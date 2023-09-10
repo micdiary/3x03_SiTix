@@ -1,12 +1,21 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
 
 const router = express.Router();
 
-import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
+import {
+	JWT_SECRET,
+	INTERNAL_SERVER_ERROR,
+	EMAIL,
+	EMAIL_PASSWORD,
+	EMAIL_BODY,
+} from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
+import { toProperCase } from "../utils/string.js";
+import { sendEmail } from "../utils/email.js";
 
 // Register new user
 router.post("/register", async (req, res) => {
@@ -21,7 +30,7 @@ router.post("/register", async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		// Create new user
-		const sql = `INSERT INTO user (username, first_name, last_name, email, password_hash, is_verified, role) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+		const sql = `INSERT INTO user (username, first_name, last_name, email, password_hash, is_verified) VALUES ( ?, ?, ?, ?, ?, ?)`;
 		const values = [
 			username,
 			first_name,
@@ -29,16 +38,54 @@ router.post("/register", async (req, res) => {
 			email,
 			hashedPassword,
 			false,
-			"user",
 		];
 		await mysql_connection.promise().query(sql, values);
 
+		// Generate JWT token for password reset
+		// Token expiry time: 20 minutes
+		const token = jwt.sign({ email }, JWT_SECRET, {
+			expiresIn: "1200s",
+		});
+
 		// send email to user to check if they are real
+		const transporter = nodemailer.createTransport({
+			service: "gmail",
+			auth: {
+				user: EMAIL,
+				pass: EMAIL_PASSWORD,
+			},
+		});
+
+		const emailBody = EMAIL_BODY.replace(
+			"{name}",
+			toProperCase(first_name)
+		).replace(/{token}/g, token);
+
+		sendEmail(email, "Email Verification", emailBody).then((info) => {
+			console.log("Email sent: " + info.response);
+		});
 
 		return res.status(201).json({ message: "User registered successfully" });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
+	}
+});
+
+router.get("/verify-email", async (req, res) => {
+	const { token } = req.query;
+	try {
+		const decoded = jwt.verify(token, JWT_SECRET);
+		const { email } = decoded;
+
+		const sql = `UPDATE user SET is_verified = 1 WHERE email = ?`;
+		const values = [email];
+		await mysql_connection.promise().query(sql, values);
+
+		return res.status(200).json({ message: "User verified successfully" });
+	} catch (err) {
+		console.log(err);
+		return res.status(401).json({ error: "Invalid token" });
 	}
 });
 
@@ -55,6 +102,10 @@ router.post("/login", async (req, res) => {
 			return res.status(401).json({ error: "Invalid credentials" });
 		}
 
+		if (user[0].is_verified === 0) {
+			return res.status(401).json({ error: "User not verified" });
+		}
+
 		// Checking if password is correct
 		const passwordMatch = await bcrypt.compare(password, user[0].password_hash);
 		if (!passwordMatch) {
@@ -62,13 +113,15 @@ router.post("/login", async (req, res) => {
 		}
 
 		// Create and assign token
-		const token = jwt.sign({ user_id: user[0].user_id }, JWT_SECRET, {
+		const token = jwt.sign({ email: user[0].email }, JWT_SECRET, {
 			expiresIn: "1h",
 		});
+
+		// to look into
 		res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
 
-        // Add token to redis
-        await redis_connection.set(token, user[0].user_id);
+		// Add token to redis
+		await redis_connection.set(token, user[0].email);
 
 		return res.status(200).json({ message: "User logged in successfully" });
 	} catch (err) {

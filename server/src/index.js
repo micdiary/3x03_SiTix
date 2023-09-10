@@ -19,6 +19,8 @@ mysql_connection.connect((err) => {
 	console.log("MySQL Connected!");
 });
 
-await redis_connection.connect();
+redis_connection.connect(
+	console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
+);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
