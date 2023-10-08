@@ -4,7 +4,11 @@ import { Layout as AntdLayout } from "antd";
 import Footer from "./Footer";
 import Header from "./Header";
 import Home from "../pages/Home";
-import Register from "../pages/Register";
+import Event from "../pages/Event";
+import Purchase from "../pages/Purchase";
+import Category from "../pages/Cateogry";
+import TicketSelection from "../pages/TicketSelection";
+import History from "../pages/History";
 
 const { Header: AntHeader, Content, Footer: AntFooter } = AntdLayout;
 
@@ -14,11 +18,16 @@ const Layout = (page) => {
         switch (page) {
             case "home":
                 return <Home />;
-            // examples
-            case "register":
-                return <Register />;
-            // case "queue":
-            //     return <queue />;
+            case "category":
+                return <Category />;
+            case "event":
+                return <Event />;
+            case "ticket":
+                return <TicketSelection />;
+            case "purchase":
+                return <Purchase />;
+            case "history":
+                return <History />;
             default:
                 return <Home />;
         }

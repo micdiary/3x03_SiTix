@@ -1,41 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Input, Button } from "antd";
+import "./RightMenu.css";
+import { Input, Button, Dropdown, Menu } from "antd";
 import * as constants from "../constants";
-import { UserOutlined, SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
-
-const rightIconsStyle = { display: "flex", alignItems: "center" };
-const searchIconStyle = { fontSize: "16px", cursor: "pointer" };
-const loginIconStyle = {
-    fontSize: "16px",
-    cursor: "pointer",
-    margin: "0 5px 0 15px",
-};
-const searchInputStyle = {
-    width: "300px",
-    height: "40px",
-    borderRadius: "50px",
-};
-const searchInputTwoStyle = {
-    width: "200px",
-    height: "30px",
-    borderRadius: "50px",
-    marginBottom: "10px",
-};
-const loginButtonStyle = {
-    color: "white",
-    height: "40px",
-    marginLeft: "10px",
-    borderRadius: "50px",
-    backgroundColor: "black",
-};
+import { UserOutlined, SearchOutlined } from "@ant-design/icons";
+import { buttonBlack, buttonWhite } from "../components/Buttons";
 
 const RightMenu = () => {
-    const navigate = useNavigate();
+    let navigate = useNavigate();
     const isLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
 
     const [isSearchExpanded, setSearchExpanded] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const inputRef = useRef(null);
 
     const toggleSearch = () => {
@@ -59,37 +36,86 @@ const RightMenu = () => {
         navigate(constants.LOGIN_URL);
     };
 
+    const profileMenu = (
+        <Menu>
+            <Menu.Item key="profile">
+                <a href={constants.HOME_URL}>Profile</a>
+            </Menu.Item>
+            <Menu.Item key="profile">
+                <a href={constants.HISTORY_URL}>History</a>
+            </Menu.Item>
+            <Menu.Item key="logout">
+                <a href={constants.LOGIN_URL}>Logout</a>
+            </Menu.Item>
+        </Menu>
+    );
+
     if (isLaptop) {
         return (
-            <div style={rightIconsStyle}>
+            <div className="right-icons">
                 <Input
                     prefix={<SearchOutlined />}
                     placeholder="Search..."
-                    style={searchInputStyle}
+                    className="search-input"
                 />
-                <Button style={loginButtonStyle} onClick={loginButton}>
+                <Button
+                    className="login-button"
+                    onMouseOut={buttonBlack}
+                    onMouseOver={buttonWhite}
+                    onClick={loginButton}
+                >
                     <UserOutlined /> Login
                 </Button>
+                {/* {isLoggedIn ? (
+                    <Dropdown overlay={profileMenu} trigger={["click"]}>
+                        <Button
+                            className="profile-button"
+                            onMouseOut={buttonWhite}
+                            onMouseOver={buttonBlack}
+                        >
+                            <UserOutlined style={{ fontSize: "15px" }} />
+                        </Button>
+                    </Dropdown>
+                ) : (
+                    <Button
+                        className="login-button"
+                        onMouseOut={buttonBlack}
+                        onMouseOver={buttonWhite}
+                        onClick={loginButton}
+                    >
+                        <UserOutlined /> Login
+                    </Button>
+                )} */}
             </div>
         );
     } else {
         return (
-            <div style={rightIconsStyle}>
+            <div className="right-icons">
                 {isSearchExpanded ? (
                     <div ref={inputRef}>
                         <Input
                             prefix={<SearchOutlined />}
                             placeholder="Search..."
-                            style={searchInputTwoStyle}
+                            className="search-input-two"
                         />
                     </div>
                 ) : (
                     <SearchOutlined
-                        style={searchIconStyle}
+                        className="search-icon"
                         onClick={toggleSearch}
                     />
-                )}
-                <UserOutlined style={loginIconStyle} onClick={loginButton} />
+                )}{" "}
+                <UserOutlined className="login-icon" onClick={loginButton} />
+                {/* {isLoggedIn ? (
+                    <Dropdown overlay={profileMenu} trigger={["click"]}>
+                        <UserOutlined className="profile-icon" />
+                    </Dropdown>
+                ) : (
+                    <UserOutlined
+                        className="login-icon"
+                        onClick={loginButton}
+                    />
+                )} */}
             </div>
         );
     }

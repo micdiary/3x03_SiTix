@@ -1,80 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
 import * as constants from "../constants";
 import { register } from "../api/account";
 import { useNavigate } from "react-router-dom";
-import CustomModal from "../components/Modal";
+import Buttons from "../components/Buttons";
 import { showNotification } from "../components/Notification";
-import { Col, Row, Form, Input, Button, Typography, Card, Select } from "antd";
-
-const { Option } = Select;
-const aStyle = { color: "#B59410" };
-const marginBottomOneStyle = { marginBottom: "25px" };
-const inputStyle = { height: "30px", borderRadius: "50px" };
-const typographyStyle = { textAlign: "center", marginBottom: "30px" };
-const cardStyle = { padding: "10px", boxShadow: "0 4px 8px rgba(0,0,0,0.2)" };
-const buttonStyle = {
-    width: "100%",
-    height: "50px",
-    color: "white",
-    borderRadius: "50px",
-    marginBottom: "5px",
-    backgroundColor: "black",
-    transition: "background-color 0.3s, color 0.3s",
-};
+import { Col, Row, Form, Input, Typography, Card } from "antd";
+import { getPasswordValidationRule } from "../utils/validation";
+import {
+    aStyle,
+    cardStyle,
+    inputStyle,
+    marginBottomOneStyle,
+    typographyStyle,
+} from "./PagesStyles";
 
 const Register = () => {
     const navigate = useNavigate();
-    // [variable, setVariable] = useState(value)
-    const [modal2Open, setModal2Open] = useState(false);
-    const [modalContent, setModalContent] = useState(null);
-    const [modalTitle, setModalTitle] = useState("Title");
-
-    const buttonMouseOut = (e) => {
-        e.currentTarget.style.backgroundColor = "black";
-        e.currentTarget.style.color = "white";
-    };
-
-    const buttonMouseOver = (e) => {
-        e.currentTarget.style.backgroundColor = "white";
-        e.currentTarget.style.color = "black";
-        e.currentTarget.style.border = "2px solid black";
-    };
-
-    const prefixSelector = (
-        <Form.Item name="prefix" noStyle>
-            <Select
-                style={{
-                    width: 70,
-                }}
-            >
-                <Option value="65">+65</Option>
-            </Select>
-        </Form.Item>
-    );
-
-    const closeModal = (isOpen) => {
-        setModal2Open(isOpen);
-    };
-
-    const handleOpenModal = () => {
-        setModalTitle(<>Email Verification</>);
-        setModalContent(
-            <>
-                <p>New contents...</p>
-                <p>New contents...</p>
-                <p>New contents...</p>
-            </>
-        );
-        setModal2Open(true);
-    };
-    const handleModalOnOk = () => {
-        navigate(constants.LOGIN_URL);
-    };
 
     const onFinish = (values) => {
         const req = {
             username: values.username,
-            lastname: values.last_name,
+            last_name: values.last_name,
             first_name: values.first_name,
             email: values.email,
             password: values.password,
@@ -82,8 +28,7 @@ const Register = () => {
         register(req)
             .then((res) => {
                 showNotification(res.message);
-                handleOpenModal();
-                // navigate();
+                navigate(constants.LOGIN_URL);
             })
             .catch((err) => {
                 showNotification(err.message);
@@ -91,8 +36,15 @@ const Register = () => {
     };
 
     return (
-        <Row justify="center" align="middle" style={{ minHeight: "100vh" }}>
-            <Col xs={20} sm={20} md={16} lg={12}>
+        <Row
+            justify="center"
+            align="middle"
+            style={{
+                minHeight: "100vh",
+                background: `url(https://pngimg.com/d/smoke_PNG55185.png) no-repeat center`,
+            }}
+        >
+            <Col xs={20} sm={20} md={16} lg={10}>
                 <Typography.Title style={typographyStyle} level={1}>
                     Sign Up
                 </Typography.Title>
@@ -157,7 +109,7 @@ const Register = () => {
                                         {
                                             pattern: /^[a-zA-Z]+$/,
                                             message:
-                                                "First name can only contain letters.",
+                                                "Last name can only contain letters.",
                                         },
                                     ]}
                                     style={marginBottomOneStyle}
@@ -169,27 +121,6 @@ const Register = () => {
                                 </Form.Item>
                             </Col>
                         </Row>
-                        <Form.Item
-                            name="phone_number"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter phone number.",
-                                },
-                                {
-                                    pattern: /^[89]\d{7}$/,
-                                    message:
-                                        "Please enter a valid 8-digit phone number starting with 8 or 9 and without spaces.",
-                                },
-                            ]}
-                            style={marginBottomOneStyle}
-                        >
-                            <Input
-                                sstyle={inputStyle}
-                                addonBefore={prefixSelector}
-                                placeholder="Phone Number"
-                            />
-                        </Form.Item>
                         <Form.Item
                             name="email"
                             rules={[
@@ -210,17 +141,7 @@ const Register = () => {
                                     required: true,
                                     message: "Please enter your Password.",
                                 },
-                                {
-                                    min: 8,
-                                    message:
-                                        "Password must contain at least 8 characters!",
-                                },
-                                {
-                                    pattern:
-                                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                                    message:
-                                        "Password must contain at least a number, an uppercase, a lower case and a special charatcer!",
-                                },
+                                ...getPasswordValidationRule(),
                             ]}
                             hasFeedback
                             style={marginBottomOneStyle}
@@ -259,19 +180,11 @@ const Register = () => {
                         >
                             <Input.Password
                                 style={inputStyle}
-                                placeholder="Comfirm"
+                                placeholder="Confirm Password"
                             />
                         </Form.Item>
                         <Form.Item>
-                            <Button
-                                style={buttonStyle}
-                                onMouseOut={buttonMouseOut}
-                                onMouseOver={buttonMouseOver}
-                                htmlType="submit"
-                                onClick={handleOpenModal}
-                            >
-                                Sign Up
-                            </Button>
+                            <Buttons text="Sign Up" />
                             <div>
                                 Already have an account?{" "}
                                 <a style={aStyle} href={constants.LOGIN_URL}>
@@ -279,13 +192,6 @@ const Register = () => {
                                 </a>
                             </div>
                         </Form.Item>
-                        <CustomModal
-                            modal2Open={modal2Open}
-                            closeModal={closeModal}
-                            modalTitle={modalTitle}
-                            modalContent={modalContent}
-                            onOk={handleModalOnOk}
-                        />
                     </Form>
                 </Card>
             </Col>
