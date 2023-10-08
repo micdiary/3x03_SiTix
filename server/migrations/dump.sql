@@ -188,6 +188,7 @@ CREATE TABLE `user` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` varchar(45) DEFAULT NULL,
   `is_verified` tinyint NOT NULL,
+  `failed_tries` int NOT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -198,7 +199,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'micdiary','mic','chan','micdiary@123.com','$2b$10$Ir8MaqpTYwZ7g/w5FXjJzOdfVNve2R5GApdZ8flMGRxwX3likkRYC','2023-09-05 22:07:35','',0);
+INSERT INTO `user` VALUES (1,'micdiary','mic','chan','micdiary@123.com','$2b$10$Ir8MaqpTYwZ7g/w5FXjJzOdfVNve2R5GApdZ8flMGRxwX3likkRYC','2023-09-05 22:07:35','',1,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 

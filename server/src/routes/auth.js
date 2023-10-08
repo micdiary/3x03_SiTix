@@ -41,11 +41,8 @@ router.post("/register", async (req, res) => {
 		];
 		await mysql_connection.promise().query(sql, values);
 
-		// Generate JWT token for password reset
 		// Token expiry time: 20 minutes
-		const token = jwt.sign({ email }, JWT_SECRET, {
-			expiresIn: "1200s",
-		});
+		const token = jwt.sign({ email }, JWT_SECRET);
 
 		// send email to user to check if they are real
 		const transporter = nodemailer.createTransport({
@@ -65,7 +62,9 @@ router.post("/register", async (req, res) => {
 			console.log("Email sent: " + info.response);
 		});
 
-		return res.status(201).json({ message: "User registered successfully" });
+		return res.status(201).json({
+			message: "Verify your email address to activate your SiTix account!",
+		});
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
@@ -113,20 +112,40 @@ router.post("/login", async (req, res) => {
 		}
 
 		// Create and assign token
-		const token = jwt.sign({ email: user[0].email }, JWT_SECRET, {
-			expiresIn: "1h",
+		const token = jwt.sign({ email: user[0].email }, JWT_SECRET);
+
+		// Add token to redis for 4 hours
+		setTokenToRedis(token, user[0].email, 14400);
+
+		return res.status(200).json({
+			token: token,
+			userType: "customer",
+			message: "User logged in successfully",
 		});
-
-		// to look into
-		res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
-
-		// Add token to redis
-		await redis_connection.set(token, user[0].email);
-
-		return res.status(200).json({ message: "User logged in successfully" });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
+	}
+});
+
+// refresh token
+router.post("/refresh-token", async (req, res) => {
+	const { token } = req.body;
+	try {
+		const decoded = jwt.verify(token, JWT_SECRET);
+		const { email } = decoded;
+
+		const tokenToCompare = await redis_connection.get(email);
+
+		if (tokenToCompare !== token) {
+			return res.status(401).json({ error: "Invalid token" });
+		}
+
+		setTokenToRedis(token, email, 14400);
+		return res.status(200).json({ token: token, message: "Token refreshed" });
+	} catch (err) {
+		console.log(err);
+		return res.status(401).json({ error: "Invalid token" });
 	}
 });
 
@@ -136,6 +155,11 @@ async function userExists(email) {
 	const values = [email];
 	const [user] = await mysql_connection.promise().query(sql, values);
 	return user.length > 0;
+}
+
+async function setTokenToRedis(token, email, timeout) {
+	await redis_connection.set(email, token);
+	await redis_connection.expire(email, timeout);
 }
 
 export { router as authRouter };
