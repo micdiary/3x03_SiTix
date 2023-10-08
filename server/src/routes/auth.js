@@ -74,8 +74,8 @@ router.post("/register", async (req, res) => {
     }
 });
 
-router.get("/verify-email", async (req, res) => {
-    const { token } = req.query;
+router.post("/verify-email", async (req, res) => {
+    const { token } = req.body;
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         const { email } = decoded;

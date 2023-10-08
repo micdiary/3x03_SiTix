@@ -78,16 +78,16 @@ const Header = () => {
                     </a>
                 </div>
                 <div>
-                    <RightMenu />
+                    <RightMenu token={token} />
                 </div>
             </div>
         );
     } else {
-        return <MobileMenu />;
+        return <MobileMenu token={token} />;
     }
 };
 
-const MobileMenu = () => {
+const MobileMenu = ({ token }) => {
     const [isDrawerVisible, setDrawerVisible] = React.useState(false);
 
     const showDrawer = () => {
@@ -118,7 +118,7 @@ const MobileMenu = () => {
                 </a>
             </div>
             <div>
-                <RightMenu />
+                <RightMenu token={token} />
             </div>
         </div>
     );

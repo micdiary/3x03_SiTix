@@ -1,5 +1,5 @@
 // service for account related
-import { requestGet, requestPost } from "../utils/request";
+import { requestPost } from "../utils/request";
 import {
     REGISTER_API,
     LOGIN_API,
@@ -21,8 +21,4 @@ export async function verifyEmail(req) {
 
 export async function refreshToken(req) {
     return requestPost(REFRESH_TOKEN_API, { req });
-}
-
-export async function verifyAccount(req) {
-    return requestGet(`${VERIFY_EMAIL_API}/${req}`);
 }

@@ -141,7 +141,7 @@ const Register = () => {
                                     required: true,
                                     message: "Please enter your Password.",
                                 },
-                                ...getPasswordValidationRule(),
+                                // ...getPasswordValidationRule(),
                             ]}
                             hasFeedback
                             style={marginBottomOneStyle}

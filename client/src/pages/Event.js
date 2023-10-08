@@ -1,20 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as constants from "../constants";
 import { Row, Col, Typography, Divider } from "antd";
 import eventBackground from "../assets/d4vd.jpg";
 import Buttons from "../components/Buttons";
 import { useNavigate } from "react-router-dom";
+import { getToken } from "../utils/account";
+import { userStore } from "../store/User";
 
 const Event = () => {
     let navigate = useNavigate();
-    // const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const buyNowButton = () => {
+    const localToken = getToken();
+    const storeToken = userStore((state) => state.token);
+    const [isLoggedIn, setIsLoggedIn] = useState(
+        localToken !== null ? localToken : storeToken
+    );
+
+    useEffect(() => {
+        setIsLoggedIn(localToken !== null ? localToken : storeToken);
+    }, [localToken, storeToken]);
+
+    const buyButton = () => {
         navigate(constants.QUEUE_URL);
     };
 
-    // const logInButton = () => {
-    //     navigate(constants.LOGIN_URL);
-    // };
+    const loginButton = () => {
+        navigate(constants.HOME_URL);
+    };
 
     return (
         <div style={{ minHeight: "100vh" }}>
@@ -46,7 +57,7 @@ const Event = () => {
                         <Buttons
                             text="Buy Now"
                             marginTop="20px"
-                            onClick={buyNowButton}
+                            onClick={isLoggedIn ? buyButton : loginButton}
                         />
                     </Col>
                     <Divider />

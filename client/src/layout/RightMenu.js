@@ -7,12 +7,11 @@ import { useMediaQuery } from "react-responsive";
 import { UserOutlined, SearchOutlined } from "@ant-design/icons";
 import { buttonBlack, buttonWhite } from "../components/Buttons";
 
-const RightMenu = () => {
+const RightMenu = ({ token }) => {
     let navigate = useNavigate();
     const isLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
 
     const [isSearchExpanded, setSearchExpanded] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const inputRef = useRef(null);
 
     const toggleSearch = () => {
@@ -58,15 +57,16 @@ const RightMenu = () => {
                     placeholder="Search..."
                     className="search-input"
                 />
-                <Button
-                    className="login-button"
-                    onMouseOut={buttonBlack}
-                    onMouseOver={buttonWhite}
-                    onClick={loginButton}
-                >
-                    <UserOutlined /> Login
-                </Button>
-                {/* {isLoggedIn ? (
+                {token === null ? (
+                    <Button
+                        className="login-button"
+                        onMouseOut={buttonBlack}
+                        onMouseOver={buttonWhite}
+                        onClick={loginButton}
+                    >
+                        <UserOutlined /> Login
+                    </Button>
+                ) : (
                     <Dropdown overlay={profileMenu} trigger={["click"]}>
                         <Button
                             className="profile-button"
@@ -76,16 +76,7 @@ const RightMenu = () => {
                             <UserOutlined style={{ fontSize: "15px" }} />
                         </Button>
                     </Dropdown>
-                ) : (
-                    <Button
-                        className="login-button"
-                        onMouseOut={buttonBlack}
-                        onMouseOver={buttonWhite}
-                        onClick={loginButton}
-                    >
-                        <UserOutlined /> Login
-                    </Button>
-                )} */}
+                )}
             </div>
         );
     } else {
@@ -105,17 +96,17 @@ const RightMenu = () => {
                         onClick={toggleSearch}
                     />
                 )}{" "}
-                <UserOutlined className="login-icon" onClick={loginButton} />
-                {/* {isLoggedIn ? (
-                    <Dropdown overlay={profileMenu} trigger={["click"]}>
-                        <UserOutlined className="profile-icon" />
-                    </Dropdown>
-                ) : (
+                {/* <UserOutlined className="login-icon" onClick={loginButton} /> */}
+                {token === null ? (
                     <UserOutlined
                         className="login-icon"
                         onClick={loginButton}
                     />
-                )} */}
+                ) : (
+                    <Dropdown overlay={profileMenu} trigger={["click"]}>
+                        <UserOutlined className="login-icon" />
+                    </Dropdown>
+                )}
             </div>
         );
     }
