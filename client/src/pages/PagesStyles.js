@@ -37,3 +37,11 @@ export const cardStyletwo = {
 // Home.js
 export const carouselStyle = { margin: "10px 0" };
 export const bodyContentStyle = { margin: "60px" };
+
+
+// AdminManagement.js
+export const tableStyle = {
+    border: "2px solid #dcdcdc",
+    borderRadius: "20px",
+    padding: "10px",
+};
