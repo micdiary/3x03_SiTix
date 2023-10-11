@@ -124,4 +124,19 @@ const MobileMenu = ({ token }) => {
     );
 };
 
+const SuperHeader = () => {
+    return (
+        <div className="header">
+            <div className="logo">
+                <a className="href" href={constants.HOME_URL}>
+                    SiTix SuperAdmin
+                </a>
+            </div>
+            <div>
+                <RightSuperMenu />
+            </div>
+        </div>
+    );
+};
+
 export default Header;

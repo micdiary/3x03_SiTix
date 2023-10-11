@@ -112,4 +112,22 @@ const RightMenu = ({ token }) => {
     }
 };
 
+export const RightSuperMenu = () => {
+    let navigate = useNavigate();
+    const logoutButton = () => {
+        navigate();
+    };
+    return (
+        <Button
+            className="login-button"
+            onMouseOut={buttonBlack}
+            onMouseOver={buttonWhite}
+            onClick={logoutButton}
+        >
+            Logout
+            <LogoutOutlined />
+        </Button>
+    );
+};
+
 export default RightMenu;
