@@ -136,14 +136,10 @@ router.post("/reset-password", async (req, res) => {
 
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
-		const hashedPassword = await bcrypt.hash(password, 10);
-
-		console.log(decoded);
 
 		let user = [];
 		const { email } = decoded;
 
-		// user is logged in
 		const sql = `SELECT * FROM user WHERE email = ?`;
 		const values = [email];
 		[user] = await mysql_connection.promise().query(sql, values);
@@ -155,13 +151,16 @@ router.post("/reset-password", async (req, res) => {
 			[user] = await mysql_connection.promise().query(sql, values);
 		}
 
-		const passwordCheck = await verifyAccountPassword(
-			password,
-			user[0].password_hash
-		);
+		if (password !== undefined) {
+			const hashedPassword = await bcrypt.hash(password, 10);
+			const passwordCheck = await verifyAccountPassword(
+				hashedPassword,
+				user[0].password_hash
+			);
 
-		if (!passwordCheck) {
-			return res.status(409).json({ error: "Incorrect password" });
+			if (!passwordCheck) {
+				return res.status(409).json({ error: "Incorrect password" });
+			}
 		}
 
 		// hash new password
