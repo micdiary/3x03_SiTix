@@ -131,6 +131,22 @@ router.post("/login", async (req, res) => {
 	}
 });
 
+// logout
+router.get("/logout/:token", async (req, res) => {
+	const { token } = req.params;
+	try {
+		const decoded = jwt.verify(token, JWT_SECRET);
+		const { email } = decoded;
+
+		await redis_connection.del(email);
+
+		return res.status(200).json({ message: "User logged out successfully" });
+	} catch (err) {
+		console.log(err);
+		return res.status(401).json({ error: INTERNAL_SERVER_ERROR });
+	}
+});
+
 // refresh token
 router.post("/refresh-token", async (req, res) => {
 	const { token } = req.body;
