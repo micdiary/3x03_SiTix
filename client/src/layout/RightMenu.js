@@ -48,6 +48,7 @@ const RightMenu = ({ token }) => {
                 showNotification(res.message);
                 removeToken();
                 removeUser();
+                navigate(constants.HOME_URL);
             })
             .catch((error) => {
                 console.error("Logout failed:", error);
