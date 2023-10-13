@@ -87,6 +87,11 @@ const AdminManagement = () => {
             key: "email",
         },
         {
+            title: "Created At",
+            dataIndex: "created_at",
+            key: "created_at",
+        },
+        {
             title: "Action",
             key: "action",
             render: (_, record) => (
@@ -120,16 +125,6 @@ const AdminManagement = () => {
     };
 
     const formItems = [
-        {
-            name: "admin_id",
-            rules: [
-                {
-                    required: true,
-                    message: "Numbers only",
-                },
-            ],
-            input: <Input style={inputStyle} placeholder="AdminID" />,
-        },
         {
             name: "name",
             rules: [
@@ -169,61 +164,12 @@ const AdminManagement = () => {
             ],
             input: <Input style={inputStyle} placeholder="Email" />,
         },
-        {
-            name: "email",
-            rules: [
-                {
-                    required: true,
-                    message: "Enter a valid Email.",
-                    type: "email",
-                },
-            ],
-            input: <Input style={inputStyle} placeholder="Email" />,
-        },
-        {
-            name: "password",
-            rules: [
-                {
-                    required: true,
-                    message: "Please enter your Password.",
-                },
-                // ...getPasswordValidationRule(),
-            ],
-            input: <Input.Password style={inputStyle} placeholder="Password" />,
-        },
-        {
-            name: "confirm_password",
-            dependencies: ["password"],
-            rules: [
-                {
-                    required: true,
-                    message: "Please confirm your Password.",
-                },
-                ({ getFieldValue }) => ({
-                    validator(_, value) {
-                        if (!value || getFieldValue("password") === value) {
-                            return Promise.resolve();
-                        }
-                        return Promise.reject(
-                            new Error(
-                                "The password you entered does not match!"
-                            )
-                        );
-                    },
-                }),
-            ],
-            input: (
-                <Input.Password
-                    style={inputStyle}
-                    placeholder="Confirm Password"
-                />
-            ),
-        },
     ];
 
     return (
         <div style={{ minHeight: "100vh" }}>
             <Row justify="center" align="middle">
+                <Typography.Title level={3}>Super Admin</Typography.Title>
                 <Col xs={23} sm={23} md={22} lg={22}>
                     <Row justify="end" style={{ margin: "15px 0" }}>
                         <Col xs={24} sm={12} md={8} lg={4}>
@@ -248,8 +194,8 @@ const AdminManagement = () => {
                         modalTitle={addMode ? "Add New Admin" : "Edit Admin"}
                         modalContent={
                             <Form>
-                                {addMode && modalForm(formItems.slice(0, 2))}
-                                {modalForm(formItems.slice(2))}
+                                {addMode && modalForm(formItems)}
+                                {!addMode && modalForm(formItems.slice(0, 2))}
                             </Form>
                         }
                         onOk={handleModalOk}

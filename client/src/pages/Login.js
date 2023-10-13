@@ -2,10 +2,8 @@ import React from "react";
 import { login } from "../api/account";
 import * as constants from "../constants";
 import Buttons from "../components/Buttons";
-import { setLoggedIn } from "../utils/account";
 import { useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { showNotification } from "../components/Notification";
 import { Col, Row, Form, Input, Typography, Card } from "antd";
 import {
     aStyle,

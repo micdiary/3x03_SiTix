@@ -9,8 +9,6 @@ const OrderCard = ({
     eventDate,
     eventDay,
     eventTime,
-    sectionId,
-    rowNumber,
     seatNumber,
     eventCat,
     eventPrice,
@@ -45,8 +43,9 @@ const OrderCard = ({
                         </Col>
                         <Col span={5}>
                             <div>
-                                {sectionId} <br /> {`Row ${rowNumber}`},{" "}
                                 {`Seat ${seatNumber}`}
+                                <br />
+                                {"-"}
                             </div>
                         </Col>
                     </Row>

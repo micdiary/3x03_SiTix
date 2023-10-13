@@ -37,6 +37,10 @@ function App() {
                     element={<Layout page={"history"} />}
                 />
                 <Route
+                    path={constants.PROFILE_URL}
+                    element={<Layout page={"profile"} />}
+                />
+                <Route
                     path={constants.USER_VERIFICATION_URL}
                     element={<UserVerification />}
                 />
@@ -51,6 +55,21 @@ function App() {
                     element={<ResetPassword />}
                 />
                 <Route path={constants.QUEUE_URL} element={<Queue />} />
+
+                {/* SuperAdmin */}
+                <Route
+                    path={constants.SUPERADMIN_URL}
+                    element={<Layout page={"superadmin"} />}
+                />
+                {/* Admin */}
+                <Route
+                    path={constants.ADMIN_URL}
+                    element={<Layout page={"admin"} />}
+                />
+                <Route
+                    path={constants.EVENT_MANAGEMENR_URL}
+                    element={<Layout page={"add-event"} />}
+                />
             </Routes>
         </BrowserRouter>
     );

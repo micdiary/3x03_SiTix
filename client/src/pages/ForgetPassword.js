@@ -5,8 +5,24 @@ import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import Buttons from "../components/Buttons";
 import { cardStyle, inputStyle, typographyStyle } from "./PagesStyles";
+import { forgetPassword } from "../api/account";
+import { showNotification } from "../components/Notification";
 
 const ForgetPassword = () => {
+    const [form] = Form.useForm();
+
+    const onFinish = (values) => {
+        const req = { email: values.email };
+        forgetPassword(req)
+            .then((res) => {
+                showNotification(res.message);
+                form.resetFields();
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
+    };
+
     return (
         <Row justify="center" align="middle" style={{ minHeight: "100vh" }}>
             <Col xs={20} sm={16} md={12} lg={8}>
@@ -17,7 +33,7 @@ const ForgetPassword = () => {
                     No worries, we'll send you the reset instructions.
                 </Typography.Title>
                 <Card style={cardStyle}>
-                    <Form>
+                    <Form form={form} onFinish={onFinish}>
                         <Form.Item
                             name="email"
                             rules={[

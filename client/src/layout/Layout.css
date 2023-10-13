@@ -1,5 +1,28 @@
-/* RightMenu.css */
+/* header.css */
+.header {
+    display: flex;
+    padding: 0px 24px;
+    align-items: center;
+    background-color: #fff;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 
+.href {
+    color: black;
+}
+
+.logo {
+    font-size: 20px;
+}
+
+.hamburger {
+    font-size: 16px;
+    cursor: pointer;
+    padding-right: 30px;
+}
+
+/* RightMenu.css */
 .right-icons {
     display: flex;
     align-items: center;

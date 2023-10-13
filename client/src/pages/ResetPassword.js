@@ -1,5 +1,5 @@
 import React from "react";
-// import * as constants from "../constants";
+import * as constants from "../constants";
 import { Card, Col, Form, Input, Row, Typography } from "antd";
 import Buttons from "../components/Buttons";
 import {
@@ -9,8 +9,29 @@ import {
     cardStyle,
 } from "./PagesStyles";
 import { getPasswordValidationRule } from "../utils/validation";
+import { useNavigate } from "react-router";
+import { getToken } from "../utils/account";
+import { resetPassword } from "../api/account";
+import { showNotification } from "../components/Notification";
 
 const ResetPassword = () => {
+    let navigate = useNavigate();
+
+    const onFinish = (values) => {
+        const req = {
+            token: getToken(),
+            newPassword: values.new_password,
+        };
+        resetPassword(req)
+            .then((res) => {
+                showNotification(res.message);
+                navigate(constants.LOGIN_URL);
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
+    };
+
     return (
         <Row justify="center" align="middle" style={{ minHeight: "100vh" }}>
             <Col xs={20} sm={16} md={12} lg={8}>
@@ -21,7 +42,7 @@ const ResetPassword = () => {
                     <Form
                         layout="vertical"
                         name="forget-password"
-                        // onFinish={onFinish}
+                        onFinish={onFinish}
                     >
                         <Form.Item
                             name="new_password"
@@ -30,7 +51,7 @@ const ResetPassword = () => {
                                     required: true,
                                     message: "Please enter your new password.",
                                 },
-                                ...getPasswordValidationRule(),
+                                // ...getPasswordValidationRule(),
                             ]}
                             hasFeedback
                             style={marginBottomOneStyle}

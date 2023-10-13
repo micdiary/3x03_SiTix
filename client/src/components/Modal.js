@@ -1,13 +1,7 @@
 import React from "react";
 import { Modal } from "antd";
 
-const CustomModal = ({
-    modal2Open,
-    closeModal,
-    modalTitle,
-    modalContent,
-    onOk,
-}) => {
+const Modals = ({ modal2Open, closeModal, modalTitle, modalContent, onOk }) => {
     return (
         <Modal
             title={modalTitle}
@@ -20,10 +14,29 @@ const CustomModal = ({
                 }
             }}
             onCancel={() => closeModal(false)}
+            okText="Submit"
+            okButtonProps={{
+                style: {
+                    height: "50px",
+                    background: "black",
+                    borderColor: "black",
+                    color: "white",
+                    borderRadius: "30px",
+                },
+            }}
+            cancelButtonProps={{
+                style: {
+                    height: "50px",
+                    background: "white",
+                    borderColor: "black",
+                    color: "black",
+                    borderRadius: "30px",
+                },
+            }}
         >
             {modalContent}
         </Modal>
     );
 };
 
-export default CustomModal;
+export default Modals;

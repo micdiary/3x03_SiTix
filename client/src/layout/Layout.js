@@ -8,7 +8,11 @@ import Event from "../pages/Event";
 import Purchase from "../pages/Purchase";
 import Category from "../pages/Cateogry";
 import TicketSelection from "../pages/TicketSelection";
+import Profile from "../pages/Profile";
 import History from "../pages/History";
+import AdminManagement from "../pages/Superadmin/AdminManagement";
+import Admin from "../pages/Admin/Admin";
+import EventManagement from "../pages/Admin/EventManagement";
 
 const { Header: AntHeader, Content, Footer: AntFooter } = AntdLayout;
 
@@ -28,6 +32,14 @@ const Layout = (page) => {
                 return <Purchase />;
             case "history":
                 return <History />;
+            case "profile":
+                return <Profile />;
+            case "superadmin":
+                return <AdminManagement />;
+            case "admin":
+                return <Admin />;
+            case "add-event":
+                return <EventManagement />;
             default:
                 return <Home />;
         }

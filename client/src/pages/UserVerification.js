@@ -5,22 +5,13 @@ import { verifyEmail } from "../api/account";
 import { CheckCircleTwoTone } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
 import { buttonStyle, cardStyletwo } from "./PagesStyles";
+import { buttonBlack, buttonWhite } from "../components/Buttons";
 
 const UserVerfication = () => {
     let navigate = useNavigate();
     const location = useLocation();
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
-    const handleButtonMouseOut = (e) => {
-        e.currentTarget.style.backgroundColor = "black";
-        e.currentTarget.style.color = "white";
-    };
-    const handleButtonMouseOver = (e) => {
-        e.currentTarget.style.backgroundColor = "white";
-        e.currentTarget.style.color = "black";
-        e.currentTarget.style.border = "2px solid black";
-    };
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
@@ -58,8 +49,8 @@ const UserVerfication = () => {
                             style={buttonStyle}
                             onClick={loginButton}
                             disabled={isButtonDisabled}
-                            onMouseOut={handleButtonMouseOut}
-                            onMouseOver={handleButtonMouseOver}
+                            onMouseOut={buttonBlack}
+                            onMouseOver={buttonWhite}
                         >
                             Login
                         </Button>

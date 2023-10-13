@@ -1,28 +1,26 @@
+import "./Layout.css";
 import React, { useState, useRef, useEffect } from "react";
-import "./RightMenu.css";
-import { Input, Button, Dropdown, Menu } from "antd";
+import { Input, Button, Dropdown } from "antd";
 import * as constants from "../constants";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
-import { UserOutlined, SearchOutlined, LogoutOutlined } from "@ant-design/icons";
+import {
+    UserOutlined,
+    SearchOutlined,
+    LogoutOutlined,
+} from "@ant-design/icons";
 import { buttonBlack, buttonWhite } from "../components/Buttons";
+import { logout } from "../api/account";
+import { showNotification } from "../components/Notification";
+import { removeToken, removeUserType } from "../utils/account";
+import { userStore } from "../store/User";
 
 const RightMenu = ({ token }) => {
     let navigate = useNavigate();
     const isLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
-
     const [isSearchExpanded, setSearchExpanded] = useState(false);
     const inputRef = useRef(null);
-
-    const toggleSearch = () => {
-        setSearchExpanded(!isSearchExpanded);
-    };
-
-    const handleClickOutside = (event) => {
-        if (inputRef.current && !inputRef.current.contains(event.target)) {
-            setSearchExpanded(false);
-        }
-    };
+    const removeUser = userStore((state) => state.removeUser);
 
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
@@ -31,23 +29,45 @@ const RightMenu = ({ token }) => {
         };
     }, []);
 
+    const toggleSearch = () => {
+        setSearchExpanded(!isSearchExpanded);
+    };
+    const handleClickOutside = (event) => {
+        if (inputRef.current && !inputRef.current.contains(event.target)) {
+            setSearchExpanded(false);
+        }
+    };
     const loginButton = () => {
         navigate(constants.LOGIN_URL);
     };
 
-    const profileMenu = (
-        <Menu>
-            <Menu.Item key="profile">
-                <a href={constants.HOME_URL}>Profile</a>
-            </Menu.Item>
-            <Menu.Item key="profile">
-                <a href={constants.HISTORY_URL}>History</a>
-            </Menu.Item>
-            <Menu.Item key="logout">
-                <a href={constants.LOGIN_URL}>Logout</a>
-            </Menu.Item>
-        </Menu>
-    );
+    const logoutButton = () => {
+        logout()
+            .then((res) => {
+                console.log("logout", res);
+                showNotification(res.message);
+                removeToken();
+                removeUser();
+            })
+            .catch((error) => {
+                console.error("Logout failed:", error);
+            });
+    };
+
+    const profileItems = [
+        {
+            key: "1",
+            label: <a href={constants.PROFILE_URL}> Profile </a>,
+        },
+        {
+            key: "2",
+            label: <a href={constants.HISTORY_URL}>History </a>,
+        },
+        {
+            key: "3",
+            label: <div onClick={logoutButton}>Logout</div>,
+        },
+    ];
 
     if (isLaptop) {
         return (
@@ -67,7 +87,7 @@ const RightMenu = ({ token }) => {
                         <UserOutlined /> Login
                     </Button>
                 ) : (
-                    <Dropdown overlay={profileMenu} trigger={["click"]}>
+                    <Dropdown menu={{ items: profileItems }}>
                         <Button
                             className="profile-button"
                             onMouseOut={buttonWhite}
@@ -96,14 +116,16 @@ const RightMenu = ({ token }) => {
                         onClick={toggleSearch}
                     />
                 )}{" "}
-                {/* <UserOutlined className="login-icon" onClick={loginButton} /> */}
                 {token === null ? (
                     <UserOutlined
                         className="login-icon"
                         onClick={loginButton}
                     />
                 ) : (
-                    <Dropdown overlay={profileMenu} trigger={["click"]}>
+                    <Dropdown
+                        menu={{ items: profileItems }}
+                        trigger={["click"]}
+                    >
                         <UserOutlined className="login-icon" />
                     </Dropdown>
                 )}

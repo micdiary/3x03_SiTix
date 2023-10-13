@@ -11,8 +11,6 @@ const Purchase = () => {
         eventDate: "10 November 2023",
         eventDay: "Sat",
         eventTime: "8pm",
-        sectionId: "323",
-        rowNumber: "3",
         seatNumber: "12",
         eventCat: "1",
         eventPrice: "150",

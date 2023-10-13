@@ -26,22 +26,25 @@ export const buttonStyle = {
     height: "50px",
     color: "white",
     borderRadius: "50px",
-    marginBottom: "5px 0",
+    margin: "20px 0",
     backgroundColor: "black",
     transition: "background-color 0.3s, color 0.3s",
 };
 export const cardStyletwo = {
-    padding: "0px 20px 20px 20px",
+    padding: "0 20px",
     boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
 };
 // Home.js
 export const carouselStyle = { margin: "10px 0" };
 export const bodyContentStyle = { margin: "60px" };
-
-
 // AdminManagement.js
 export const tableStyle = {
     border: "2px solid #dcdcdc",
     borderRadius: "20px",
     padding: "10px",
+};
+// Events.js
+export const liStyle = {
+    fontSize: "16px",
+    margin: "10px",
 };

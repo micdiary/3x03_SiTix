@@ -6,6 +6,7 @@ import Buttons from "../components/Buttons";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../utils/account";
 import { userStore } from "../store/User";
+import { liStyle } from "./PagesStyles";
 
 const Event = () => {
     let navigate = useNavigate();
@@ -86,9 +87,36 @@ const Event = () => {
                         <Row>
                             <Col>
                                 <Typography.Title level={2}>
-                                    Details
+                                    Admission Policy
                                 </Typography.Title>
-                                <Typography.Text>fk 3103</Typography.Text>
+                                <Typography.Text strong style={liStyle}>
+                                    Admission Rules:
+                                </Typography.Text>
+                                <ul>
+                                    <li style={liStyle}>
+                                        Admission to show/venue by full ticket
+                                        only. Printed/electronic tickets must be
+                                        produced for admission.
+                                    </li>
+                                    <li style={liStyle}>
+                                        There will be no admission for infants
+                                        in arms and children below 5 years old.
+                                    </li>
+                                    <li style={liStyle}>
+                                        Individuals and Children aged 5 years
+                                        old and above will be required to
+                                        purchase a ticket for admission.
+                                    </li>
+                                    <li style={liStyle}>
+                                        Photography and videography of any form
+                                        and social media live streaming is not
+                                        allowed.
+                                    </li>
+                                    <li style={liStyle}>
+                                        No outside food and beverage are allowed
+                                        into the venue.
+                                    </li>
+                                </ul>
                             </Col>
                         </Row>
                         <Row style={{ backgroundColor: "#ECECEC" }}>
@@ -96,15 +124,44 @@ const Event = () => {
                                 <Typography.Title level={2}>
                                     Exchange & Refund Policy
                                 </Typography.Title>
-                                <Typography.Text>someshit</Typography.Text>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Typography.Title level={2}>
-                                    Admission Policy
-                                </Typography.Title>
-                                <Typography.Text>fk 3103</Typography.Text>
+                                <ol>
+                                    <li style={liStyle}>
+                                        The Organiser/Venue Owner reserves the
+                                        right without refund or compensation to
+                                        refuse admission/evict any person(s)
+                                        whose conduct is disorderly or
+                                        inappropriate or who poses a threat to
+                                        security, or to the enjoyment of the
+                                        Event by others.
+                                    </li>
+                                    <li style={liStyle}>
+                                        Ticket holders assume all risk of injury
+                                        and all responsibility for property
+                                        loss, destruction, or theft and release
+                                        the promoters, performers, sponsors,
+                                        ticket outlets, venues, and their
+                                        employees from any liability thereafter.
+                                    </li>
+                                    <li style={liStyle}>
+                                        The resale of ticket(s) at the same or
+                                        any price in excess of the initial
+                                        purchase price is prohibited.
+                                    </li>
+                                    <li style={liStyle}>
+                                        There is no refund, exchange, upgrade,
+                                        or cancellation once ticket(s) are sold.
+                                    </li>
+                                    <li style={liStyle}>
+                                        We would like to caution members of the
+                                        public against purchasing tickets from
+                                        unauthorized sellers or 3rd party
+                                        websites. By purchasing tickets through
+                                        these non-authorized points of sale,
+                                        buyers take on the risk that the
+                                        validity of the tickets cannot be
+                                        guaranteed, with no refunds possible.
+                                    </li>
+                                </ol>
                             </Col>
                         </Row>
                     </Col>

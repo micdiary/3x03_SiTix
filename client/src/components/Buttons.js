@@ -18,10 +18,8 @@ const Buttons = ({ width, height, marginTop, text, onClick }) => {
     const buttonStyle = {
         width: width || "100%",
         height: height || "50px",
-
         color: "white",
         borderRadius: "50px",
-
         marginBotton: "10px",
         backgroundColor: "black",
         marginTop: marginTop || "auto",
