@@ -13,7 +13,8 @@ export const HISTORY_URL = "/history";
 export const PROFILE_URL = "/profile";
 export const SUPERADMIN_URL = "/superadmin";
 export const ADMIN_URL = "/admin";
-export const EVENT_MANAGEMENR_URL = "/admin/add-event";
+export const ADD_EVENT_URL = "/admin/add-event";
+export const ADD_VENUE_URL = "/admin/add-venue";
 
 export const URL = "http://localhost:3001";
 export const REGISTER_API = `${URL}/auth/register`;

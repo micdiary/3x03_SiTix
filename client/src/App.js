@@ -67,8 +67,12 @@ function App() {
                     element={<Layout page={"admin"} />}
                 />
                 <Route
-                    path={constants.EVENT_MANAGEMENR_URL}
+                    path={constants.ADD_EVENT_URL}
                     element={<Layout page={"add-event"} />}
+                />
+                <Route
+                    path={constants.ADD_VENUE_URL}
+                    element={<Layout page={"add-venue"} />}
                 />
             </Routes>
         </BrowserRouter>

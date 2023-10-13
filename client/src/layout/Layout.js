@@ -12,7 +12,8 @@ import Profile from "../pages/Profile";
 import History from "../pages/History";
 import AdminManagement from "../pages/Superadmin/AdminManagement";
 import Admin from "../pages/Admin/Admin";
-import EventManagement from "../pages/Admin/EventManagement";
+import AddEvent from "../pages/Admin/AddEvent";
+import AddVenue from "../pages/Admin/AddVenue";
 
 const { Header: AntHeader, Content, Footer: AntFooter } = AntdLayout;
 
@@ -39,7 +40,9 @@ const Layout = (page) => {
             case "admin":
                 return <Admin />;
             case "add-event":
-                return <EventManagement />;
+                return <AddEvent />;
+            case "add-venue":
+                return <AddVenue />;
             default:
                 return <Home />;
         }
