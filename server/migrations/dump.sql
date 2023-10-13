@@ -26,11 +26,15 @@ DROP TABLE IF EXISTS `admin`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin` (
   `admin_id` int NOT NULL,
+  `role_id` int NOT NULL,
   `email` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`admin_id`)
+  PRIMARY KEY (`admin_id`,`role_id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `admin_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -53,6 +57,7 @@ DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
   `event_id` int NOT NULL,
   `venue_id` int NOT NULL,
+  `request_id` int NOT NULL,
   `event_name` varchar(255) NOT NULL,
   `date` datetime NOT NULL,
   `description` varchar(255) NOT NULL,
@@ -61,11 +66,13 @@ CREATE TABLE `event` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` varchar(45) DEFAULT NULL,
   `updated_by` int NOT NULL,
-  PRIMARY KEY (`event_id`,`venue_id`),
+  PRIMARY KEY (`event_id`,`venue_id`,`request_id`),
   KEY `venue_id_idx` (`venue_id`),
   KEY `updated_by` (`updated_by`),
+  KEY `request_id` (`request_id`),
   CONSTRAINT `event_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`venue_id`),
-  CONSTRAINT `event_ibfk_2` FOREIGN KEY (`updated_by`) REFERENCES `admin` (`admin_id`)
+  CONSTRAINT `event_ibfk_2` FOREIGN KEY (`updated_by`) REFERENCES `admin` (`admin_id`),
+  CONSTRAINT `event_ibfk_3` FOREIGN KEY (`request_id`) REFERENCES `request` (`request_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -144,6 +151,59 @@ LOCK TABLES `order` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `request`
+--
+
+DROP TABLE IF EXISTS `request`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `request` (
+  `request_id` int NOT NULL AUTO_INCREMENT,
+  `admin_id` int NOT NULL,
+  `event_id` int NOT NULL,
+  `approval_num` int NOT NULL,
+  `status` tinyint NOT NULL,
+  PRIMARY KEY (`request_id`),
+  KEY `admin_id` (`admin_id`),
+  KEY `event_id` (`event_id`),
+  CONSTRAINT `request_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`),
+  CONSTRAINT `request_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`event_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `request`
+--
+
+LOCK TABLES `request` WRITE;
+/*!40000 ALTER TABLE `request` DISABLE KEYS */;
+/*!40000 ALTER TABLE `request` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `role`
+--
+
+DROP TABLE IF EXISTS `role`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `role` (
+  `role_id` int NOT NULL,
+  `name` varchar(45) NOT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `role`
+--
+
+LOCK TABLES `role` WRITE;
+/*!40000 ALTER TABLE `role` DISABLE KEYS */;
+/*!40000 ALTER TABLE `role` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `seat_type`
 --
 
@@ -155,7 +215,6 @@ CREATE TABLE `seat_type` (
   `venue_id` int NOT NULL,
   `type_name` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
   PRIMARY KEY (`seat_type_id`,`venue_id`),
   KEY `venue_id` (`venue_id`),
   CONSTRAINT `seat_type_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`venue_id`)
@@ -190,7 +249,7 @@ CREATE TABLE `user` (
   `is_verified` tinyint NOT NULL,
   `failed_tries` int NOT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -199,7 +258,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'micdiary','mic','chan','micdiary@123.com','$2b$10$Ir8MaqpTYwZ7g/w5FXjJzOdfVNve2R5GApdZ8flMGRxwX3likkRYC','2023-09-05 22:07:35','',1,0);
+INSERT INTO `user` VALUES (1,'micdiary','mic','chan','micdiary@123.com','$2b$10$Ir8MaqpTYwZ7g/w5FXjJzOdfVNve2R5GApdZ8flMGRxwX3likkRYC','2023-09-05 22:07:35','',1,0),(2,'mic','mic','chand','michael.chandiary@hotmail.com','$2b$10$7OkY/nBR2CKn/cd1.r27lOV7eV8tCNfkAWsHMy0lIBo1OCW8bn6zC','2023-10-09 01:19:03',NULL,1,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -241,4 +300,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-09 23:29:50
+-- Dump completed on 2023-10-13  0:53:17
