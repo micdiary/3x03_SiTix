@@ -1,5 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
 
 const router = express.Router();
 
@@ -14,6 +16,7 @@ import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, userExists } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
+import { toProperCase } from "../utils/string.js";
 
 // Get Profile
 router.get("/profile/:token", async (req, res) => {
@@ -90,8 +93,8 @@ router.get("/delete/:token", async (req, res) => {
 });
 
 // forget password
-router.get("/forget-password/:email", async (req, res) => {
-	const { email } = req.params;
+router.post("/forget-password", async (req, res) => {
+	const { email } = req.body;
 
 	const sql = `SELECT * FROM user WHERE email = ?`;
 	const values = [email];
@@ -104,9 +107,8 @@ router.get("/forget-password/:email", async (req, res) => {
 	// Generate JWT token for password reset
 	// Token expiry time: 1 hour
 	const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1h" });
-	const link = `http://localhost:3000/reset-password/${token}`;
 
-	const transporter = nodemailer.createTransport({
+	nodemailer.createTransport({
 		service: "gmail",
 		auth: {
 			user: EMAIL,
@@ -117,7 +119,7 @@ router.get("/forget-password/:email", async (req, res) => {
 	const emailBody = EMAIL_BODY_RESET_PASSWORD.replace(
 		"{name}",
 		toProperCase(user[0].first_name)
-	).replace(/{link}/g, link);
+	).replace(/{token}/g, token);
 
 	sendEmail(email, "Reset Password", emailBody).then((info) => {
 		console.log("Email sent: " + info.response);
@@ -134,39 +136,41 @@ router.post("/reset-password", async (req, res) => {
 
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
-		const hashedPassword = bcrypt.hashSync(password, 10);
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		console.log(decoded);
 
 		let user = [];
-		if (decoded.email !== undefined) {
-			// user is logged in
-			const { email } = decoded;
-			if (!(await checkToken(email, token))) {
-				return res
-					.status(409)
-					.json({ error: "Invalid token used. Please relogin" });
-			}
+		const { email } = decoded;
 
-			const sql = `SELECT * FROM user WHERE email = ?`;
+		// user is logged in
+		const sql = `SELECT * FROM user WHERE email = ?`;
+		const values = [email];
+		[user] = await mysql_connection.promise().query(sql, values);
+
+		// check if user is admin
+		if (user.length === 0) {
+			const sql = `SELECT * FROM admin WHERE email = ?`;
 			const values = [email];
-			user = await mysql_connection.promise().query(sql, values);
-
-			// check if user is admin
-			if (user.length === 0) {
-				const sql = `SELECT * FROM admin WHERE email = ?`;
-				const values = [email];
-				user = await mysql_connection.promise().query(sql, values);
-			}
-
-			if (!verifyAccountPassword(password, user[0].password_hash)) {
-				return res.status(409).json({ error: "Incorrect password" });
-			}
-		} else {
-            // user forgot password
+			[user] = await mysql_connection.promise().query(sql, values);
 		}
 
-		const sql = `UPDATE user SET password_hash = ? WHERE email = ?`;
-		const values = [hashedPassword, user[0].email];
-		await mysql_connection.promise().query(sql, values);
+		const passwordCheck = await verifyAccountPassword(
+			password,
+			user[0].password_hash
+		);
+
+		if (!passwordCheck) {
+			return res.status(409).json({ error: "Incorrect password" });
+		}
+
+		// hash new password
+		const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+		// update password
+		const update_sql = `UPDATE user SET password_hash = ? WHERE email = ?`;
+		const update_values = [newPasswordHash, user[0].email];
+		await mysql_connection.promise().query(update_sql, update_values);
 
 		return res.status(200).json({ message: "Password updated" });
 	} catch (err) {
@@ -177,7 +181,14 @@ router.post("/reset-password", async (req, res) => {
 
 // verify account password
 async function verifyAccountPassword(password, passwordToCompare) {
-	return await bcrypt.compare(password, passwordToCompare);
+	try {
+		const result = await bcrypt.compare(password, passwordToCompare);
+		console.log(result);
+		return result;
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
 }
 
 export { router as accountRouter };

@@ -47,7 +47,7 @@ router.post("/register", async (req, res) => {
 		const token = jwt.sign({ email }, JWT_SECRET);
 
 		// send email to user to check if they are real
-		const transporter = nodemailer.createTransport({
+		nodemailer.createTransport({
 			service: "gmail",
 			auth: {
 				user: EMAIL,
@@ -73,6 +73,7 @@ router.post("/register", async (req, res) => {
 	}
 });
 
+// verify email
 router.post("/verify-email", async (req, res) => {
 	const { token } = req.body;
 	try {
