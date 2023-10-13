@@ -22,7 +22,7 @@ export const INTERNAL_SERVER_ERROR = "Internal Server Error";
 
 // Email message
 export const EMAIL_SUBJECT = "Email Verification";
-export const EMAIL_BODY = `
+export const EMAIL_BODY_ACTIVATE_ACCOUNT = `
 Hi {name}! <br><br>
 
 Thank you for registering on our website. Please click on the link below to verify your email address: <br><br>
@@ -37,4 +37,20 @@ To activate your account, click on the button below:<br>
 Alternatively, you can click on this <a href="http://localhost:3000/user-verification?token={token}">link.</a><br><br>
 
 If you did not sign up for an account, please ignore this email.
+`;
+export const EMAIL_BODY_RESET_PASSWORD = `
+Hi {name}! <br><br>
+
+You have requested to reset your password. Please click on the link below to reset your password: <br><br>
+
+To reset your password, click on the button below:<br>
+<p>
+  <a href="http://localhost:3000/reset-password?token={token}" style="display:inline-block; background-color:#007bff; color:#fff; padding:10px 20px; text-decoration:none; border-radius: 4px;">
+    Reset password
+  </a>
+</p>
+
+Alternatively, you can click on this <a href="http://localhost:3000/reset-password?token={token}">link.</a><br><br>
+
+If you did not request to reset your password, please ignore this email.
 `;

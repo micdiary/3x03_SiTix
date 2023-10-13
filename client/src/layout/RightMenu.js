@@ -4,7 +4,7 @@ import { Input, Button, Dropdown, Menu } from "antd";
 import * as constants from "../constants";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
-import { UserOutlined, SearchOutlined } from "@ant-design/icons";
+import { UserOutlined, SearchOutlined, LogoutOutlined } from "@ant-design/icons";
 import { buttonBlack, buttonWhite } from "../components/Buttons";
 
 const RightMenu = ({ token }) => {
