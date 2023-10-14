@@ -266,7 +266,7 @@ UNLOCK TABLES;
 -- Dumping data for table `role`
 --
 
-LOCK TABLES `user` WRITE;
+LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
 INSERT INTO `role` VALUES (1,'ADMIN'),(2,'SUPER_ADMIN');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
@@ -276,7 +276,7 @@ UNLOCK TABLES;
 -- Dumping data for table `admin`
 --
 
-LOCK TABLES `user` WRITE;
+LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
 INSERT INTO `admin` VALUES ('80995877-2d63-4c1b-bd2e-ab4eed46137d',2,'superadmin@sitix.com','sitixsuperadmin','$2b$10$7wO5qzUkqj/k8aWxsSJzkuRoQttCyMpGNr07FyZWSeQmLvGka8g7y','2023-10-14 12:26:48',NULL);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
