@@ -9,6 +9,7 @@ import { queueRouter } from "./routes/queue.js";
 import { mysql_connection } from "./mysql_db.js";
 import { redis_connection } from "./redis.js";
 import { accountRouter } from "./routes/account.js";
+import { adminRouter } from "./routes/admin.js";
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use("/auth", authRouter);
 app.use("/queue", queueRouter);
 app.use("/account", accountRouter);
+app.use("/admin", adminRouter);
+
 
 mysql_connection.connect((err) => {
 	if (err) console.error("Error connecting to the database:", err);

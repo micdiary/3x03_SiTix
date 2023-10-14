@@ -16,6 +16,7 @@ import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
 import { toProperCase } from "../utils/string.js";
 import { sendEmail } from "../utils/email.js";
+import { verifyAccountPassword } from "./account.js";
 
 // Register new user
 router.post("/register", async (req, res) => {
@@ -96,12 +97,19 @@ router.post("/login", async (req, res) => {
 	const { username, password } = req.body;
 
 	try {
+		let user = [];
 		// Checking if user exists
 		const sql = `SELECT * FROM user WHERE username = ?`;
 		const values = [username];
-		const [user] = await mysql_connection.promise().query(sql, values);
+		[user] = await mysql_connection.promise().query(sql, values);
 		if (user.length === 0) {
-			return res.status(401).json({ error: "Invalid credentials" });
+			const adminSql = `SELECT * FROM admin WHERE username = ?`;
+			const adminValues = [username];
+			[user] = await mysql_connection.promise().query(adminSql, adminValues);
+
+			if (user.length === 0) {
+				return res.status(401).json({ error: "Invalid credentials" });
+			}
 		}
 
 		if (user[0].is_verified === 0) {
@@ -109,20 +117,28 @@ router.post("/login", async (req, res) => {
 		}
 
 		// Checking if password is correct
-		const passwordMatch = await bcrypt.compare(password, user[0].password_hash);
+		const passwordMatch = await verifyAccountPassword(
+			password,
+			user[0].password_hash
+		);
 		if (!passwordMatch) {
 			return res.status(401).json({ error: "Invalid credentials" });
 		}
 
+		const userType = user[0].admin_id !== undefined ? "admin" : "customer";
+
 		// Create and assign token
-		const token = jwt.sign({ email: user[0].email }, JWT_SECRET);
+		const token = jwt.sign(
+			{ email: user[0].email, userType: userType },
+			JWT_SECRET
+		);
 
 		// Add token to redis for 4 hours
 		setTokenToRedis(user[0].email, token, 14400);
 
 		return res.status(200).json({
 			token: token,
-			userType: "customer",
+			userType: userType,
 			message: "User logged in successfully",
 		});
 	} catch (err) {
@@ -183,9 +199,15 @@ export async function refreshToken(email, token) {
 	}
 }
 
+// check if token exist
 export async function checkToken(email, token) {
 	const tokenToCompare = await redis_connection.get(email);
 	return tokenToCompare === token;
+}
+
+// remove session from redis
+export async function removeSession(email) {
+	await redis_connection.del(email);
 }
 
 async function setTokenToRedis(email, token, timeout) {
