@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `admin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin` (
-  `admin_id` int NOT NULL,
+  `admin_id` varchar(191) NOT NULL,
   `role_id` int NOT NULL,
   `email` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
@@ -55,9 +55,9 @@ DROP TABLE IF EXISTS `event`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `event` (
-  `event_id` int NOT NULL,
-  `venue_id` int NOT NULL,
-  `request_id` int NOT NULL,
+  `event_id` varchar(191) NOT NULL,
+  `venue_id` varchar(191) NOT NULL,
+  `request_id` varchar(191) NOT NULL,
   `event_name` varchar(255) NOT NULL,
   `date` datetime NOT NULL,
   `description` varchar(255) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE `event` (
   `banner_img` varchar(255) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` varchar(45) DEFAULT NULL,
-  `updated_by` int NOT NULL,
+  `updated_by` varchar(255) NOT NULL,
   PRIMARY KEY (`event_id`,`venue_id`,`request_id`),
   KEY `venue_id_idx` (`venue_id`),
   KEY `updated_by` (`updated_by`),
@@ -93,7 +93,7 @@ DROP TABLE IF EXISTS `event_seat_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `event_seat_type` (
-  `event_id` int NOT NULL,
+  `event_id` varchar(191) NOT NULL,
   `seat_type_id` int NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `available_seats` int NOT NULL,
@@ -121,11 +121,11 @@ DROP TABLE IF EXISTS `order`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order` (
-  `order_id` varchar(255) NOT NULL,
-  `user_id` int NOT NULL,
-  `event_id` int NOT NULL,
+  `order_id` varchar(191) NOT NULL,
+  `user_id` varchar(191) NOT NULL,
+  `event_id` varchar(191) NOT NULL,
   `seat_type_id` int NOT NULL,
-  `venue_id` int NOT NULL,
+  `venue_id` varchar(191) NOT NULL,
   `total_price` decimal(10,2) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL,
@@ -158,9 +158,9 @@ DROP TABLE IF EXISTS `request`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `request` (
-  `request_id` int NOT NULL AUTO_INCREMENT,
-  `admin_id` int NOT NULL,
-  `event_id` int NOT NULL,
+  `request_id` varchar(191) NOT NULL,
+  `admin_id` varchar(191) NOT NULL,
+  `event_id` varchar(191) NOT NULL,
   `approval_num` int NOT NULL,
   `status` tinyint NOT NULL,
   PRIMARY KEY (`request_id`),
@@ -211,8 +211,8 @@ DROP TABLE IF EXISTS `seat_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `seat_type` (
-  `seat_type_id` int NOT NULL,
-  `venue_id` int NOT NULL,
+  `seat_type_id` int NOT NULL AUTO_INCREMENT,
+  `venue_id` varchar(191) NOT NULL,
   `type_name` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`seat_type_id`,`venue_id`),
@@ -238,7 +238,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `user_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(191) NOT NULL,
   `username` varchar(50) NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
@@ -249,7 +249,7 @@ CREATE TABLE `user` (
   `is_verified` tinyint NOT NULL,
   `failed_tries` int NOT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,8 +258,28 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'micdiary','mic','chan','micdiary@123.com','$2b$10$Ir8MaqpTYwZ7g/w5FXjJzOdfVNve2R5GApdZ8flMGRxwX3likkRYC','2023-09-05 22:07:35','',1,0),(2,'mic','mic','chand','michael.chandiary@hotmail.com','$2b$10$7OkY/nBR2CKn/cd1.r27lOV7eV8tCNfkAWsHMy0lIBo1OCW8bn6zC','2023-10-09 01:19:03',NULL,1,0);
+INSERT INTO `user` VALUES ('c32d8b45-92fe-44f6-8b61-42c2107dfe87','micdiary','mic','chan','micdiary@123.com','$2b$10$Ir8MaqpTYwZ7g/w5FXjJzOdfVNve2R5GApdZ8flMGRxwX3likkRYC','2023-09-05 22:07:35','',1,0),('d956972e-1689-4bc8-b56c-a277202343f6','mic','mic','chand','michael.chandiary@hotmail.com','$2b$10$7OkY/nBR2CKn/cd1.r27lOV7eV8tCNfkAWsHMy0lIBo1OCW8bn6zC','2023-10-09 01:19:03',NULL,1,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `role`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `role` DISABLE KEYS */;
+INSERT INTO `role` VALUES (1,'ADMIN'),(2,'SUPER_ADMIN');
+/*!40000 ALTER TABLE `role` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `admin`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `admin` DISABLE KEYS */;
+INSERT INTO `admin` VALUES ('80995877-2d63-4c1b-bd2e-ab4eed46137d',2,'superadmin@sitix.com','sitixsuperadmin','$2b$10$7wO5qzUkqj/k8aWxsSJzkuRoQttCyMpGNr07FyZWSeQmLvGka8g7y','2023-10-14 12:26:48',NULL);
+/*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -270,12 +290,12 @@ DROP TABLE IF EXISTS `venue`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `venue` (
-  `venue_id` int NOT NULL AUTO_INCREMENT,
+  `venue_id` varchar(191) NOT NULL,
   `venue_name` varchar(255) NOT NULL,
   `img` varchar(255) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL,
-  `updated_by` int NOT NULL,
+  `updated_by` varchar(255) NOT NULL,
   PRIMARY KEY (`venue_id`),
   KEY `updated_by` (`updated_by`),
   CONSTRAINT `venue_ibfk_1` FOREIGN KEY (`updated_by`) REFERENCES `admin` (`admin_id`)
