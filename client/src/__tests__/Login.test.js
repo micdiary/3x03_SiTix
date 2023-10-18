@@ -1,6 +1,11 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Login } from 'client/src/pages/Login';
+import Login from 'client/src/pages/Login';
+// import { Login } from 'client/src/pages/Login';
 import * as api from '../api/account'; // adjust this to your actual path
 import { useNavigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
