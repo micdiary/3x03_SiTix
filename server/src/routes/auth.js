@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
+import { v4 as uuidv4 } from "uuid";
 
 const router = express.Router();
 
@@ -30,9 +31,13 @@ router.post("/register", async (req, res) => {
 		// Hashing password
 		const hashedPassword = await bcrypt.hash(password, 10);
 
+		// uuidv4
+		const uuid = uuidv4();
+
 		// Create new user
-		const sql = `INSERT INTO user (username, first_name, last_name, email, password_hash, is_verified, failed_tries) VALUES ( ?, ?, ?, ?, ?, ?, ?)`;
+		const sql = `INSERT INTO user (user_id, username, first_name, last_name, email, password_hash, is_verified, failed_tries) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)`;
 		const values = [
+			uuid,
 			username,
 			first_name,
 			last_name,
