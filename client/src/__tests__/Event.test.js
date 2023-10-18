@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import Event from "./Event"; // Import your component
 
 // Mock the dependencies and utilities as needed
+//test comments
 jest.mock("../utils/account", () => ({
   getToken: jest.fn(() => "mock-token"),
 }));
