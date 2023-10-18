@@ -10,6 +10,7 @@ import { mysql_connection } from "./mysql_db.js";
 import { redis_connection } from "./redis.js";
 import { accountRouter } from "./routes/account.js";
 import { adminRouter } from "./routes/admin.js";
+import { venueRouter } from "./routes/venue.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/auth", authRouter);
 app.use("/queue", queueRouter);
 app.use("/account", accountRouter);
 app.use("/admin", adminRouter);
+app.use("/venue", venueRouter);
 
 
 mysql_connection.connect((err) => {
