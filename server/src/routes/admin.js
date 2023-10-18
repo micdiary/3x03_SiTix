@@ -35,7 +35,7 @@ router.get("/:token", async (req, res) => {
 			return res.status(409).json({ error: "Invalid token used" });
 		}
 
-		const sql = `SELECT * FROM admin`;
+		const sql = `SELECT * FROM admin where role_id = 1`;
 		const [rows] = await mysql_connection.promise().query(sql);
 
 		const admins = rows;
