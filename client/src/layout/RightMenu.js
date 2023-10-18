@@ -56,7 +56,7 @@ const RightMenu = ({ userType, token }) => {
     // after login
     const profileItems = [];
 
-    if (userType !== "admin") {
+    if (userType === "customer") {
         profileItems.push({
             key: "1",
             label: <a href={constants.PROFILE_URL}>Profile</a>,
@@ -83,7 +83,7 @@ const RightMenu = ({ userType, token }) => {
     if (isLaptop) {
         return (
             <div className="right-icons">
-                {userType !== "admin" && (
+                {userType === "customer" && (
                     <Input
                         prefix={<SearchOutlined />}
                         placeholder="Search..."

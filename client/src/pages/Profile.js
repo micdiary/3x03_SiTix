@@ -1,12 +1,15 @@
 import { Button, Form, Input, Typography } from "antd";
+import * as constants from "../constants";
 import React, { useState, useEffect } from "react";
 import { editProfile, getProfile, resetPassword } from "../api/account";
 import { getToken } from "../utils/account";
 import { showNotification } from "../components/Notification";
 import Buttons from "../components/Buttons";
 import { inputStyle, marginBottomOneStyle } from "./PagesStyles";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
+    let navigate = useNavigate();
     const [profile, setProfile] = useState({});
     const [updateProfile, setUpdateProfile] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(true);
@@ -16,7 +19,8 @@ const Profile = () => {
     useEffect(() => {
         getProfile().then((res) => {
             if (res.user !== undefined) {
-                setProfile(res.user);
+                // res.user is array
+                setProfile(res.user[0]);
             }
         });
     }, [updateProfile]);
@@ -49,11 +53,10 @@ const Profile = () => {
         resetPassword(req)
             .then((res) => {
                 showNotification(res.message);
-                passwordForm.resetFields();
+                navigate(constants.PROFILE_URL);
             })
-            .catch((err) => {
-                showNotification(err.message);
-            });
+            .catch((err) => {});
+        passwordForm.resetFields();
     };
 
     useEffect(() => {
@@ -189,9 +192,10 @@ const Profile = () => {
                 </Form>
             )}
             <div style={{ margin: "10px" }}>
-                <Button type="primary" onClick={toggleForm}>
-                    {isEditingProfile ? "Change Password" : "Edit Profile"}
-                </Button>
+                <Buttons
+                    text={isEditingProfile ? "Change Password" : "Edit Profile"}
+                    onClick={toggleForm}
+                />
             </div>
         </div>
     );

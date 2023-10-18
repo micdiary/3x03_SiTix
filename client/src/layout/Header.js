@@ -62,7 +62,19 @@ const Header = () => {
     if (isLaptop) {
         return (
             <div className="header">
-                {userType !== "admin" ? (
+                {userType === "admin" ? (
+                    <div className="logo">
+                        <a className="href" href={constants.ADMIN_URL}>
+                            SiTix Admin
+                        </a>
+                    </div>
+                ) : userType === "superadmin" ? (
+                    <div className="logo">
+                        <a className="href" href={constants.SUPERADMIN_URL}>
+                            SiTix Super Admin
+                        </a>
+                    </div>
+                ) : (
                     <>
                         <div>
                             <LeftMenu />
@@ -73,12 +85,6 @@ const Header = () => {
                             </a>
                         </div>
                     </>
-                ) : (
-                    <div className="logo">
-                        <a className="href" href={constants.SUPERADMIN_URL}>
-                            SiTix Admin
-                        </a>
-                    </div>
                 )}
 
                 <div>

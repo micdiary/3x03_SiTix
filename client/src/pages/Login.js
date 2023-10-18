@@ -40,8 +40,10 @@ const Login = () => {
                 localStorage.setItem("userType", res.userType);
 
                 // TODO change accordingly depending on usertype
-                if (res.userType === "admin") {
+                if (res.userType === "superadmin") {
                     navigate(constants.SUPERADMIN_URL);
+                } else if (res.userType === "admin") {
+                    navigate(constants.ADMIN_URL);
                 } else {
                     navigate(constants.HOME_URL);
                 }
