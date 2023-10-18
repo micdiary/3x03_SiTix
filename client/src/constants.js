@@ -27,3 +27,6 @@ export const PROFILE_API = `${URL}/account/profile`;
 export const EDIT_PROFILE_API = `${URL}/account/edit`;
 export const RESET_PASSWORD_API = `${URL}/account/reset-password`;
 export const FORGET_PASSWORD_API = `${URL}/account/forget-password`;
+
+export const ADMINS_API = `${URL}/admin`;
+export const ADD_ADMINS_API = `${URL}/admin/add`;
