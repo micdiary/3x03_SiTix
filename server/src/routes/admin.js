@@ -20,8 +20,21 @@ import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 
 // Get Admins
-router.get("/admins", async (req, res) => {
+router.get("/:token", async (req, res) => {
+	const { token } = req.params;
 	try {
+		const { email, userType } = jwt.verify(token, JWT_SECRET);
+
+		if (!(await checkToken(email, token))) {
+			return res
+				.status(409)
+				.json({ error: "Invalid token used. Please relogin" });
+		}
+
+		if (userType !== "admin" && !(await isSuperAdmin(email))) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
 		const sql = `SELECT * FROM admin`;
 		const [rows] = await mysql_connection.promise().query(sql);
 
@@ -118,6 +131,20 @@ const emailExists = async (email) => {
 		return false;
 	}
 };
+
+// get admin id 
+export const getAdminId = async (email) => {
+	try {
+		const sql = `SELECT * FROM admin WHERE email = ?`;
+		const values = [email];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		return rows[0].admin_id;
+
+	} catch (err) {
+		console.log(err);
+		return false;
+	}
+}
 
 // check if superadmin
 const isSuperAdmin = async (email) => {
