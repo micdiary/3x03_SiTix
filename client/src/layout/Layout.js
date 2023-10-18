@@ -8,12 +8,12 @@ import Event from "../pages/Event";
 import Purchase from "../pages/Purchase";
 import Category from "../pages/Cateogry";
 import TicketSelection from "../pages/TicketSelection";
-import Profile from "../pages/Profile";
 import History from "../pages/History";
 import AdminManagement from "../pages/Superadmin/AdminManagement";
 import Admin from "../pages/Admin/Admin";
 import AddEvent from "../pages/Admin/AddEvent";
 import AddVenue from "../pages/Admin/AddVenue";
+import Profile from "../pages/Profile/Profile";
 
 const { Header: AntHeader, Content, Footer: AntFooter } = AntdLayout;
 
