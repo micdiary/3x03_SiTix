@@ -10,7 +10,7 @@ const router = express.Router();
 import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { checkToken } from "./auth.js";
-import { getAdminId } from "./admin.js";
+import { getAdminId, isSuperAdmin } from "./admin.js";
 
 const maxMB = 5; // Set file size limit to 5MB
 
@@ -20,7 +20,6 @@ const storage = multer.diskStorage({
 		cb(null, "uploads/");
 	},
 	filename: function (req, file, cb) {
-		console.log(file);
 		cb(null, file.originalname); // use the extension from the original file
 	},
 });
@@ -93,8 +92,10 @@ router.get("/:token", async (req, res) => {
 });
 
 // Add Venue
+// sample seat type format
+// seat_type = [{"type_name": "VIP", "description":"VIP seats"}, {"type_name": "Regular", "description":"Regular seats"}]
 router.post("/add", upload.single("file"), async (req, res) => {
-	const { token, venue_name } = req.body;
+	const { token, venue_name, seat_type } = req.body;
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -122,10 +123,29 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		const uuid = uuidv4();
 
 		const admin_id = await getAdminId(email);
+
+		await mysql_connection.promise().beginTransaction();
+
 		const sql = `INSERT INTO venue (venue_id, venue_name, img, updated_by) VALUES (?, ?, ?, ?)`;
 		const [rows] = await mysql_connection
 			.promise()
 			.query(sql, [uuid, venue_name, img, admin_id]);
+
+		for (const seat of JSON.parse(seat_type)) {
+
+			if (seat.type_name === null || !seat.hasOwnProperty('type_name') || seat.description === null || !seat.hasOwnProperty('description')) {
+				await mysql_connection.promise().rollback(); // Rollback the transaction if there's an error
+				return res.status(409).json({ error: "Invalid seat type" });
+			}
+
+			const sql = `INSERT INTO seat_type (venue_id, type_name, description) VALUES (?,?,?)`;
+			const [rows] = await mysql_connection
+				.promise()
+				.query(sql, [uuid, seat.type_name, seat.description]);
+		}
+
+		// If everything is successful, commit the transaction
+		await mysql_connection.promise().commit();
 
 		return res.status(200).json({ message: "Venue added successfully" });
 	} catch (err) {
@@ -135,8 +155,9 @@ router.post("/add", upload.single("file"), async (req, res) => {
 });
 
 // Update Venue
+// seat_type = [{"seat_type_id":"1" ,"type_name": "VIP", "description":"VIP seats"}, {"seat_type_id":"2" ,"type_name": "Regular", "description":"Regular seats"}]
 router.post("/update", upload.single("file"), async (req, res) => {
-	const { token, venue_id, venue_name } = req.body;
+	const { token, venue_id, venue_name, seat_type } = req.body;
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -166,6 +187,17 @@ router.post("/update", upload.single("file"), async (req, res) => {
 				.query(sql, [venue_name, img, venue_id]);
 		}
 
+		for (const seat of JSON.parse(seat_type)) {
+			if (seat.type_name === "" || seat.description === "") {
+				return res.status(409).json({ error: "Invalid seat type" });
+			}
+
+			const sql = `UPDATE seat_type SET type_name = ?, description = ? WHERE seat_type_id = ?`;
+			const [rows] = await mysql_connection
+				.promise()
+				.query(sql, [seat.type_name, seat.description, seat.seat_type_id]);
+		}
+
 		return res.status(200).json({ message: "Venue updated successfully" });
 	} catch (err) {}
 });
@@ -178,6 +210,18 @@ async function venueExists(venue_name) {
 	}
 	return false;
 }
+
+// get all seat types
+export const getSeatTypes = async () => {
+	try {
+		const sql = `SELECT * FROM seat_type`;
+		const [rows] = await mysql_connection.promise().query(sql);
+		return rows;
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
+};
 
 router.use(handleMulterError);
 

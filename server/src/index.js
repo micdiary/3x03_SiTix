@@ -11,6 +11,7 @@ import { redis_connection } from "./redis.js";
 import { accountRouter } from "./routes/account.js";
 import { adminRouter } from "./routes/admin.js";
 import { venueRouter } from "./routes/venue.js";
+import { eventRouter } from "./routes/event.js";
 
 const app = express();
 
@@ -23,7 +24,7 @@ app.use("/queue", queueRouter);
 app.use("/account", accountRouter);
 app.use("/admin", adminRouter);
 app.use("/venue", venueRouter);
-
+app.use("/event", eventRouter);
 
 mysql_connection.connect((err) => {
 	if (err) console.error("Error connecting to the database:", err);

@@ -174,7 +174,7 @@ export const getAdminId = async (email) => {
 };
 
 // check if superadmin
-const isSuperAdmin = async (email) => {
+export const isSuperAdmin = async (email) => {
 	try {
 		const sql = `SELECT * FROM admin WHERE email = ?`;
 		const values = [email];
