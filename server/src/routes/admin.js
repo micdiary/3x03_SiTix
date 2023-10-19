@@ -102,6 +102,34 @@ router.post("/add", async (req, res) => {
 	}
 });
 
+// delete admin account
+router.post("/delete", async (req, res) => {
+	const { token, admin_id } = req.body;
+
+	try {
+		const { email, userType } = jwt.verify(token, JWT_SECRET);
+
+		if (!(await checkToken(email, token))) {
+			return res
+				.status(409)
+				.json({ error: "Invalid token used. Please relogin" });
+		}
+
+		if (userType !== "admin" && !(await isSuperAdmin(email))) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const sql = `DELETE FROM admin WHERE admin_id = ?`;
+		const values = [admin_id];
+		await mysql_connection.promise().query(sql, values);
+
+		return res.status(200).json({ message: "Admin deleted successfully" });
+	} catch (err) {
+		console.log(err);
+		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
+	}
+});
+
 // generate password for account creation
 const generatePassword = () => {
 	const length = 8;
@@ -132,19 +160,18 @@ const emailExists = async (email) => {
 	}
 };
 
-// get admin id 
+// get admin id
 export const getAdminId = async (email) => {
 	try {
 		const sql = `SELECT * FROM admin WHERE email = ?`;
 		const values = [email];
 		const [rows] = await mysql_connection.promise().query(sql, values);
 		return rows[0].admin_id;
-
 	} catch (err) {
 		console.log(err);
 		return false;
 	}
-}
+};
 
 // check if superadmin
 const isSuperAdmin = async (email) => {
