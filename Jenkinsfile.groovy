@@ -2,12 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checking out...'
-                checkout scm
-            }
-        }
         stage('Install dependencies') {
             steps {
                 echo 'Installing dependencies...'
