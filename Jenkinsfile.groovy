@@ -5,6 +5,7 @@ pipeline {
         stage('Install') {
             steps {
                 sh 'npm install'
+                sh 'npm install --save-dev @testing-library/jest-dom'
             }
         }
         stage('Test') {
