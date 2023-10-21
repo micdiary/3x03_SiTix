@@ -2,11 +2,17 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out...'
+                checkout scm
+            }
+        }
         stage('Version Checking') {
             steps {
                 echo 'version???'
-                sh 'node --version'
-                sh 'npm --version'
+                echo sh 'node --version'
+                echo sh 'npm --version'
             }
         }
         stage('Install dependencies') {
