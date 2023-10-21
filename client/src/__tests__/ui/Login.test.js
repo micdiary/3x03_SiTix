@@ -7,13 +7,13 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Login from 'client/src/pages/Login';
 // import { Login } from 'client/src/pages/Login';
-import * as api from '../../api/account'; // adjust this to your actual path
+import * as api from 'client/src/api/account';
 import { useNavigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from '../../store/User.js';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-jest.mock('../api/account');
+jest.mock('client/src/api/account');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
