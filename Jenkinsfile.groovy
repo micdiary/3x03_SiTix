@@ -2,6 +2,13 @@ pipeline {
     agent any
 
     stages {
+        stage('Version Checking') {
+            steps {
+                echo 'version???'
+                sh 'node --version'
+                sh 'npm --version'
+            }
+        }
         stage('Install dependencies') {
             steps {
                 echo 'Installing dependencies...'
