@@ -13,7 +13,7 @@ export async function addVenue(req) {
     formData.append("venue_name", req.venue_name);
     formData.append("seat_type", req.seat_type);
     if (req.file) {
-        formData.append("file", req.file.originFileObj);
+        formData.append("file", req.file);
     }
     return requestPost(ADD_VENUE_API, { req: formData }, "multipart/form-data");
 }
