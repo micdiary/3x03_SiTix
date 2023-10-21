@@ -19,5 +19,19 @@ export async function addVenue(req) {
 }
 
 export async function updateVenue(req) {
-    return requestPost(UPDATE_VENUE_API, { req });
+    console.log(req.seat_type);
+    const token = getToken();
+    const formData = new FormData();
+    formData.append("token", token);
+    formData.append("venue_id", req.venue_id);
+    formData.append("venue_name", req.venue_name);
+    formData.append("seat_type", req.seat_type);
+    if (req.file) {
+        formData.append("file", req.file);
+    }
+    return requestPost(
+        UPDATE_VENUE_API,
+        { req: formData },
+        "multipart/form-data"
+    );
 }

@@ -22,9 +22,7 @@ const AddVenue = () => {
     const [categoryCount, setCategoryCount] = useState(1);
 
     const onFinish = (values) => {
-        console.log(values);
         const seatArray = [];
-
         for (let i = 0; i < categoryCount; i++) {
             seatArray.push({
                 type_name: values[`type_name[${i}]`],
@@ -94,6 +92,7 @@ const AddVenue = () => {
                 <Upload
                     name="image"
                     listType="picture"
+                    maxCount={1}
                     beforeUpload={() => false}
                 >
                     <Button style={inputStyle} icon={<PlusOutlined />}>
