@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Table, Modal, Form, Input, Row, Col, Typography, Space } from "antd";
 import Modals from "../../components/Modal";
 import Buttons from "../../components/Buttons";
+import { showNotification } from "../../components/Notification";
 import { inputStyle, marginBottomOneStyle, tableStyle } from "../PagesStyles";
 import { getToken } from "../../utils/account";
-import { addNewAdmin, getAdmins } from "../../api/admin";
-import { showNotification } from "../../components/Notification";
+import { addNewAdmin, deleteAdmin, getAdmins } from "../../api/admin";
 
 const AdminManagement = () => {
     const [data, setData] = useState([]);
@@ -15,13 +15,19 @@ const AdminManagement = () => {
     useEffect(() => {
         getAdmins()
             .then((res) => {
-                console.log(res.admins);
-                setData(res.admins);
+                // variable to store transform data // loop through each item in the res.admins
+                const admins = res.admins.map((admin) => ({
+                    // copies all properties from original object to new object
+                    ...admin,
+                    // admin_id is unqiue
+                    key: admin.admin_id,
+                }));
+                setData(admins);
             })
             .catch((err) => {
                 showNotification(err.message);
             });
-    }, []);
+    }, [data]);
 
     const handleAddAdmin = () => {
         setModalVisible(true);
@@ -35,8 +41,8 @@ const AdminManagement = () => {
         };
         addNewAdmin(req)
             .then((res) => {
-                console.log("success");
                 showNotification(res.message);
+                showNotification("done");
             })
             .catch((err) => {
                 showNotification(err.message);
@@ -59,13 +65,26 @@ const AdminManagement = () => {
     const showDeleteConfirmation = (admin) => {
         Modal.confirm({
             title: "Confirm Delete",
-            content: `Are you sure you want to permanently delete ${admin.name}?`,
-            onOk: () => handleDelete(admin.adminID),
+            content: `Are you sure you want to permanently delete ${admin.username}?`,
+            onOk: () => handleDelete(admin.admin_id),
             okText: "Delete",
         });
     };
 
-    const handleDelete = (adminID) => {};
+    const handleDelete = (adminID) => {
+        const req = {
+            token: getToken(),
+            adminId: adminID,
+        };
+        console.log(req);
+        deleteAdmin(req)
+            .then((res) => {
+                showNotification(res.message);
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
+    };
 
     const columns = [
         {
@@ -92,14 +111,12 @@ const AdminManagement = () => {
             title: "Action",
             key: "action",
             render: (_, record) => (
-                <Space>
-                    <Typography.Link
-                        onClick={() => showDeleteConfirmation(record)}
-                        style={{ color: "red", cursor: "pointer" }}
-                    >
-                        Delete
-                    </Typography.Link>
-                </Space>
+                <Typography.Link
+                    onClick={() => showDeleteConfirmation(record)}
+                    style={{ color: "red", cursor: "pointer" }}
+                >
+                    Delete
+                </Typography.Link>
             ),
         },
     ];
@@ -151,7 +168,7 @@ const AdminManagement = () => {
         <div style={{ minHeight: "100vh" }}>
             <Row justify="center" align="middle">
                 <Typography.Title level={3}>Super Admin</Typography.Title>
-                <Col xs={23} sm={23} md={22} lg={22}>
+                <Col xs={23} sm={23} md={22} lg={22} xl={22}>
                     <Row justify="end" style={{ margin: "15px 0" }}>
                         <Col xs={24} sm={12} md={8} lg={4}>
                             <div>

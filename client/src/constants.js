@@ -31,6 +31,7 @@ export const FORGET_PASSWORD_API = `${URL}/account/forget-password`;
 
 export const ADMINS_API = `${URL}/admin`;
 export const ADD_ADMINS_API = `${URL}/admin/add`;
+export const DELETE_ADMINS_API = `${URL}/admin/delete`;
 
 export const VENUE_API = `${URL}/venue`;
 export const ADD_VENUE_API = `${URL}/venue/add`;

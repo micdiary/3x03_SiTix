@@ -1,6 +1,5 @@
-import React from "react";
 import { requestGet, requestPost } from "../utils/request";
-import { ADD_ADMINS_API, ADMINS_API } from "../constants";
+import { ADD_ADMINS_API, ADMINS_API, DELETE_ADMINS_API } from "../constants";
 import { getToken } from "../utils/account";
 
 export async function getAdmins() {
@@ -9,4 +8,8 @@ export async function getAdmins() {
 
 export async function addNewAdmin(req) {
     return requestPost(ADD_ADMINS_API, { req });
+}
+
+export async function deleteAdmin(req) {
+    return requestPost(DELETE_ADMINS_API, { req });
 }
