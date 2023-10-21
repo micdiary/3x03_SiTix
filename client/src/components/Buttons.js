@@ -28,6 +28,7 @@ const Buttons = ({ width, height, marginTop, text, onClick }) => {
 
     return (
         <Button
+            aria-label={arialLabel}
             style={buttonStyle}
             onMouseOver={buttonWhite}
             onMouseOut={buttonBlack}
@@ -43,6 +44,7 @@ Buttons.propTypes = {
     width: PropTypes.string,
     height: PropTypes.string,
     marginTop: PropTypes.string,
+    arialLabel: PropTypes.string,
     text: PropTypes.string.isRequired,
     onClick: PropTypes.func,
 };

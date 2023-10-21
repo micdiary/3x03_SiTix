@@ -121,7 +121,7 @@ const Login = () => {
                             </a>
                         </Form.Item>
                         <Form.Item>
-                            <Buttons text="Login" />
+                            <Buttons arialLabel="login button" text="Login" />
                             Or{" "}
                             <a style={aStyle} href={constants.REGISTER_URL}>
                                 register now!
