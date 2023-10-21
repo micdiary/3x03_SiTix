@@ -89,6 +89,11 @@ router.get("/:token", async (req, res) => {
 			} else {
 				venues[i].img = "";
 			}
+
+			const sql = `SELECT * FROM seat_type WHERE venue_id = ?`;
+			const values = [venue.venue_id];
+			const [rows] = await mysql_connection.promise().query(sql, values);
+			venues[i].seat_type = rows;
 		}
 
 		return res.status(200).json({ venues });
