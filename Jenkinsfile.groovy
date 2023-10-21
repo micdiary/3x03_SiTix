@@ -2,14 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('Install') {
+        stage('Install dependencies') {
             steps {
-                sh 'npm install'
-                sh 'npm install --save-dev @testing-library/jest-dom'
+                echo 'Installing dependencies...'
+                sh 'npm ci'
             }
         }
         stage('Test') {
             steps {
+                echo 'Running tests...'
                 sh 'npm test'
             }
         }
