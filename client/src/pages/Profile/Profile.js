@@ -1,17 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal } from "antd";
-import { getProfile } from "../../api/account";
-import { getUserType } from "../../utils/account";
+import * as constants from "../../constants";
+import { deleteUserAccount, getProfile } from "../../api/account";
+import {
+    getToken,
+    getUserType,
+    removeToken,
+    removeUserType,
+} from "../../utils/account";
 import Users from "./Users";
 import Admins from "./Admins";
 import Password from "./Password";
 import Buttons from "../../components/Buttons";
 import { deleteButtonStyle } from "../PagesStyles";
+import { showNotification } from "../../components/Notification";
+import { useNavigate } from "react-router-dom";
+import { userStore } from "../../store/User";
 
 const Profile = () => {
+    let navigate = useNavigate();
     const [profile, setProfile] = useState({});
     const [updateProfile, setUpdateProfile] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(true);
+    const removeUser = userStore((state) => state.removeUser);
 
     const [userType, setUserType] = useState(null);
 
@@ -26,10 +37,6 @@ const Profile = () => {
         });
     }, [updateProfile]);
 
-    const toggleForm = () => {
-        setIsEditingProfile(!isEditingProfile);
-    };
-
     const deleteAccount = () => {
         Modal.confirm({
             title: "Confirm Delete",
@@ -38,7 +45,25 @@ const Profile = () => {
             okText: "Delete",
         });
     };
-    const handleDelete = () => {};
+
+    const handleDelete = () => {
+        deleteUserAccount()
+            .then((res) => {
+                console.log("delete", res);
+                showNotification(res.message);
+                removeToken();
+                removeUser();
+                removeUserType();
+                navigate(constants.HOME_URL);
+            })
+            .catch((err) => {
+                console.error(err.message);
+            });
+    };
+
+    const toggleForm = () => {
+        setIsEditingProfile(!isEditingProfile);
+    };
 
     return (
         <div style={{ margin: "10px 60px" }}>
