@@ -8,13 +8,6 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Version Checking') {
-            steps {
-                echo 'version???'
-                echo sh 'node --version'
-                echo sh 'npm --version'
-            }
-        }
         stage('Install dependencies') {
             steps {
                 echo 'Installing dependencies...'
