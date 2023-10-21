@@ -25,8 +25,13 @@ export const REFRESH_TOKEN_API = `${URL}/auth/refresh-token`;
 
 export const PROFILE_API = `${URL}/account/profile`;
 export const EDIT_PROFILE_API = `${URL}/account/edit`;
+export const DELETE_ACCOUNT_API = `${URL}/account/delete`;
 export const RESET_PASSWORD_API = `${URL}/account/reset-password`;
 export const FORGET_PASSWORD_API = `${URL}/account/forget-password`;
 
 export const ADMINS_API = `${URL}/admin`;
 export const ADD_ADMINS_API = `${URL}/admin/add`;
+
+export const VENUE_API = `${URL}/venue`;
+export const ADD_VENUE_API = `${URL}/venue/add`;
+export const UPDATE_VENUE_API = `${URL}/venue/update`;
