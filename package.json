@@ -37,7 +37,6 @@
       "\\.(jpg|jpeg|png|svg|css|less)$": "<rootDir>/__mocks__/fileMock.js"
     },
     "setupFilesAfterEnv": [
-      
       "./jest.setup.js"
     ],
     "transform": {
