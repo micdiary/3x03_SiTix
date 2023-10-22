@@ -14,10 +14,9 @@ import { getAdminId, isSuperAdmin } from "./admin.js";
 import { getCurrentTime } from "../utils/time.js";
 
 const maxMB = 5; // Set file size limit to 5MB
+const uploadDir = "uploads/venue";
 
-const uploadDir = "uploads/";
-
-// Ensure upload directory exists
+// Create uploads folder if it doesn't exist
 if (!fs.existsSync(uploadDir)) {
 	fs.mkdirSync(uploadDir);
 }
@@ -25,7 +24,7 @@ if (!fs.existsSync(uploadDir)) {
 // Set up storage engine with Multer
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, "uploads/");
+		cb(null, uploadDir);
 	},
 	filename: function (req, file, cb) {
 		cb(null, file.originalname); // use the extension from the original file
@@ -219,6 +218,7 @@ router.post("/update", upload.single("file"), async (req, res) => {
 				seat.seat_type_id === null ||
 				!seat.hasOwnProperty("seat_type_id")
 			) {
+				await mysql_connection.promise().rollback(); // Rollback the transaction if there's an error
 				return res.status(409).json({ error: "Invalid seat type" });
 			}
 
@@ -253,6 +253,37 @@ export const getSeatTypes = async () => {
 	} catch (err) {
 		console.log(err);
 		return null;
+	}
+};
+
+export const isVenueValid = async (venue_id) => {
+	try {
+		const sql = `SELECT * FROM venue WHERE venue_id = ?`;
+		const values = [venue_id];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		if (rows.length === 0) {
+			return false;
+		}
+		return true;
+	} catch (err) {
+		console.log(err);
+		return false;
+	}
+};
+
+// check seat types
+export const seatTypeExists = async (seat_type_id, venue_id) => {
+	try {
+		const sql = `SELECT * FROM seat_type WHERE seat_type_id = ? AND venue_id = ?`;
+		const values = [seat_type_id, venue_id];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		if (rows.length === 0) {
+			return false;
+		}
+		return true;
+	} catch (err) {
+		console.log(err);
+		return false;
 	}
 };
 
