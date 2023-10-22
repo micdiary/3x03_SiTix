@@ -43,6 +43,4 @@ describe('Login', () => {
     expect(allLoginElements[0]).toBeInTheDocument();
     expect(allLoginElements[1]).toBeInTheDocument();
   });
-
-
 });
