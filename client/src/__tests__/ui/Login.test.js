@@ -14,7 +14,6 @@ jest.mock('react-router-dom', () => ({
 
 describe('Login', () => {
   let navigate;
-
   beforeEach(() => {
     api.login.mockResolvedValue({
       token: 'dummy_token',
