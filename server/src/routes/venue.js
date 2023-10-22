@@ -11,14 +11,15 @@ import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { checkToken } from "./auth.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
+import { getCurrentTime } from "../utils/time.js";
 
 const maxMB = 5; // Set file size limit to 5MB
 
-const uploadDir = 'uploads/';
+const uploadDir = "uploads/";
 
 // Ensure upload directory exists
-if (!fs.existsSync(uploadDir)){
-    fs.mkdirSync(uploadDir);
+if (!fs.existsSync(uploadDir)) {
+	fs.mkdirSync(uploadDir);
 }
 
 // Set up storage engine with Multer
@@ -144,8 +145,12 @@ router.post("/add", upload.single("file"), async (req, res) => {
 			.query(sql, [uuid, venue_name, img, admin_id]);
 
 		for (const seat of JSON.parse(seat_type)) {
-
-			if (seat.type_name === null || !seat.hasOwnProperty('type_name') || seat.description === null || !seat.hasOwnProperty('description')) {
+			if (
+				seat.type_name === null ||
+				!seat.hasOwnProperty("type_name") ||
+				seat.description === null ||
+				!seat.hasOwnProperty("description")
+			) {
 				await mysql_connection.promise().rollback(); // Rollback the transaction if there's an error
 				return res.status(409).json({ error: "Invalid seat type" });
 			}
@@ -186,21 +191,34 @@ router.post("/update", upload.single("file"), async (req, res) => {
 
 		let sql = "";
 
+		await mysql_connection.promise().beginTransaction();
+
+		const admin_id = await getAdminId(email);
+
+		const updated_at = getCurrentTime();
+
 		if (!req.file) {
-			sql = `UPDATE venue SET venue_name = ? WHERE venue_id = ?`;
+			sql = `UPDATE venue SET venue_name = ?, updated_by = ?, updated_at = ? WHERE venue_id = ?`;
 			const [rows] = await mysql_connection
 				.promise()
-				.query(sql, [venue_name, venue_id]);
+				.query(sql, [venue_name, admin_id, updated_at, venue_id]);
 		} else {
 			const img = req.file.originalname;
-			sql = `UPDATE venue SET venue_name = ?, img = ? WHERE venue_id = ?`;
+			sql = `UPDATE venue SET venue_name = ?, img = ?, updated_by = ?, updated_at = ? WHERE venue_id = ?`;
 			const [rows] = await mysql_connection
 				.promise()
-				.query(sql, [venue_name, img, venue_id]);
+				.query(sql, [venue_name, img, admin_id, updated_at, venue_id]);
 		}
 
 		for (const seat of JSON.parse(seat_type)) {
-			if (seat.type_name === "" || seat.description === "") {
+			if (
+				seat.type_name === null ||
+				!seat.hasOwnProperty("type_name") ||
+				seat.description === null ||
+				!seat.hasOwnProperty("description") ||
+				seat.seat_type_id === null ||
+				!seat.hasOwnProperty("seat_type_id")
+			) {
 				return res.status(409).json({ error: "Invalid seat type" });
 			}
 
@@ -209,6 +227,9 @@ router.post("/update", upload.single("file"), async (req, res) => {
 				.promise()
 				.query(sql, [seat.type_name, seat.description, seat.seat_type_id]);
 		}
+
+		// If everything is successful, commit the transaction
+		await mysql_connection.promise().commit();
 
 		return res.status(200).json({ message: "Venue updated successfully" });
 	} catch (err) {}
