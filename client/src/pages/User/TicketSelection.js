@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import * as constants from "../constants";
+import * as constants from "../../constants";
 import { useNavigate } from "react-router-dom";
-import Buttons from "../components/Buttons";
-import seatingMap from "../assets/Capitol_Seating_Map-1.png";
+import Buttons from "../../components/Buttons";
+import seatingMap from "../../assets/Capitol_Seating_Map-1.png";
 import { Row, Col, Typography, Table, Select, Divider } from "antd";
 
 const TicketSelection = () => {

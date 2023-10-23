@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, Typography } from "antd";
-import OrderCard from "../components/OrderCard";
+import OrderCard from "../../components/OrderCard";
 
 const History = () => {
     const orderDummyData = [

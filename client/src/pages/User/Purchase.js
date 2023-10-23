@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, Typography, Card } from "antd";
-import Payment from "../components/Payment";
-import OrderCard from "../components/OrderCard";
+import Payment from "../../components/Payment";
+import OrderCard from "../../components/OrderCard";
 
 const Purchase = () => {
     const dummyData = {
