@@ -82,7 +82,7 @@ router.get("/:token", async (req, res) => {
 		for (let i = 0; i < venues.length; i++) {
 			const venue = venues[i];
 			const img = venue.venue_address;
-			const imgPath = `uploads/${img}`;
+			const imgPath = `${uploadDir}${img}`;
 
 			if (fs.existsSync(imgPath)) {
 				venues[i].img = imgPath;

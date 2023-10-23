@@ -85,6 +85,8 @@ router.get("/:token", async (req, res) => {
 		const [rows] = await mysql_connection.promise().query(sql);
 		const events = rows;
 
+		// TODO
+
 		return res.status(200).json({ events });
 	} catch (err) {
 		console.log(err);

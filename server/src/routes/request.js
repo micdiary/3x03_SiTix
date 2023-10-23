@@ -55,7 +55,7 @@ router.get("/:token", async (req, res) => {
 export async function createRequest(admin_id, event_id) {
 	const id = uuidv4();
 	const sql = `INSERT INTO request (request_id,admin_id, event_id, approval_num, status) VALUES (?, ?, ?, ?, ?)`;
-	const values = [id, admin_id, event_id, 0, 0];
+	const values = [id, admin_id, event_id, 0, "pending"];
 	await mysql_connection.promise().query(sql, values);
 }
 
