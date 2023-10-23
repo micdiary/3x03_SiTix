@@ -13,12 +13,12 @@ import { accountRouter } from "./routes/account.js";
 const app = express();
 
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "https://sitix:3000" }));
+app.use(cors({ credentials: true, origin: "https://tix.busy-shannon.cloud" }));
 
 // Routes
-app.use("/auth", authRouter);
-app.use("/queue", queueRouter);
-app.use("/account", accountRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/queue", queueRouter);
+app.use("/api/account", accountRouter);
 
 mysql_connection.connect((err) => {
 	if (err) console.error("Error connecting to the database:", err);
@@ -32,7 +32,7 @@ redis_connection.connect(
 const server = http.createServer(app);
 export const io = new Server(server, {
 	cors: {
-		origin: "https://sitix:3000",
+		origin: "https://tix.busy-shannon.cloud",
 		credentials: true,
 	},
 });
