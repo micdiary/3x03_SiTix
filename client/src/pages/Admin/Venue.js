@@ -20,14 +20,16 @@ const Venue = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [categoryCount, setCategoryCount] = useState(1);
     const [editVenueID, setEditVenueID] = useState(null);
-    const [venueName, setVenueName] = useState(null);
+    const [venueName, setVenueName] = useState("");
     const [venueData, setVenueData] = useState([]);
+    const [updated, setUpdated] = useState([]);
     const [form] = Form.useForm();
 
     // display venue
     useEffect(() => {
         getVenue()
             .then((res) => {
+                console.log(res.venues);
                 const venues = res.venues.map((venue) => ({
                     ...venue,
                     key: venue.admin_id,
@@ -37,7 +39,7 @@ const Venue = () => {
             .catch((err) => {
                 showNotification(err.message);
             });
-    }, [venueData]);
+    }, [updated]);
 
     const editVenue = (venueId) => (
         <Space>
@@ -86,15 +88,41 @@ const Venue = () => {
 
         for (let i = 0; i < selectedVenue.seat_type.length; i++) {
             form.setFieldsValue({
+                [`seat_type_id[${i}]`]: selectedVenue.seat_type[i].seat_type_id,
                 [`type_name[${i}]`]: selectedVenue.seat_type[i].type_name,
                 [`description[${i}]`]: selectedVenue.seat_type[i].description,
             });
         }
-
         setCategoryCount(selectedVenue.seat_type.length);
         setVenueName(selectedVenue.venue_name);
         setEditVenueID(venueId);
         setModalVisible(true);
+    };
+
+    const submitEditForm = (values) => {
+        const seatArray = [];
+        for (let i = 0; i < categoryCount; i++) {
+            seatArray.push({
+                seat_type_id: values[`seat_type_id[${i}]`],
+                type_name: values[`type_name[${i}]`],
+                description: values[`description[${i}]`],
+            });
+        }
+        const req = {
+            venue_id: editVenueID,
+            venue_name: values.venue_name,
+            seat_type: JSON.stringify(seatArray),
+            file: values.image.file,
+        };
+        updateVenue(req)
+            .then((res) => {
+                showNotification(res.message);
+                setModalVisible(false);
+                setUpdated(!updated);
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
     };
 
     const modalForm = (formItems) => {
@@ -122,7 +150,7 @@ const Venue = () => {
             label: "No. of Seat Types",
             name: "seat_types_count",
             input: (
-                <Select onChange={(value) => setCategoryCount(value)}>
+                <Select disabled onChange={(value) => setCategoryCount(value)}>
                     {Array.from({ length: 10 }, (_, index) => (
                         <Option key={index + 1} value={index + 1}>
                             {index + 1}
@@ -131,7 +159,11 @@ const Venue = () => {
                 </Select>
             ),
         },
-        // Conditional rendering of seat type input fields
+        ...Array.from({ length: categoryCount }, (_, index) => ({
+            label: `Seat Type ID ${index + 1}`,
+            name: `seat_type_id[${index}]`,
+            input: <Input disabled />,
+        })),
         ...Array.from({ length: categoryCount }, (_, index) => ({
             label: `Seat Type ${index + 1}`,
             name: `type_name[${index}]`,
@@ -159,31 +191,6 @@ const Venue = () => {
             ),
         },
     ];
-
-    const submitEditForm = (values) => {
-        const seatArray = [];
-        for (let i = 0; i < categoryCount; i++) {
-            seatArray.push({
-                type_name: values[`type_name[${i}]`],
-                description: values[`description[${i}]`],
-            });
-        }
-        const req = {
-            venue_id: editVenueID,
-            venue_name: values.venue_name,
-            seat_type: JSON.stringify(seatArray),
-            file: values.image.file,
-        };
-        // console.log(req.seat_type);
-        updateVenue(req)
-            .then((res) => {
-                showNotification(res.message);
-                setModalVisible(false);
-            })
-            .catch((err) => {
-                showNotification(err.message);
-            });
-    };
 
     const handleModalOk = () => {
         form.submit();

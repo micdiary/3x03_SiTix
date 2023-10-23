@@ -83,13 +83,14 @@ const RightMenu = ({ userType, token }) => {
     if (isLaptop) {
         return (
             <div className="right-icons">
-                {userType === "customer" && (
+                {(userType === "customer" || userType === null) && (
                     <Input
                         prefix={<SearchOutlined />}
                         placeholder="Search..."
                         className="search-input"
                     />
                 )}
+
                 {token === null ? (
                     <Button
                         className="login-button"
