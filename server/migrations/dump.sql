@@ -44,6 +44,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
+INSERT INTO `admin` VALUES ('80995877-2d63-4c1b-bd2e-ab4eed46137d',2,'superadmin@sitix.com','sitixsuperadmin','$2b$10$7wO5qzUkqj/k8aWxsSJzkuRoQttCyMpGNr07FyZWSeQmLvGka8g7y','2023-10-14 12:26:48',NULL);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,7 +58,6 @@ DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
   `event_id` varchar(191) NOT NULL,
   `venue_id` varchar(191) NOT NULL,
-  `request_id` varchar(191) NOT NULL,
   `event_name` varchar(255) NOT NULL,
   `date` datetime NOT NULL,
   `description` varchar(255) NOT NULL,
@@ -66,13 +66,12 @@ CREATE TABLE `event` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` varchar(45) DEFAULT NULL,
   `updated_by` varchar(255) NOT NULL,
-  PRIMARY KEY (`event_id`,`venue_id`,`request_id`),
+  `status` varchar(45) NOT NULL,
+  PRIMARY KEY (`event_id`,`venue_id`),
   KEY `venue_id_idx` (`venue_id`),
   KEY `updated_by` (`updated_by`),
-  KEY `request_id` (`request_id`),
   CONSTRAINT `event_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`venue_id`),
-  CONSTRAINT `event_ibfk_2` FOREIGN KEY (`updated_by`) REFERENCES `admin` (`admin_id`),
-  CONSTRAINT `event_ibfk_3` FOREIGN KEY (`request_id`) REFERENCES `request` (`request_id`)
+  CONSTRAINT `event_ibfk_2` FOREIGN KEY (`updated_by`) REFERENCES `admin` (`admin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -82,6 +81,7 @@ CREATE TABLE `event` (
 
 LOCK TABLES `event` WRITE;
 /*!40000 ALTER TABLE `event` DISABLE KEYS */;
+INSERT INTO `event` VALUES ('3ac7af05-57fe-4876-814f-b8408771495a','705bb0fb-6ce3-473d-88d1-5e73360cf102','new event','2023-11-30 00:00:00','new event desc','sports','12345.jpg','2023-10-22 08:42:14',NULL,'80995877-2d63-4c1b-bd2e-ab4eed46137d','pending');
 /*!40000 ALTER TABLE `event` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -110,6 +110,7 @@ CREATE TABLE `event_seat_type` (
 
 LOCK TABLES `event_seat_type` WRITE;
 /*!40000 ALTER TABLE `event_seat_type` DISABLE KEYS */;
+INSERT INTO `event_seat_type` VALUES ('3ac7af05-57fe-4876-814f-b8408771495a',7,1000.00,30);
 /*!40000 ALTER TABLE `event_seat_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -162,7 +163,7 @@ CREATE TABLE `request` (
   `admin_id` varchar(191) NOT NULL,
   `event_id` varchar(191) NOT NULL,
   `approval_num` int NOT NULL,
-  `status` tinyint NOT NULL,
+  `status` varchar(45) NOT NULL,
   PRIMARY KEY (`request_id`),
   KEY `admin_id` (`admin_id`),
   KEY `event_id` (`event_id`),
@@ -177,6 +178,7 @@ CREATE TABLE `request` (
 
 LOCK TABLES `request` WRITE;
 /*!40000 ALTER TABLE `request` DISABLE KEYS */;
+INSERT INTO `request` VALUES ('cca6b2cc-a0d7-443a-a62d-ea5ab7a704b1','80995877-2d63-4c1b-bd2e-ab4eed46137d','3ac7af05-57fe-4876-814f-b8408771495a',0,'pending');
 /*!40000 ALTER TABLE `request` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -200,6 +202,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
+INSERT INTO `role` VALUES (1,'ADMIN'),(2,'SUPER_ADMIN');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -218,7 +221,7 @@ CREATE TABLE `seat_type` (
   PRIMARY KEY (`seat_type_id`,`venue_id`),
   KEY `venue_id` (`venue_id`),
   CONSTRAINT `seat_type_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`venue_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -227,6 +230,7 @@ CREATE TABLE `seat_type` (
 
 LOCK TABLES `seat_type` WRITE;
 /*!40000 ALTER TABLE `seat_type` DISABLE KEYS */;
+INSERT INTO `seat_type` VALUES (5,'9e0f2a83-93cf-410e-a26a-36325dc47b53','VIP','VIP seats 123'),(6,'9e0f2a83-93cf-410e-a26a-36325dc47b53','Regular','Regular seats 12345'),(7,'705bb0fb-6ce3-473d-88d1-5e73360cf102','CAT1','Cat1'),(8,'4c98a9fd-11e9-4a9d-9689-cf4349c9e621','345','123');
 /*!40000 ALTER TABLE `seat_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -263,26 +267,6 @@ INSERT INTO `user` VALUES ('c32d8b45-92fe-44f6-8b61-42c2107dfe87','micdiary','mi
 UNLOCK TABLES;
 
 --
--- Dumping data for table `role`
---
-
-LOCK TABLES `role` WRITE;
-/*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'ADMIN'),(2,'SUPER_ADMIN');
-/*!40000 ALTER TABLE `role` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `admin`
---
-
-LOCK TABLES `admin` WRITE;
-/*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES ('80995877-2d63-4c1b-bd2e-ab4eed46137d',2,'superadmin@sitix.com','sitixsuperadmin','$2b$10$7wO5qzUkqj/k8aWxsSJzkuRoQttCyMpGNr07FyZWSeQmLvGka8g7y','2023-10-14 12:26:48',NULL);
-/*!40000 ALTER TABLE `admin` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `venue`
 --
 
@@ -308,6 +292,7 @@ CREATE TABLE `venue` (
 
 LOCK TABLES `venue` WRITE;
 /*!40000 ALTER TABLE `venue` DISABLE KEYS */;
+INSERT INTO `venue` VALUES ('4c98a9fd-11e9-4a9d-9689-cf4349c9e621','asd45','lloyd.jpg','2023-10-21 22:55:03',NULL,'80995877-2d63-4c1b-bd2e-ab4eed46137d'),('705bb0fb-6ce3-473d-88d1-5e73360cf102','asd','12345.jpg','2023-10-21 22:26:34',NULL,'80995877-2d63-4c1b-bd2e-ab4eed46137d'),('9e0f2a83-93cf-410e-a26a-36325dc47b53','new venue17','12345.jpg','2023-10-19 16:55:19',NULL,'80995877-2d63-4c1b-bd2e-ab4eed46137d');
 /*!40000 ALTER TABLE `venue` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -320,4 +305,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-13  0:53:17
+-- Dump completed on 2023-10-23 21:25:22
