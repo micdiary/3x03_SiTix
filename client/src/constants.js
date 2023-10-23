@@ -16,7 +16,7 @@ export const ADMIN_URL = "/admin";
 export const ADD_EVENT_URL = "/admin/add-event";
 export const ADD_VENUE_URL = "/admin/add-venue";
 
-export const URL = "http://sotox:3001";
+export const URL = "https://tix.busy-shannon.cloud/api";
 export const REGISTER_API = `${URL}/auth/register`;
 export const LOGIN_API = `${URL}/auth/login`;
 export const LOGOUT_API = `${URL}/auth/logout`;
