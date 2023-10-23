@@ -12,6 +12,9 @@ pipeline {
                 sh 'cd 3x03_SiTix/client && npm test'
                 sh 'cd 3x03_SiTix/server && npm test'
             }
+            post {
+                always {
+                    junit '**/junit.xml'
         }
         stage('OWASP Dependency Check') {
             steps {
