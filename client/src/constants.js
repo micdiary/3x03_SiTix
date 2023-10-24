@@ -36,3 +36,6 @@ export const DELETE_ADMINS_API = `${URL}/admin/delete`;
 export const VENUE_API = `${URL}/venue`;
 export const ADD_VENUE_API = `${URL}/venue/add`;
 export const UPDATE_VENUE_API = `${URL}/venue/update`;
+
+export const ADD_EVENT_API = `${URL}/event/add`;
+export const GET_EVENT_API = `${URL}/event/get`;
