@@ -85,6 +85,24 @@ router.get("/:token", async (req, res) => {
 		const [rows] = await mysql_connection.promise().query(sql);
 		const events = rows;
 
+		// get events image
+		for (const event of events) {
+			const img = event.banner_img;
+			const imgPath = `${uploadDir}/${img}`;
+			if(fs.existsSync(imgPath)) {
+				// Read the file from the file system
+				const fileData = fs.readFileSync(imgPath);
+				// Convert it to a base64 string
+				const base64Image = new Buffer.from(fileData).toString('base64');
+				// Attach it to your response object
+				event.banner_img = base64Image;
+			} else {
+				event.banner_img = "";
+			}
+			delete event.created_at;
+			delete event.updated_at;
+			delete event.updated_by;
+		}
 
 		return res.status(200).json({ events });
 	} catch (err) {
@@ -110,6 +128,20 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const values = [event_id];
 		const [rows] = await mysql_connection.promise().query(sql, values);
 		const event = rows[0];
+
+		const img = event.banner_img;
+		const imgPath = `${uploadDir}/${img}`;
+		if(fs.existsSync(imgPath)) {
+			// Read the file from the file system
+			const fileData = fs.readFileSync(imgPath);
+			// Convert it to a base64 string
+			const base64Image = new Buffer.from(fileData).toString('base64');
+			// Attach it to your response object
+			event.banner_img = base64Image;
+		} else {
+			event.banner_img = "";
+		}
+
 		delete event.created_at;
 		delete event.updated_at;
 		delete event.updated_by;
