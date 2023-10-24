@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import http from "http";
+import fs from "fs";
 import { Server } from "socket.io";
 
 import { PORT } from "./constants.js";
@@ -17,6 +18,14 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+
+// create upload route
+const uploadDir = "uploads/";
+
+// Create uploads folder if it doesn't exist
+if (!fs.existsSync(uploadDir)) {
+	fs.mkdirSync(uploadDir);
+}
 
 // Routes
 app.use("/auth", authRouter);

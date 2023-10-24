@@ -81,11 +81,16 @@ router.get("/:token", async (req, res) => {
 		// get img from uploads folder
 		for (let i = 0; i < venues.length; i++) {
 			const venue = venues[i];
-			const img = venue.venue_address;
-			const imgPath = `${uploadDir}${img}`;
+			const img = venue.img;
+			const imgPath = `${uploadDir}/${img}`;
 
 			if (fs.existsSync(imgPath)) {
-				venues[i].img = imgPath;
+				// Read the file from the file system
+				const fileData = fs.readFileSync(imgPath);
+				// Convert it to a base64 string
+				const base64Image = new Buffer.from(fileData).toString('base64');
+				// Attach it to your response object
+				venues[i].img = base64Image;
 			} else {
 				venues[i].img = "";
 			}
