@@ -15,7 +15,7 @@ import AddEvent from "../pages/Admin/AddEvent";
 import AddVenue from "../pages/Admin/AddVenue";
 import Profile from "../pages/Profile/Profile";
 
-import { getToken } from "../utils/account";
+import { getToken, getUserType } from "../utils/account";
 import { userStore } from "../store/User";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -31,6 +31,11 @@ const Layout = (page) => {
         setUserID(localToken !== null ? localToken : storeToken);
     }, [localToken, storeToken]);
 
+    const [userType, setUserType] = useState(null);
+    useEffect(() => {
+        setUserType(getUserType());
+    });
+
     const renderPage = ({ page }) => {
         switch (page) {
             case "home":
@@ -41,49 +46,49 @@ const Layout = (page) => {
                 return <Event />;
             case "ticket":
                 return (
-                    <ProtectedRoute userID={userID}>
+                    <ProtectedRoute user={userID}>
                         <TicketSelection />
                     </ProtectedRoute>
                 );
             case "purchase":
                 return (
-                    <ProtectedRoute userID={userID}>
+                    <ProtectedRoute user={userID}>
                         <Purchase />
                     </ProtectedRoute>
                 );
             case "history":
                 return (
-                    <ProtectedRoute userID={userID}>
+                    <ProtectedRoute user={userID}>
                         <History />
                     </ProtectedRoute>
                 );
             case "profile":
                 return (
-                    <ProtectedRoute userID={userID}>
+                    <ProtectedRoute user={userID}>
                         <Profile />
                     </ProtectedRoute>
                 );
             case "superadmin":
                 return (
-                    <ProtectedRoute userID={userID}>
+                    <ProtectedRoute user={userID}>
                         <AdminManagement />
                     </ProtectedRoute>
                 );
             case "admin":
                 return (
-                    <ProtectedRoute userID={userID}>
+                    <ProtectedRoute user={userID}>
                         <Admin />
                     </ProtectedRoute>
                 );
             case "add-event":
                 return (
-                    <ProtectedRoute userID={userID}>
+                    <ProtectedRoute user={userID}>
                         <AddEvent />
                     </ProtectedRoute>
                 );
             case "add-venue":
                 return (
-                    <ProtectedRoute userID={userID}>
+                    <ProtectedRoute user={userID}>
                         <AddVenue />
                     </ProtectedRoute>
                 );

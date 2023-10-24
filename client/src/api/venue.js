@@ -19,7 +19,6 @@ export async function addVenue(req) {
 }
 
 export async function updateVenue(req) {
-    console.log(req.seat_type);
     const token = getToken();
     const formData = new FormData();
     formData.append("token", token);
