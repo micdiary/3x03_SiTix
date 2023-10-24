@@ -85,7 +85,6 @@ router.get("/:token", async (req, res) => {
 		const [rows] = await mysql_connection.promise().query(sql);
 		const events = rows;
 
-		// TODO
 
 		return res.status(200).json({ events });
 	} catch (err) {
@@ -111,6 +110,9 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const values = [event_id];
 		const [rows] = await mysql_connection.promise().query(sql, values);
 		const event = rows[0];
+		delete event.created_at;
+		delete event.updated_at;
+		delete event.updated_by;
 
 		if (!event) {
 			return res.status(409).json({ error: "Event does not exist" });
@@ -120,6 +122,9 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const values2 = [event.venue_id];
 		const [rows2] = await mysql_connection.promise().query(sql2, values2);
 		const venue = rows2[0];
+		delete venue.created_at;
+		delete venue.updated_at;
+		delete venue.updated_by;
 
 		const sql3 = `SELECT * FROM event_seat_type WHERE event_id = ?`;
 		const values3 = [event_id];
@@ -191,6 +196,15 @@ router.post("/add", upload.single("file"), async (req, res) => {
 			return res.status(409).json({ error: "Image not found" });
 		}
 
+		// check if event date is valid (at least 7 days from today)
+		const today = new Date();
+		const event_date = new Date(date);
+		const diffTime = Math.abs(event_date - today);
+		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+		if (diffDays < 7) {
+			return res.status(409).json({ error: "Invalid event date" });
+		}
+		
 		// generate uuid
 		const uuid = uuidv4();
 
@@ -257,6 +271,24 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
+
+// start event
+export async function startEvent(request_id) {
+	try {
+		const sql = `SELECT * FROM request WHERE request_id = ?`;
+		const values = [request_id];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		const request = rows[0];
+
+		const sql2 = `UPDATE event SET status = "active" WHERE event_id = ?`;
+		const values2 = [request.event_id];
+		const [rows2] = await mysql_connection.promise().query(sql2, values2);
+		return true;
+	} catch (err) {
+		console.log(err);
+		return false;
+	}
+}
 
 router.use(handleMulterError);
 

@@ -17,6 +17,8 @@ import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, removeSession, userExists } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
+import { getAdminId, getNumAdmins, isSuperAdmin } from "./admin.js";
+import { startEvent } from "./event.js";
 
 // get all requests
 router.get("/:token", async (req, res) => {
@@ -35,16 +37,101 @@ router.get("/:token", async (req, res) => {
 			return res.status(409).json({ error: "Invalid token used" });
 		}
 
-		const sql = `SELECT a.username AS admin, e.event_id, e.event_name, v.venue_name, v.venue_id, r.approval_num
-            FROM requests r
-            JOIN admins a ON r.admin_id = a.admin_id
-            JOIN events e ON r.event_id = e.event_id
-            JOIN venues v ON e.venue_id = v.venue_id;`;
+		const sql = `SELECT r.request_id , a.username AS admin, e.event_id, e.event_name, v.venue_name, v.venue_id, r.approval_num
+            FROM request r
+            JOIN admin a ON r.admin_id = a.admin_id
+            JOIN event e ON r.event_id = e.event_id
+            JOIN venue v ON e.venue_id = v.venue_id
+			WHERE r.status = "pending"
+			`;
 
 		const [rows] = await mysql_connection.promise().query(sql);
 		const requests = rows;
 
+		// hide requests that the admin has already responded to
+		const admin_id = await getAdminId(email);
+		for (let i = 0; i < requests.length; i++) {
+			const request = requests[i];
+			const request_id = request.request_id;
+
+			const accepted = await redis_connection.lRange(
+				`${request_id}/accepted`,
+				0,
+				-1
+			);
+
+			const rejected = await redis_connection.lRange(
+				`${request_id}/rejected`,
+				0,
+				-1
+			);
+
+			if (accepted.includes(admin_id) || rejected.includes(admin_id)) {
+				requests.splice(i, 1);
+				i--;
+			}
+		}
+		
 		return res.status(200).json({ requests });
+	} catch (err) {
+		console.log(err);
+		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
+	}
+});
+
+// accept/reject request
+router.post("/update", async (req, res) => {
+	const { token, request_id, status } = req.body;
+
+	try {
+		const { email, userType } = jwt.verify(token, JWT_SECRET);
+
+		if (!(await checkToken(email, token))) {
+			return res
+				.status(409)
+				.json({ error: "Invalid token used. Please relogin" });
+		}
+
+		if (userType !== "admin" && !(await isSuperAdmin(email))) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		if(status !== "accepted" && status !== "rejected") {
+			return res.status(409).json({ error: "Invalid status" });
+		}		
+
+		if(status === "accepted") {
+			const admin_id = await getAdminId(email);
+
+			await redis_connection.rPush(`${request_id}/accepted`, admin_id);
+
+			const sql = `UPDATE request SET approval_num = approval_num + 1 WHERE request_id = ?`;
+			const values = [request_id];
+			const [rows] = await mysql_connection.promise().query(sql, values);
+		}
+		else{
+			await redis_connection.rPush(`${request_id}/rejected`, admin_id);
+		}
+
+		const sql = `SELECT approval_num FROM request WHERE request_id = ?`;
+		const values = [request_id];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		const approval_num = rows[0].approval_num;
+
+		const numAdmins = await getNumAdmins();
+		if((approval_num >= numAdmins/2) && await redis_connection.lLen(`${request_id}/accepted`) >= numAdmins/2) {
+			const response = await startEvent(request_id);
+			if(response){
+				const sql = `UPDATE request SET status = "accepted" WHERE request_id = ?`;
+				const values = [request_id];
+				const [rows] = await mysql_connection.promise().query(sql, values);
+				return res.status(200).json({ message: "Event started!" });
+			}
+			else{
+				return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
+			}
+		}
+		return res.status(200).json({ message: "Request updated" });
 	} catch (err) {
 		console.log(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });

@@ -13,6 +13,7 @@ import { accountRouter } from "./routes/account.js";
 import { adminRouter } from "./routes/admin.js";
 import { venueRouter } from "./routes/venue.js";
 import { eventRouter } from "./routes/event.js";
+import { requestRouter } from "./routes/request.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/account", accountRouter);
 app.use("/admin", adminRouter);
 app.use("/venue", venueRouter);
 app.use("/event", eventRouter);
+app.use("/request", requestRouter);
 
 mysql_connection.connect((err) => {
 	if (err) console.error("Error connecting to the database:", err);

@@ -16,7 +16,7 @@ import {
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, userExists } from "./auth.js";
-import { sendEmail } from "../utils/email.js";
+import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 
 // Get Admins
@@ -61,6 +61,11 @@ router.post("/add", async (req, res) => {
 
 		if (userType !== "admin" && !(await isSuperAdmin(email))) {
 			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		// check if email valid
+		if (!isValidEmailFormat(admin_email)) {
+			return res.status(409).json({ error: "Invalid email format" });
 		}
 
 		if (await emailExists(admin_email)) {
@@ -185,6 +190,18 @@ export const isSuperAdmin = async (email) => {
 		} else {
 			return false;
 		}
+	} catch (err) {
+		console.log(err);
+		return false;
+	}
+};
+
+// get total number of admins
+export const getNumAdmins = async () => {
+	try {
+		const sql = `SELECT * FROM admin WHERE role_id = 1`;
+		const [rows] = await mysql_connection.promise().query(sql);
+		return rows.length;
 	} catch (err) {
 		console.log(err);
 		return false;
