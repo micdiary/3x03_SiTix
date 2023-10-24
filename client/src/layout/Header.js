@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Layout.css";
 import LeftMenu from "./LeftMenu";
-import RightMenu, { RightSuperMenu } from "./RightMenu";
+import RightMenu from "./RightMenu";
 import * as constants from "../constants";
 import { useMediaQuery } from "react-responsive";
 import { MenuOutlined } from "@ant-design/icons";
@@ -47,24 +47,50 @@ const Header = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localStorageToken, storeToken]);
 
+    const storeUserType = userStore((state) => state.userType);
+    const [userType, setUserType] = useState(
+        localStorageUserType !== null ? localStorageUserType : storeUserType
+    );
+    useEffect(() => {
+        setUserType(
+            localStorageUserType !== null ? localStorageUserType : storeUserType
+        );
+    }, [localStorageUserType, storeUserType]);
+
     const isLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
 
     if (isLaptop) {
         return (
             <div className="header">
+                {userType === "admin" ? (
+                    <div className="logo">
+                        <a className="href" href={constants.ADMIN_URL}>
+                            SiTix Admin
+                        </a>
+                    </div>
+                ) : userType === "superadmin" ? (
+                    <div className="logo">
+                        <a className="href" href={constants.SUPERADMIN_URL}>
+                            SiTix Super Admin
+                        </a>
+                    </div>
+                ) : (
+                    <>
+                        <div>
+                            <LeftMenu />
+                        </div>
+                        <div className="logo">
+                            <a className="href" href={constants.HOME_URL}>
+                                SiTix
+                            </a>
+                        </div>
+                    </>
+                )}
+
                 <div>
-                    <LeftMenu />
-                </div>
-                <div className="logo">
-                    <a className="href" href={constants.HOME_URL}>
-                        SiTix
-                    </a>
-                </div>
-                <div>
-                    <RightMenu token={token} />
+                    <RightMenu userType={userType} token={token} />
                 </div>
             </div>
-            // <AdminHeader />
         );
     } else {
         return <MobileMenu token={token} />;
@@ -103,21 +129,6 @@ const MobileMenu = ({ token }) => {
             </div>
             <div>
                 <RightMenu token={token} />
-            </div>
-        </div>
-    );
-};
-
-const AdminHeader = () => {
-    return (
-        <div className="header">
-            <div className="logo">
-                <a className="href" href={constants.ADMIN_URL}>
-                    SiTix
-                </a>
-            </div>
-            <div>
-                <RightSuperMenu />
             </div>
         </div>
     );

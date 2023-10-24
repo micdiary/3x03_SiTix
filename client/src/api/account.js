@@ -10,6 +10,7 @@ import {
     RESET_PASSWORD_API,
     FORGET_PASSWORD_API,
     LOGOUT_API,
+    DELETE_ACCOUNT_API,
 } from "../constants.js";
 import { getToken } from "../utils/account";
 
@@ -39,6 +40,10 @@ export async function getProfile() {
 
 export async function editProfile(req) {
     return requestPost(EDIT_PROFILE_API, { req });
+}
+
+export async function deleteUserAccount() {
+    return requestGet(`${DELETE_ACCOUNT_API}/${getToken()}`);
 }
 
 export async function resetPassword(req) {

@@ -14,13 +14,13 @@ export const buttonBlack = (e) => {
     e.currentTarget.style.border = "2px solid white";
 };
 
-const Buttons = ({ width, height, marginTop, text, onClick }) => {
+const Buttons = ({ width, height, marginTop, ariaLabel, text, onClick }) => {
     const buttonStyle = {
         width: width || "100%",
         height: height || "50px",
         color: "white",
         borderRadius: "50px",
-        marginBotton: "10px",
+        marginBottom: "10px",
         backgroundColor: "black",
         marginTop: marginTop || "auto",
         transition: "background-color 0.3s, color 0.3s",
@@ -28,6 +28,7 @@ const Buttons = ({ width, height, marginTop, text, onClick }) => {
 
     return (
         <Button
+            aria-label={ariaLabel}
             style={buttonStyle}
             onMouseOver={buttonWhite}
             onMouseOut={buttonBlack}
@@ -43,6 +44,7 @@ Buttons.propTypes = {
     width: PropTypes.string,
     height: PropTypes.string,
     marginTop: PropTypes.string,
+    ariaLabel: PropTypes.string,
     text: PropTypes.string.isRequired,
     onClick: PropTypes.func,
 };

@@ -40,7 +40,13 @@ const Login = () => {
                 localStorage.setItem("userType", res.userType);
 
                 // TODO change accordingly depending on usertype
-                navigate(constants.HOME_URL);
+                if (res.userType === "superadmin") {
+                    navigate(constants.SUPERADMIN_URL);
+                } else if (res.userType === "admin") {
+                    navigate(constants.ADMIN_URL);
+                } else {
+                    navigate(constants.HOME_URL);
+                }
             })
             .catch((err) => {
                 console.log(err);
@@ -115,7 +121,7 @@ const Login = () => {
                             </a>
                         </Form.Item>
                         <Form.Item>
-                            <Buttons text="Login" />
+                            <Buttons arialLabel="login button" text="Login" />
                             Or{" "}
                             <a style={aStyle} href={constants.REGISTER_URL}>
                                 register now!

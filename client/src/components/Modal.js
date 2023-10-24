@@ -8,7 +8,6 @@ const Modals = ({ modal2Open, closeModal, modalTitle, modalContent, onOk }) => {
             centered
             open={modal2Open}
             onOk={() => {
-                closeModal(false);
                 if (onOk) {
                     onOk();
                 }

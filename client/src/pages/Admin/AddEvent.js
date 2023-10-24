@@ -11,16 +11,74 @@ import {
     Typography,
     Upload,
 } from "antd";
-import React, { useState } from "react";
+import * as constants from "../../constants";
+import React, { useEffect, useState } from "react";
 import Buttons from "../../components/Buttons";
+import { showNotification } from "../../components/Notification";
 import { cardStyle, inputStyle, marginBottomOneStyle } from "../PagesStyles";
+import { getVenue } from "../../api/venue";
+import { addEvent } from "../../api/event";
+import { useNavigate } from "react-router-dom";
 
 const AddEvent = () => {
+    let navigate = useNavigate();
     const { Option } = Select;
     const [eventForm] = Form.useForm();
+    const [venueData, setVenueData] = useState([]);
+    const [selectedVenue, setSelectedVenue] = useState(null);
+    const [categoryCount, setCategoryCount] = useState(0);
 
-    const [categoryCount, setCategoryCount] = useState(1);
-    const dummyVenues = ["Venue 1", "Venue 2", "Venue 3"];
+    useEffect(() => {
+        getVenue()
+            .then((res) => {
+                const venues = res.venues.map((venue) => ({
+                    ...venue,
+                    key: venue.admin_id,
+                }));
+                setVenueData(venues);
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
+    });
+
+    useEffect(() => {
+        if (selectedVenue) {
+            setCategoryCount(selectedVenue.seat_type.length);
+        }
+    }, [selectedVenue]);
+
+    const onFinish = (values) => {
+        const seatType = [];
+        for (let i = 0; i < categoryCount; i++) {
+            seatType.push({
+                seat_type_id: selectedVenue
+                    ? selectedVenue.seat_type[i].seat_type_id
+                    : "",
+                price: values[`price[${i}]`],
+                available_seats: values[`available_seats[${i}]`],
+            });
+        }
+        const req = {
+            venue_id: selectedVenue ? selectedVenue.venue_id : "",
+            event_name: values.event_name,
+            date: values.event_date,
+            description: values.event_description,
+            category: values.category,
+            seat_type: JSON.stringify(seatType),
+            file: values.event_image.file,
+        };
+        addEvent(req)
+            .then((res) => {
+                showNotification(res.message);
+                eventForm.resetFields();
+                navigate(constants.ADMIN_URL);
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
+    };
+
     const addEventFormItem = [
         {
             label: "Event Name",
@@ -35,55 +93,75 @@ const AddEvent = () => {
             input: <DatePicker style={inputStyle} />,
         },
         {
+            label: "Event Image Upload",
+            name: "event_image",
+            rules: [{ required: true, message: "Required" }],
+            input: (
+                <Upload
+                    name="image"
+                    listType="picture"
+                    beforeUpload={() => false}
+                >
+                    <Button style={inputStyle} icon={<PlusOutlined />}>
+                        Upload Image
+                    </Button>
+                </Upload>
+            ),
+        },
+        {
             label: "Event Venue",
             name: "event_venue",
             rules: [{ required: true, message: "Required" }],
             input: (
-                <Select>
-                    {dummyVenues.map((venue) => (
-                        <Option key={venue} value={venue}>
-                            {venue}
-                        </Option>
-                    ))}
-                </Select>
-            ),
-        },
-        {
-            label: "Description",
-            name: "description",
-            rules: [{ required: true, message: "Required" }],
-            input: <Input style={inputStyle} />,
-        },
-        {
-            label: "Total Seats Available",
-            name: "total_seats",
-            rules: [{ required: true, message: "Required" }],
-            input: <Input style={inputStyle} />,
-        },
-        {
-            label: "No. of Category",
-            name: "category_count",
-            rules: [{ required: true, message: "Required" }],
-            input: (
                 <Select
-                    style={inputStyle}
-                    onChange={(value) => setCategoryCount(value)}
+                    onChange={(value) => {
+                        const selected = venueData.find(
+                            (venue) => venue.venue_name === value
+                        );
+                        setSelectedVenue(selected);
+                    }}
                 >
-                    {Array.from({ length: 10 }, (_, index) => (
-                        <Option key={index + 1} value={index + 1}>
-                            {index + 1}
-                        </Option>
+                    {venueData.map((venue) => (
+                        <Option
+                            key={venue.venue_id}
+                            value={venue.venue_name}
+                        ></Option>
                     ))}
                 </Select>
             ),
         },
-        // Conditional rendering of price input fields
         ...Array.from({ length: categoryCount }, (_, index) => ({
-            label: `Price for Category ${index + 1}`,
-            name: `category_price_${index + 1}`,
+            label: `Price (${selectedVenue.seat_type[index].type_name})`,
+            name: `price[${index}]`,
             rules: [{ required: true, message: "Required" }],
             input: <Input style={inputStyle} />,
         })),
+        ...Array.from({ length: categoryCount }, (_, index) => ({
+            label: `Available Seats (${selectedVenue.seat_type[index].type_name})`,
+            name: `available_seats[${index}]`,
+            rules: [{ required: true, message: "Required" }],
+            input: <Input style={inputStyle} />,
+        })),
+        {
+            label: "Category",
+            name: "category",
+            rules: [{ required: true, message: "Required" }],
+            input: (
+                <Select
+                    options={[
+                        { value: "sports", label: "Sports" },
+                        { value: "concerts", label: "Concerts" },
+                        { value: "comedy", label: "Comedy" },
+                    ]}
+                />
+            ),
+        },
+        {
+            label: "Event Description",
+            name: "event_description",
+            rules: [{ required: true, message: "Required" }],
+            input: <Input style={inputStyle} />,
+        },
     ];
 
     return (
@@ -100,7 +178,7 @@ const AddEvent = () => {
                         <Form
                             form={eventForm}
                             layout="vertical"
-                            // onFinish={onFinish}
+                            onFinish={onFinish}
                         >
                             {addEventFormItem.map((item) => (
                                 <Form.Item

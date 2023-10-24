@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import http from "http";
+import fs from "fs";
 import { Server } from "socket.io";
 
 import { PORT } from "./constants.js";
@@ -9,16 +10,32 @@ import { queueRouter } from "./routes/queue.js";
 import { mysql_connection } from "./mysql_db.js";
 import { redis_connection } from "./redis.js";
 import { accountRouter } from "./routes/account.js";
+import { adminRouter } from "./routes/admin.js";
+import { venueRouter } from "./routes/venue.js";
+import { eventRouter } from "./routes/event.js";
+import { requestRouter } from "./routes/request.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
+// create upload route
+const uploadDir = "uploads/";
+
+// Create uploads folder if it doesn't exist
+if (!fs.existsSync(uploadDir)) {
+	fs.mkdirSync(uploadDir);
+}
+
 // Routes
 app.use("/auth", authRouter);
 app.use("/queue", queueRouter);
 app.use("/account", accountRouter);
+app.use("/admin", adminRouter);
+app.use("/venue", venueRouter);
+app.use("/event", eventRouter);
+app.use("/request", requestRouter);
 
 mysql_connection.connect((err) => {
 	if (err) console.error("Error connecting to the database:", err);

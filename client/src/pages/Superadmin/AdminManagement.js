@@ -1,80 +1,96 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Modal, Form, Input, Row, Col, Typography, Space } from "antd";
 import Modals from "../../components/Modal";
 import Buttons from "../../components/Buttons";
+import { showNotification } from "../../components/Notification";
 import { inputStyle, marginBottomOneStyle, tableStyle } from "../PagesStyles";
+import { getToken } from "../../utils/account";
+import { addNewAdmin, deleteAdmin, getAdmins } from "../../api/admin";
 
 const AdminManagement = () => {
-    // const [data, setData] = useState([]);
+    const [data, setData] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [addMode, setAddMode] = useState(false);
+    const [form] = Form.useForm();
 
-    const handleEdit = () => {
-        setAddMode(false);
+    useEffect(() => {
+        getAdmins()
+            .then((res) => {
+                // variable to store transform data // loop through each item in the res.admins
+                const admins = res.admins.map((admin) => ({
+                    // copies all properties from original object to new object
+                    ...admin,
+                    // admin_id is unqiue
+                    key: admin.admin_id,
+                }));
+                setData(admins);
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
+    }, [data]);
+
+    const handleAddAdmin = () => {
         setModalVisible(true);
+    };
+
+    const submitAddAdminForm = (values) => {
+        const req = {
+            token: getToken(),
+            username: values.admin_username,
+            admin_email: values.admin_email,
+        };
+        addNewAdmin(req)
+            .then((res) => {
+                showNotification(res.message);
+                showNotification("done");
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            })
+            .finally(() => {
+                form.resetFields();
+                setModalVisible(false);
+            });
+    };
+
+    const handleModalOk = () => {
+        form.submit();
+    };
+
+    const handleModalCancel = () => {
+        setModalVisible(false);
+        form.resetFields();
     };
 
     const showDeleteConfirmation = (admin) => {
         Modal.confirm({
             title: "Confirm Delete",
-            content: `Are you sure you want to permanently delete ${admin.name}?`,
-            onOk: () => handleDelete(admin.adminID),
+            content: `Are you sure you want to permanently delete ${admin.username}?`,
+            onOk: () => handleDelete(admin.admin_id),
             okText: "Delete",
         });
     };
 
-    const handleDelete = (adminID) => {};
-
-    const handleAddAdmin = () => {
-        setAddMode(true);
-        setModalVisible(true);
+    const handleDelete = (adminID) => {
+        const req = {
+            token: getToken(),
+            adminId: adminID,
+        };
+        console.log(req);
+        deleteAdmin(req)
+            .then((res) => {
+                showNotification(res.message);
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
     };
-
-    const handleModalOk = () => {
-        setModalVisible(false);
-    };
-
-    const handleModalCancel = () => {
-        setModalVisible(false);
-    };
-
-    const dummyData = [
-        {
-            adminID: 1,
-            name: "Admin 1",
-            username: "admin1",
-            email: "admin1@example.com",
-        },
-        {
-            adminID: 2,
-            name: "Admin 2",
-            username: "admin2",
-            email: "admin2@example.com",
-        },
-        {
-            adminID: 3,
-        },
-        {
-            adminID: 4,
-        },
-        {
-            adminID: 5,
-        },
-        {
-            adminID: 6,
-        },
-    ];
 
     const columns = [
         {
             title: "Admin ID",
-            dataIndex: "adminID",
-            key: "adminID",
-        },
-        {
-            title: "Name",
-            dataIndex: "name",
-            key: "name",
+            dataIndex: "admin_id",
+            key: "admin_id",
         },
         {
             title: "Username",
@@ -95,17 +111,12 @@ const AdminManagement = () => {
             title: "Action",
             key: "action",
             render: (_, record) => (
-                <Space>
-                    <Typography.Link onClick={() => handleEdit(record)}>
-                        Edit
-                    </Typography.Link>
-                    <Typography.Link
-                        onClick={() => showDeleteConfirmation(record)}
-                        style={{ color: "red", cursor: "pointer" }}
-                    >
-                        Delete
-                    </Typography.Link>
-                </Space>
+                <Typography.Link
+                    onClick={() => showDeleteConfirmation(record)}
+                    style={{ color: "red", cursor: "pointer" }}
+                >
+                    Delete
+                </Typography.Link>
             ),
         },
     ];
@@ -126,20 +137,7 @@ const AdminManagement = () => {
 
     const formItems = [
         {
-            name: "name",
-            rules: [
-                {
-                    required: true,
-                },
-                {
-                    pattern: /^[a-zA-Z\s]+$/,
-                    message: "Letters only.",
-                },
-            ],
-            input: <Input style={inputStyle} placeholder="Name" />,
-        },
-        {
-            name: "username",
+            name: "admin_username",
             rules: [
                 {
                     required: true,
@@ -154,7 +152,7 @@ const AdminManagement = () => {
             input: <Input style={inputStyle} placeholder="Username" />,
         },
         {
-            name: "email",
+            name: "admin_email",
             rules: [
                 {
                     required: true,
@@ -170,7 +168,7 @@ const AdminManagement = () => {
         <div style={{ minHeight: "100vh" }}>
             <Row justify="center" align="middle">
                 <Typography.Title level={3}>Super Admin</Typography.Title>
-                <Col xs={23} sm={23} md={22} lg={22}>
+                <Col xs={23} sm={23} md={22} lg={22} xl={22}>
                     <Row justify="end" style={{ margin: "15px 0" }}>
                         <Col xs={24} sm={12} md={8} lg={4}>
                             <div>
@@ -182,7 +180,7 @@ const AdminManagement = () => {
                         </Col>
                     </Row>
                     <Table
-                        dataSource={dummyData}
+                        dataSource={data}
                         columns={columns}
                         style={tableStyle}
                         pagination={{ pageSize: 5 }}
@@ -191,11 +189,10 @@ const AdminManagement = () => {
                     <Modals
                         modal2Open={modalVisible}
                         closeModal={handleModalCancel}
-                        modalTitle={addMode ? "Add New Admin" : "Edit Admin"}
+                        modalTitle={"Add New Admin"}
                         modalContent={
-                            <Form>
-                                {addMode && modalForm(formItems)}
-                                {!addMode && modalForm(formItems.slice(0, 2))}
+                            <Form form={form} onFinish={submitAddAdminForm}>
+                                {modalForm(formItems)}
                             </Form>
                         }
                         onOk={handleModalOk}
