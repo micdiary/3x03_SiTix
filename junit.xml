@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="9" failures="0" errors="0" time="65.341">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-23T11:11:47" time="37.691" tests="1">
-    <testcase classname=" renders the home component" name=" renders the home component" time="0.363">
+<testsuites name="jest tests" tests="9" failures="0" errors="0" time="25.135">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="16.17" tests="1">
+    <testcase classname=" renders ResetPassword and triggers onSubmit" name=" renders ResetPassword and triggers onSubmit" time="0.425">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-23T11:11:47" time="37.898" tests="1">
-    <testcase classname=" renders ResetPassword and triggers onSubmit" name=" renders ResetPassword and triggers onSubmit" time="0.48">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="16.563" tests="1">
+    <testcase classname=" renders the home component" name=" renders the home component" time="0.34">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-23T11:11:47" time="38.177" tests="1">
-    <testcase classname=" renders without crashing" name=" renders without crashing" time="0.314">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="16.634" tests="1">
+    <testcase classname=" renders without crashing" name=" renders without crashing" time="0.318">
     </testcase>
   </testsuite>
-  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-23T11:11:47" time="61.872" tests="1">
-    <testcase classname="Login renders login elements" name="Login renders login elements" time="0.311">
+  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="22.462" tests="1">
+    <testcase classname="Login renders login elements" name="Login renders login elements" time="0.303">
     </testcase>
   </testsuite>
-  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-23T11:11:47" time="62.915" tests="3">
-    <testcase classname="Login renders correctly" name="Login renders correctly" time="0.316">
+  <testsuite name="ForgetPassword" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="22.547" tests="2">
+    <testcase classname="ForgetPassword renders ForgetPassword component" name="ForgetPassword renders ForgetPassword component" time="0.308">
     </testcase>
-    <testcase classname="Login shows an error if the form is submitted without a username" name="Login shows an error if the form is submitted without a username" time="0.67">
-    </testcase>
-    <testcase classname="Login shows an error if the form is submitted without a password" name="Login shows an error if the form is submitted without a password" time="0.393">
+    <testcase classname="ForgetPassword show notification on successful password reset" name="ForgetPassword show notification on successful password reset" time="0.132">
     </testcase>
   </testsuite>
-  <testsuite name="ForgetPassword" errors="0" failures="0" skipped="0" timestamp="2023-10-23T11:11:47" time="63.672" tests="2">
-    <testcase classname="ForgetPassword renders ForgetPassword component" name="ForgetPassword renders ForgetPassword component" time="0.27">
+  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="23.437" tests="3">
+    <testcase classname="Login renders correctly" name="Login renders correctly" time="0.302">
     </testcase>
-    <testcase classname="ForgetPassword show notification on successful password reset" name="ForgetPassword show notification on successful password reset" time="0.142">
+    <testcase classname="Login shows an error if the form is submitted without a username" name="Login shows an error if the form is submitted without a username" time="0.574">
+    </testcase>
+    <testcase classname="Login shows an error if the form is submitted without a password" name="Login shows an error if the form is submitted without a password" time="0.348">
     </testcase>
   </testsuite>
 </testsuites>
