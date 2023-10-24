@@ -1,33 +1,701 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="9" failures="0" errors="0" time="25.135">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="16.17" tests="1">
-    <testcase classname=" renders ResetPassword and triggers onSubmit" name=" renders ResetPassword and triggers onSubmit" time="0.425">
+<testsuites name="jest tests" tests="9" failures="2" errors="0" time="33.134">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T16:32:56" time="16.839" tests="1">
+    <testcase classname=" renders ResetPassword and triggers onSubmit" name=" renders ResetPassword and triggers onSubmit" time="0.501">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="16.563" tests="1">
-    <testcase classname=" renders the home component" name=" renders the home component" time="0.34">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T16:32:56" time="17.271" tests="1">
+    <testcase classname=" renders the home component" name=" renders the home component" time="0.45">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="16.634" tests="1">
-    <testcase classname=" renders without crashing" name=" renders without crashing" time="0.318">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-24T16:32:56" time="17.331" tests="1">
+    <testcase classname=" renders without crashing" name=" renders without crashing" time="0.431">
     </testcase>
   </testsuite>
-  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="22.462" tests="1">
-    <testcase classname="Login renders login elements" name="Login renders login elements" time="0.303">
+  <testsuite name="ForgetPassword" errors="0" failures="0" skipped="0" timestamp="2023-10-24T16:32:56" time="23.337" tests="2">
+    <testcase classname="ForgetPassword renders ForgetPassword component" name="ForgetPassword renders ForgetPassword component" time="0.298">
+    </testcase>
+    <testcase classname="ForgetPassword show notification on successful password reset" name="ForgetPassword show notification on successful password reset" time="0.135">
     </testcase>
   </testsuite>
-  <testsuite name="ForgetPassword" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="22.547" tests="2">
-    <testcase classname="ForgetPassword renders ForgetPassword component" name="ForgetPassword renders ForgetPassword component" time="0.308">
-    </testcase>
-    <testcase classname="ForgetPassword show notification on successful password reset" name="ForgetPassword show notification on successful password reset" time="0.132">
+  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-24T16:32:56" time="23.507" tests="1">
+    <testcase classname="Login renders login elements" name="Login renders login elements" time="0.299">
     </testcase>
   </testsuite>
-  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-24T15:06:00" time="23.437" tests="3">
-    <testcase classname="Login renders correctly" name="Login renders correctly" time="0.302">
+  <testsuite name="Login" errors="0" failures="2" skipped="0" timestamp="2023-10-24T16:32:56" time="31.301" tests="3">
+    <testcase classname="Login renders correctly" name="Login renders correctly" time="0.327">
     </testcase>
-    <testcase classname="Login shows an error if the form is submitted without a username" name="Login shows an error if the form is submitted without a username" time="0.574">
+    <testcase classname="Login shows an error if the form is submitted without a username" name="Login shows an error if the form is submitted without a username" time="3.895">
+      <failure>TestingLibraryElementError: Unable to find an accessible element with the role &quot;Buttons&quot; and name `/login button/i`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name &quot;Login&quot;:
+  &lt;h1
+    class=&quot;ant-typography css-dev-only-do-not-override-3mqfnx&quot;
+    style=&quot;text-align: center; margin-bottom: 30px;&quot;
+  /&gt;
+
+  --------------------------------------------------
+  img:
+
+  Name &quot;user&quot;:
+  &lt;span
+    aria-label=&quot;user&quot;
+    class=&quot;anticon anticon-user&quot;
+    role=&quot;img&quot;
+  /&gt;
+
+  Name &quot;lock&quot;:
+  &lt;span
+    aria-label=&quot;lock&quot;
+    class=&quot;anticon anticon-lock&quot;
+    role=&quot;img&quot;
+  /&gt;
+
+  Name &quot;eye-invisible&quot;:
+  &lt;span
+    aria-label=&quot;eye-invisible&quot;
+    class=&quot;anticon anticon-eye-invisible ant-input-password-icon&quot;
+    role=&quot;img&quot;
+    tabindex=&quot;-1&quot;
+  /&gt;
+
+  --------------------------------------------------
+  textbox:
+
+  Name &quot;&quot;:
+  &lt;input
+    aria-required=&quot;true&quot;
+    class=&quot;ant-input css-dev-only-do-not-override-3mqfnx&quot;
+    id=&quot;normal_login_username&quot;
+    placeholder=&quot;Username&quot;
+    type=&quot;text&quot;
+    value=&quot;&quot;
+  /&gt;
+
+  --------------------------------------------------
+  link:
+
+  Name &quot;Forgot Password?&quot;:
+  &lt;a
+    href=&quot;/forget-password&quot;
+    style=&quot;color: rgb(181, 148, 16);&quot;
+  /&gt;
+
+  Name &quot;register now!&quot;:
+  &lt;a
+    href=&quot;/register&quot;
+    style=&quot;color: rgb(181, 148, 16);&quot;
+  /&gt;
+
+  --------------------------------------------------
+  button:
+
+  Name &quot;Login&quot;:
+  &lt;button
+    class=&quot;ant-btn css-dev-only-do-not-override-3mqfnx ant-btn-default&quot;
+    style=&quot;width: 100%; height: 50px; color: white; border-radius: 50px; margin-bottom: 10px; background-color: black; margin-top: auto; transition: background-color 0.3s, color 0.3s;&quot;
+    type=&quot;submit&quot;
+  /&gt;
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;div
+      class=&quot;ant-row ant-row-center ant-row-middle css-dev-only-do-not-override-3mqfnx&quot;
+      style=&quot;min-height: 100vh; background: url(https://pngimg.com/d/smoke_PNG55185.png) no-repeat center;&quot;
+    &gt;
+      &lt;div
+        class=&quot;ant-col ant-col-xs-20 ant-col-sm-16 ant-col-md-12 ant-col-lg-8 css-dev-only-do-not-override-3mqfnx&quot;
+      &gt;
+        &lt;h1
+          class=&quot;ant-typography css-dev-only-do-not-override-3mqfnx&quot;
+          style=&quot;text-align: center; margin-bottom: 30px;&quot;
+        &gt;
+          Login
+        &lt;/h1&gt;
+        &lt;div
+          class=&quot;ant-card ant-card-bordered css-dev-only-do-not-override-3mqfnx&quot;
+          style=&quot;padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);&quot;
+        &gt;
+          &lt;div
+            class=&quot;ant-card-body&quot;
+          &gt;
+            &lt;form
+              class=&quot;ant-form ant-form-vertical css-dev-only-do-not-override-3mqfnx&quot;
+              id=&quot;normal_login&quot;
+            &gt;
+              &lt;div
+                class=&quot;ant-form-item css-dev-only-do-not-override-3mqfnx&quot;
+                style=&quot;margin-bottom: 25px;&quot;
+              &gt;
+                &lt;div
+                  class=&quot;ant-row ant-form-item-row css-dev-only-do-not-override-3mqfnx&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;ant-col ant-form-item-control css-dev-only-do-not-override-3mqfnx&quot;
+                  &gt;
+                    &lt;div
+                      class=&quot;ant-form-item-control-input&quot;
+                    &gt;
+                      &lt;div
+                        class=&quot;ant-form-item-control-input-content&quot;
+                      &gt;
+                        &lt;span
+                          class=&quot;ant-input-affix-wrapper css-dev-only-do-not-override-3mqfnx&quot;
+                          style=&quot;height: 50px; border-radius: 50px;&quot;
+                        &gt;
+                          &lt;span
+                            class=&quot;ant-input-prefix&quot;
+                          &gt;
+                            &lt;span
+                              aria-label=&quot;user&quot;
+                              class=&quot;anticon anticon-user&quot;
+                              role=&quot;img&quot;
+                            &gt;
+                              &lt;svg
+                                aria-hidden=&quot;true&quot;
+                                data-icon=&quot;user&quot;
+                                fill=&quot;currentColor&quot;
+                                focusable=&quot;false&quot;
+                                height=&quot;1em&quot;
+                                viewBox=&quot;64 64 896 896&quot;
+                                width=&quot;1em&quot;
+                              &gt;
+                                &lt;path
+                                  d=&quot;M858.5 763.6a374 374 0 00-80.6-119.5 375.63 375.63 0 00-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 00-80.6 119.5A371.7 371.7 0 00136 901.8a8 8 0 008 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 008-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z&quot;
+                                /&gt;
+                              &lt;/svg&gt;
+                            &lt;/span&gt;
+                          &lt;/span&gt;
+                          &lt;input
+                            aria-required=&quot;true&quot;
+                            class=&quot;ant-input css-dev-only-do-not-override-3mqfnx&quot;
+                            id=&quot;normal_login_username&quot;
+                            placeholder=&quot;Username&quot;
+                            type=&quot;text&quot;
+                            value=&quot;&quot;
+                          /&gt;
+                        &lt;/span&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;ant-form-item css-dev-only-do-not-override-3mqfnx&quot;
+              &gt;
+                &lt;div
+                  class=&quot;ant-row ant-form-item-row css-dev-only-do-not-override-3mqfnx&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;ant-col ant-form-item-control css-dev-only-do-not-override-3mqfnx&quot;
+                  &gt;
+                    &lt;div
+                      class=&quot;ant-form-item-control-input&quot;
+                    &gt;
+                      &lt;div
+                        class=&quot;ant-form-item-control-input-content&quot;
+                      &gt;
+                        &lt;span
+                          class=&quot;ant-input-affix-wrapper ant-input-password css-dev-only-do-not-override-3mqfnx&quot;
+                          style=&quot;height: 50px; border-radius: 50px;&quot;
+                        &gt;
+                          &lt;span
+                            class=&quot;ant-input-prefix&quot;
+                          &gt;
+                            &lt;span
+                              aria-label=&quot;lock&quot;
+                              class=&quot;anticon anticon-lock&quot;
+                              role=&quot;img&quot;
+                            &gt;
+                              &lt;svg
+                                aria-hidden=&quot;true&quot;
+                                data-icon=&quot;lock&quot;
+                                fill=&quot;currentColor&quot;
+                                focusable=&quot;false&quot;
+                                height=&quot;1em&quot;
+                                viewBox=&quot;64 64 896 896&quot;
+                                width=&quot;1em&quot;
+                              &gt;
+                                &lt;path
+                                  d=&quot;M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304zM484 701v53c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-53a48.01 48.01 0 10-56 0z&quot;
+                                /&gt;
+                              &lt;/svg&gt;
+                            &lt;/span&gt;
+                          &lt;/span&gt;
+                          &lt;input
+                            aria-required=&quot;true&quot;
+                            class=&quot;ant-input css-dev-only-do-not-override-3mqfnx&quot;
+                            id=&quot;normal_login_password&quot;
+                            placeholder=&quot;Password&quot;
+                            type=&quot;password&quot;
+                            value=&quot;&quot;
+                          /&gt;
+                          &lt;span
+                            class=&quot;ant-input-suffix&quot;
+                          &gt;
+                            &lt;span
+                              aria-label=&quot;eye-invisible&quot;
+                              class=&quot;anticon anticon-eye-invisible ant-input-password-icon&quot;
+                              role=&quot;img&quot;
+                              tabindex=&quot;-1&quot;
+                            &gt;
+                              &lt;svg
+                                aria-hidden=&quot;true&quot;
+                                data-icon=&quot;eye-invisible&quot;
+                                fill=&quot;currentColor&quot;
+                                focusable=&quot;false&quot;
+                                height=&quot;1em&quot;
+                                viewBox=&quot;64 64 896 896&quot;
+                                width=&quot;1em&quot;
+                              &gt;
+                                &lt;path
+                                  d=&quot;M942.2 486.2Q889.47 375.11 816.7 305l-50.88 50.88C807.31 395.53 843.45 447.4 874.7 512 791.5 684.2 673.4 766 512 766q-72.67 0-133.87-22.38L323 798.75Q408 838 512 838q288.3 0 430.2-300.3a60.29 60.29 0 000-51.5zm-63.57-320.64L836 122.88a8 8 0 00-11.32 0L715.31 232.2Q624.86 186 512 186q-288.3 0-430.2 300.3a60.3 60.3 0 000 51.5q56.69 119.4 136.5 191.41L112.48 835a8 8 0 000 11.31L155.17 889a8 8 0 0011.31 0l712.15-712.12a8 8 0 000-11.32zM149.3 512C232.6 339.8 350.7 258 512 258c54.54 0 104.13 9.36 149.12 28.39l-70.3 70.3a176 176 0 00-238.13 238.13l-83.42 83.42C223.1 637.49 183.3 582.28 149.3 512zm246.7 0a112.11 112.11 0 01146.2-106.69L401.31 546.2A112 112 0 01396 512z&quot;
+                                /&gt;
+                                &lt;path
+                                  d=&quot;M508 624c-3.46 0-6.87-.16-10.25-.47l-52.82 52.82a176.09 176.09 0 00227.42-227.42l-52.82 52.82c.31 3.38.47 6.79.47 10.25a111.94 111.94 0 01-112 112z&quot;
+                                /&gt;
+                              &lt;/svg&gt;
+                            &lt;/span&gt;
+                          &lt;/span&gt;
+                        &lt;/span&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;ant-form-item css-dev-only-do-not-override-3mqfnx&quot;
+                style=&quot;margin-top: -20px; display: flex; justify-content: right;&quot;
+              &gt;
+                &lt;div
+                  class=&quot;ant-row ant-form-item-row css-dev-only-do-not-override-3mqfnx&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;ant-col ant-form-item-control css-dev-only-do-not-override-3mqfnx&quot;
+                  &gt;
+                    &lt;div
+                      class=&quot;ant-form-item-control-input&quot;
+                    &gt;
+                      &lt;div
+                        class=&quot;ant-form-item-control-input-content&quot;
+                      &gt;
+                        &lt;a
+                          href=&quot;/forget-password&quot;
+                          style=&quot;color: rgb(181, 148, 16);&quot;
+                        &gt;
+                          Forgot Password?
+                        &lt;/a&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;ant-form-item css-dev-only-do-not-override-3mqfnx&quot;
+              &gt;
+                &lt;div
+                  class=&quot;ant-row ant-form-item-row css-dev-only-do-not-override-3mqfnx&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;ant-col ant-form-item-control css-dev-only-do-not-override-3mqfnx&quot;
+                  &gt;
+                    &lt;div
+                      class=&quot;ant-form-item-control-input&quot;
+                    &gt;
+                      &lt;div
+                        class=&quot;ant-form-item-control-input-content&quot;
+                      &gt;
+                        &lt;button
+                          class=&quot;ant-btn css-dev-only-do-not-override-3mqfnx ant-btn-default&quot;
+                          style=&quot;width: 100%; height: 50px; color: white; border-radius: 50px; margin-bottom: 10px; background-color: black; margin-top: auto; transition: background-color 0.3s, color 0.3s;&quot;
+                          type=&quot;submit&quot;
+                        &gt;
+                          &lt;span&gt;
+                            Login
+                          &lt;/span&gt;
+                        &lt;/button&gt;
+                        Or
+                         
+                        &lt;a
+                          href=&quot;/register&quot;
+                          style=&quot;color: rgb(181, 148, 16);&quot;
+                        &gt;
+                          register now!
+                        &lt;/a&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/form&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+    at Object.getElementError (A:\Github\3x03_SiTix\client\node_modules\@testing-library\react\node_modules\@testing-library\dom\dist\config.js:37:19)
+    at getElementError (A:\Github\3x03_SiTix\client\node_modules\@testing-library\react\node_modules\@testing-library\dom\dist\query-helpers.js:76:38)
+    at allQuery (A:\Github\3x03_SiTix\client\node_modules\@testing-library\react\node_modules\@testing-library\dom\dist\query-helpers.js:52:17)
+    at query (A:\Github\3x03_SiTix\client\node_modules\@testing-library\react\node_modules\@testing-library\dom\dist\query-helpers.js:95:19)
+    at Object.getByRole (A:\Github\3x03_SiTix\client\src\__tests__\unit\Login.test.js:22:21)
+    at Promise.then.completed (A:\Github\3x03_SiTix\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (A:\Github\3x03_SiTix\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at _runTest (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:121:9)
+    at run (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (A:\Github\3x03_SiTix\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (A:\Github\3x03_SiTix\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (A:\Github\3x03_SiTix\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (A:\Github\3x03_SiTix\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (A:\Github\3x03_SiTix\node_modules\jest-runner\build\testWorker.js:106:12)</failure>
     </testcase>
-    <testcase classname="Login shows an error if the form is submitted without a password" name="Login shows an error if the form is submitted without a password" time="0.348">
+    <testcase classname="Login shows an error if the form is submitted without a password" name="Login shows an error if the form is submitted without a password" time="3.801">
+      <failure>TestingLibraryElementError: Unable to find an accessible element with the role &quot;button&quot; and name `/login button/i`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name &quot;Login&quot;:
+  &lt;h1
+    class=&quot;ant-typography css-dev-only-do-not-override-3mqfnx&quot;
+    style=&quot;text-align: center; margin-bottom: 30px;&quot;
+  /&gt;
+
+  --------------------------------------------------
+  img:
+
+  Name &quot;user&quot;:
+  &lt;span
+    aria-label=&quot;user&quot;
+    class=&quot;anticon anticon-user&quot;
+    role=&quot;img&quot;
+  /&gt;
+
+  Name &quot;lock&quot;:
+  &lt;span
+    aria-label=&quot;lock&quot;
+    class=&quot;anticon anticon-lock&quot;
+    role=&quot;img&quot;
+  /&gt;
+
+  Name &quot;eye-invisible&quot;:
+  &lt;span
+    aria-label=&quot;eye-invisible&quot;
+    class=&quot;anticon anticon-eye-invisible ant-input-password-icon&quot;
+    role=&quot;img&quot;
+    tabindex=&quot;-1&quot;
+  /&gt;
+
+  --------------------------------------------------
+  textbox:
+
+  Name &quot;&quot;:
+  &lt;input
+    aria-required=&quot;true&quot;
+    class=&quot;ant-input css-dev-only-do-not-override-3mqfnx&quot;
+    id=&quot;normal_login_username&quot;
+    placeholder=&quot;Username&quot;
+    type=&quot;text&quot;
+    value=&quot;&quot;
+  /&gt;
+
+  --------------------------------------------------
+  link:
+
+  Name &quot;Forgot Password?&quot;:
+  &lt;a
+    href=&quot;/forget-password&quot;
+    style=&quot;color: rgb(181, 148, 16);&quot;
+  /&gt;
+
+  Name &quot;register now!&quot;:
+  &lt;a
+    href=&quot;/register&quot;
+    style=&quot;color: rgb(181, 148, 16);&quot;
+  /&gt;
+
+  --------------------------------------------------
+  button:
+
+  Name &quot;Login&quot;:
+  &lt;button
+    class=&quot;ant-btn css-dev-only-do-not-override-3mqfnx ant-btn-default&quot;
+    style=&quot;width: 100%; height: 50px; color: white; border-radius: 50px; margin-bottom: 10px; background-color: black; margin-top: auto; transition: background-color 0.3s, color 0.3s;&quot;
+    type=&quot;submit&quot;
+  /&gt;
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;div
+      class=&quot;ant-row ant-row-center ant-row-middle css-dev-only-do-not-override-3mqfnx&quot;
+      style=&quot;min-height: 100vh; background: url(https://pngimg.com/d/smoke_PNG55185.png) no-repeat center;&quot;
+    &gt;
+      &lt;div
+        class=&quot;ant-col ant-col-xs-20 ant-col-sm-16 ant-col-md-12 ant-col-lg-8 css-dev-only-do-not-override-3mqfnx&quot;
+      &gt;
+        &lt;h1
+          class=&quot;ant-typography css-dev-only-do-not-override-3mqfnx&quot;
+          style=&quot;text-align: center; margin-bottom: 30px;&quot;
+        &gt;
+          Login
+        &lt;/h1&gt;
+        &lt;div
+          class=&quot;ant-card ant-card-bordered css-dev-only-do-not-override-3mqfnx&quot;
+          style=&quot;padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);&quot;
+        &gt;
+          &lt;div
+            class=&quot;ant-card-body&quot;
+          &gt;
+            &lt;form
+              class=&quot;ant-form ant-form-vertical css-dev-only-do-not-override-3mqfnx&quot;
+              id=&quot;normal_login&quot;
+            &gt;
+              &lt;div
+                class=&quot;ant-form-item css-dev-only-do-not-override-3mqfnx&quot;
+                style=&quot;margin-bottom: 25px;&quot;
+              &gt;
+                &lt;div
+                  class=&quot;ant-row ant-form-item-row css-dev-only-do-not-override-3mqfnx&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;ant-col ant-form-item-control css-dev-only-do-not-override-3mqfnx&quot;
+                  &gt;
+                    &lt;div
+                      class=&quot;ant-form-item-control-input&quot;
+                    &gt;
+                      &lt;div
+                        class=&quot;ant-form-item-control-input-content&quot;
+                      &gt;
+                        &lt;span
+                          class=&quot;ant-input-affix-wrapper css-dev-only-do-not-override-3mqfnx&quot;
+                          style=&quot;height: 50px; border-radius: 50px;&quot;
+                        &gt;
+                          &lt;span
+                            class=&quot;ant-input-prefix&quot;
+                          &gt;
+                            &lt;span
+                              aria-label=&quot;user&quot;
+                              class=&quot;anticon anticon-user&quot;
+                              role=&quot;img&quot;
+                            &gt;
+                              &lt;svg
+                                aria-hidden=&quot;true&quot;
+                                data-icon=&quot;user&quot;
+                                fill=&quot;currentColor&quot;
+                                focusable=&quot;false&quot;
+                                height=&quot;1em&quot;
+                                viewBox=&quot;64 64 896 896&quot;
+                                width=&quot;1em&quot;
+                              &gt;
+                                &lt;path
+                                  d=&quot;M858.5 763.6a374 374 0 00-80.6-119.5 375.63 375.63 0 00-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 00-80.6 119.5A371.7 371.7 0 00136 901.8a8 8 0 008 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 008-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z&quot;
+                                /&gt;
+                              &lt;/svg&gt;
+                            &lt;/span&gt;
+                          &lt;/span&gt;
+                          &lt;input
+                            aria-required=&quot;true&quot;
+                            class=&quot;ant-input css-dev-only-do-not-override-3mqfnx&quot;
+                            id=&quot;normal_login_username&quot;
+                            placeholder=&quot;Username&quot;
+                            type=&quot;text&quot;
+                            value=&quot;&quot;
+                          /&gt;
+                        &lt;/span&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;ant-form-item css-dev-only-do-not-override-3mqfnx&quot;
+              &gt;
+                &lt;div
+                  class=&quot;ant-row ant-form-item-row css-dev-only-do-not-override-3mqfnx&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;ant-col ant-form-item-control css-dev-only-do-not-override-3mqfnx&quot;
+                  &gt;
+                    &lt;div
+                      class=&quot;ant-form-item-control-input&quot;
+                    &gt;
+                      &lt;div
+                        class=&quot;ant-form-item-control-input-content&quot;
+                      &gt;
+                        &lt;span
+                          class=&quot;ant-input-affix-wrapper ant-input-password css-dev-only-do-not-override-3mqfnx&quot;
+                          style=&quot;height: 50px; border-radius: 50px;&quot;
+                        &gt;
+                          &lt;span
+                            class=&quot;ant-input-prefix&quot;
+                          &gt;
+                            &lt;span
+                              aria-label=&quot;lock&quot;
+                              class=&quot;anticon anticon-lock&quot;
+                              role=&quot;img&quot;
+                            &gt;
+                              &lt;svg
+                                aria-hidden=&quot;true&quot;
+                                data-icon=&quot;lock&quot;
+                                fill=&quot;currentColor&quot;
+                                focusable=&quot;false&quot;
+                                height=&quot;1em&quot;
+                                viewBox=&quot;64 64 896 896&quot;
+                                width=&quot;1em&quot;
+                              &gt;
+                                &lt;path
+                                  d=&quot;M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304zM484 701v53c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-53a48.01 48.01 0 10-56 0z&quot;
+                                /&gt;
+                              &lt;/svg&gt;
+                            &lt;/span&gt;
+                          &lt;/span&gt;
+                          &lt;input
+                            aria-required=&quot;true&quot;
+                            class=&quot;ant-input css-dev-only-do-not-override-3mqfnx&quot;
+                            id=&quot;normal_login_password&quot;
+                            placeholder=&quot;Password&quot;
+                            type=&quot;password&quot;
+                            value=&quot;&quot;
+                          /&gt;
+                          &lt;span
+                            class=&quot;ant-input-suffix&quot;
+                          &gt;
+                            &lt;span
+                              aria-label=&quot;eye-invisible&quot;
+                              class=&quot;anticon anticon-eye-invisible ant-input-password-icon&quot;
+                              role=&quot;img&quot;
+                              tabindex=&quot;-1&quot;
+                            &gt;
+                              &lt;svg
+                                aria-hidden=&quot;true&quot;
+                                data-icon=&quot;eye-invisible&quot;
+                                fill=&quot;currentColor&quot;
+                                focusable=&quot;false&quot;
+                                height=&quot;1em&quot;
+                                viewBox=&quot;64 64 896 896&quot;
+                                width=&quot;1em&quot;
+                              &gt;
+                                &lt;path
+                                  d=&quot;M942.2 486.2Q889.47 375.11 816.7 305l-50.88 50.88C807.31 395.53 843.45 447.4 874.7 512 791.5 684.2 673.4 766 512 766q-72.67 0-133.87-22.38L323 798.75Q408 838 512 838q288.3 0 430.2-300.3a60.29 60.29 0 000-51.5zm-63.57-320.64L836 122.88a8 8 0 00-11.32 0L715.31 232.2Q624.86 186 512 186q-288.3 0-430.2 300.3a60.3 60.3 0 000 51.5q56.69 119.4 136.5 191.41L112.48 835a8 8 0 000 11.31L155.17 889a8 8 0 0011.31 0l712.15-712.12a8 8 0 000-11.32zM149.3 512C232.6 339.8 350.7 258 512 258c54.54 0 104.13 9.36 149.12 28.39l-70.3 70.3a176 176 0 00-238.13 238.13l-83.42 83.42C223.1 637.49 183.3 582.28 149.3 512zm246.7 0a112.11 112.11 0 01146.2-106.69L401.31 546.2A112 112 0 01396 512z&quot;
+                                /&gt;
+                                &lt;path
+                                  d=&quot;M508 624c-3.46 0-6.87-.16-10.25-.47l-52.82 52.82a176.09 176.09 0 00227.42-227.42l-52.82 52.82c.31 3.38.47 6.79.47 10.25a111.94 111.94 0 01-112 112z&quot;
+                                /&gt;
+                              &lt;/svg&gt;
+                            &lt;/span&gt;
+                          &lt;/span&gt;
+                        &lt;/span&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;ant-form-item css-dev-only-do-not-override-3mqfnx&quot;
+                style=&quot;margin-top: -20px; display: flex; justify-content: right;&quot;
+              &gt;
+                &lt;div
+                  class=&quot;ant-row ant-form-item-row css-dev-only-do-not-override-3mqfnx&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;ant-col ant-form-item-control css-dev-only-do-not-override-3mqfnx&quot;
+                  &gt;
+                    &lt;div
+                      class=&quot;ant-form-item-control-input&quot;
+                    &gt;
+                      &lt;div
+                        class=&quot;ant-form-item-control-input-content&quot;
+                      &gt;
+                        &lt;a
+                          href=&quot;/forget-password&quot;
+                          style=&quot;color: rgb(181, 148, 16);&quot;
+                        &gt;
+                          Forgot Password?
+                        &lt;/a&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;ant-form-item css-dev-only-do-not-override-3mqfnx&quot;
+              &gt;
+                &lt;div
+                  class=&quot;ant-row ant-form-item-row css-dev-only-do-not-override-3mqfnx&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;ant-col ant-form-item-control css-dev-only-do-not-override-3mqfnx&quot;
+                  &gt;
+                    &lt;div
+                      class=&quot;ant-form-item-control-input&quot;
+                    &gt;
+                      &lt;div
+                        class=&quot;ant-form-item-control-input-content&quot;
+                      &gt;
+                        &lt;button
+                          class=&quot;ant-btn css-dev-only-do-not-override-3mqfnx ant-btn-default&quot;
+                          style=&quot;width: 100%; height: 50px; color: white; border-radius: 50px; margin-bottom: 10px; background-color: black; margin-top: auto; transition: background-color 0.3s, color 0.3s;&quot;
+                          type=&quot;submit&quot;
+                        &gt;
+                          &lt;span&gt;
+                            Login
+                          &lt;/span&gt;
+                        &lt;/button&gt;
+                        Or
+                         
+                        &lt;a
+                          href=&quot;/register&quot;
+                          style=&quot;color: rgb(181, 148, 16);&quot;
+                        &gt;
+                          register now!
+                        &lt;/a&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/form&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+    at Object.getElementError (A:\Github\3x03_SiTix\client\node_modules\@testing-library\react\node_modules\@testing-library\dom\dist\config.js:37:19)
+    at getElementError (A:\Github\3x03_SiTix\client\node_modules\@testing-library\react\node_modules\@testing-library\dom\dist\query-helpers.js:76:38)
+    at allQuery (A:\Github\3x03_SiTix\client\node_modules\@testing-library\react\node_modules\@testing-library\dom\dist\query-helpers.js:52:17)
+    at query (A:\Github\3x03_SiTix\client\node_modules\@testing-library\react\node_modules\@testing-library\dom\dist\query-helpers.js:95:19)
+    at Object.getByRole (A:\Github\3x03_SiTix\client\src\__tests__\unit\Login.test.js:35:21)
+    at Promise.then.completed (A:\Github\3x03_SiTix\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (A:\Github\3x03_SiTix\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at _runTest (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:121:9)
+    at run (A:\Github\3x03_SiTix\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (A:\Github\3x03_SiTix\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (A:\Github\3x03_SiTix\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (A:\Github\3x03_SiTix\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (A:\Github\3x03_SiTix\node_modules\jest-runner\build\runTest.js:444:34)
+    at Object.worker (A:\Github\3x03_SiTix\node_modules\jest-runner\build\testWorker.js:106:12)</failure>
     </testcase>
   </testsuite>
 </testsuites>

@@ -121,7 +121,10 @@ const Login = () => {
                             </a>
                         </Form.Item>
                         <Form.Item>
-                            <Buttons arialLabel="login button" text="Login" />
+                            <Buttons arial-Label="login button" text="Login" />
+                            {/* <button role="button" aria-label="login button" text="Login">Login</button> */}
+                            {/* Buttons Error need to repalce Buttons to button */}
+                            {/* <button aria-label="login button">Login</button> */}
                             Or{" "}
                             <a style={aStyle} href={constants.REGISTER_URL}>
                                 register now!
