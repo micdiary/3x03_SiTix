@@ -1,21 +1,25 @@
+
 pipeline {
     agent any
     stages {
-        stage('Checkout SCM') {
+        stage('Install') {
             steps {
-                git url: '3x03_SiTix/JenkinsDependencyCheckTest'
-            }
+                sh 'npm install'
+            
         }
-
-        stage('OWASP DependencyCheck') {
+        }
+        
+        stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
-            }
-        }
-    }	
-    post {
-        success {
-            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                dependencyCheck additionalArguments: ''' 
+                    -o './'
+                    -s './'
+                    -f 'ALL' 
+                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+        
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+              }
         }
     }
 }
+
