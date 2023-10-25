@@ -23,11 +23,11 @@ pipeline {
             steps {
                 echo 'Check OWASP'
                 // Add your OWASP Dependency-Check configuration here if needed
-                dependencyCheck additionalArguments: ''' 
-                     -o './'
-                     -s './'
-                     -f 'ALL' 
-                     --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                dependencyCheck additionalArguments: """ 
+                -o './'
+                -s './'
+                -f 'ALL' 
+                --prettyPrint""", odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml' 
             }
         }
