@@ -18,6 +18,8 @@ pipeline {
             post {
                 always {
                     junit '**/junit.xml'
+                }
+            } 
         }
         stage('Check OWASP Dependency') {
             steps {
@@ -31,7 +33,5 @@ pipeline {
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml' 
             }
         }
-    }
-}
     }
 }
