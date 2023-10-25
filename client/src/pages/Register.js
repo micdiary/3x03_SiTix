@@ -116,6 +116,12 @@ const Register = () => {
                       pattern: /^[a-zA-Z]+$/,
                       message: "Last name can only contain letters.",
                     },
+                    {
+                      max: 50,
+                      message: "Last name can be at most 50 characters long.",
+                      //Extremely long names can potentially be used to perform denial-of-service attacks, either unintentionally or intentionally
+                      //Prevent consuming significant server resources or leads to application instability.
+                    },
                   ]}
                   style={marginBottomOneStyle}
                 >
