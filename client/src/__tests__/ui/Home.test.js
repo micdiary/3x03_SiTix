@@ -13,7 +13,7 @@ test('renders the home component', () => {
     const title = screen.getByText(/All Events/i);
     expect(title).toBeInTheDocument();
 
-//...
+//....
 // Check first event card
 const firstEventNames = screen.getAllByText('(G)i-dle');
 const firstEventDateTimes = screen.getAllByText('Date & Time 1');
