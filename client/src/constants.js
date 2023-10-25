@@ -37,5 +37,9 @@ export const VENUE_API = `${URL}/venue`;
 export const ADD_VENUE_API = `${URL}/venue/add`;
 export const UPDATE_VENUE_API = `${URL}/venue/update`;
 
+export const EVENT_API = `${URL}/event`;
 export const ADD_EVENT_API = `${URL}/event/add`;
-export const GET_EVENT_API = `${URL}/event/get`;
+export const EVENT_DETAILS_API = `${URL}/event/details`;
+
+export const REQUEST_API = `${URL}/request`;
+export const UPDATE_REQUEST_API = `${URL}/request/update`;

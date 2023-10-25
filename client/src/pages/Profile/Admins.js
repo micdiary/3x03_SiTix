@@ -5,8 +5,11 @@ import { getToken } from "../../utils/account";
 import { showNotification } from "../../components/Notification";
 import Buttons from "../../components/Buttons";
 import { inputStyle } from "../PagesStyles";
+import { useNavigate } from "react-router-dom";
+import { ADMIN_URL } from "../../constants";
 
 const Admins = ({ profile, setProfile, updateProfile, setUpdateProfile }) => {
+    let navigate = useNavigate();
     const [editForm] = Form.useForm();
 
     const onEditFinish = (values) => {
@@ -21,6 +24,7 @@ const Admins = ({ profile, setProfile, updateProfile, setUpdateProfile }) => {
                 setProfile({ ...profile, ...values });
                 // trigger the second useEffect
                 setUpdateProfile(!updateProfile);
+                navigate(ADMIN_URL);
             })
             .catch((err) => {
                 showNotification(err.message);

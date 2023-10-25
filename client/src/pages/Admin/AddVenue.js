@@ -15,8 +15,11 @@ import { addVenue } from "../../api/venue";
 import Buttons from "../../components/Buttons";
 import { showNotification } from "../../components/Notification";
 import { cardStyle, inputStyle, marginBottomOneStyle } from "../PagesStyles";
+import { useNavigate } from "react-router";
+import { ADMIN_URL } from "../../constants";
 
 const AddVenue = () => {
+    let navigate = useNavigate();
     const { Option } = Select;
     const [venueForm] = Form.useForm();
     const [categoryCount, setCategoryCount] = useState(1);
@@ -40,6 +43,7 @@ const AddVenue = () => {
             .then((res) => {
                 console.log("success");
                 showNotification(res.message);
+                navigate(ADMIN_URL);
             })
             .catch((err) => {
                 showNotification(err.message);
