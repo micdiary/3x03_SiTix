@@ -15,6 +15,8 @@ pipeline {
             post {
                 always {
                     junit '**/junit.xml'
+                }
+        }
         }
         stage('OWASP Dependency Check') {
             steps {
@@ -29,5 +31,5 @@ pipeline {
         }
     }
 }
-}
-}
+
+
