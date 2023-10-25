@@ -17,7 +17,7 @@ import {
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken, refreshToken, removeSession, userExists } from "./auth.js";
+import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { getSeatTypes, isVenueValid, seatTypeExists } from "./venue.js";
@@ -74,7 +74,7 @@ router.get("/:token", async (req, res) => {
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
-		
+
 		if (!(await checkToken(email, token))) {
 			return res
 				.status(409)
@@ -89,11 +89,11 @@ router.get("/:token", async (req, res) => {
 		for (const event of events) {
 			const img = event.banner_img;
 			const imgPath = `${uploadDir}/${img}`;
-			if(fs.existsSync(imgPath)) {
+			if (fs.existsSync(imgPath)) {
 				// Read the file from the file system
 				const fileData = fs.readFileSync(imgPath);
 				// Convert it to a base64 string
-				const base64Image = new Buffer.from(fileData).toString('base64');
+				const base64Image = new Buffer.from(fileData).toString("base64");
 				// Attach it to your response object
 				event.banner_img = base64Image;
 			} else {
@@ -131,11 +131,11 @@ router.get("/details/:token/:event_id", async (req, res) => {
 
 		const img = event.banner_img;
 		const imgPath = `${uploadDir}/${img}`;
-		if(fs.existsSync(imgPath)) {
+		if (fs.existsSync(imgPath)) {
 			// Read the file from the file system
 			const fileData = fs.readFileSync(imgPath);
 			// Convert it to a base64 string
-			const base64Image = new Buffer.from(fileData).toString('base64');
+			const base64Image = new Buffer.from(fileData).toString("base64");
 			// Attach it to your response object
 			event.banner_img = base64Image;
 		} else {
@@ -167,13 +167,12 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const values4 = [event.venue_id];
 		const [rows4] = await mysql_connection.promise().query(sql4, values4);
 		const venue_seat_type = rows4;
-		
+
 		event.venue = venue;
 		event.seat_type = seat_type;
 		event.venue_seat_type = venue_seat_type;
-		
-		return res.status(200).json({ event });
 
+		return res.status(200).json({ event });
 	} catch (err) {
 		console.log(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
@@ -236,7 +235,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		if (diffDays < 7) {
 			return res.status(409).json({ error: "Invalid event date" });
 		}
-		
+
 		// generate uuid
 		const uuid = uuidv4();
 
@@ -320,6 +319,57 @@ export async function startEvent(request_id) {
 		console.log(err);
 		return false;
 	}
+}
+
+// get event seat type
+export async function getEventSeatType(event_id) {
+	try {
+		const sql = `SELECT * FROM event_seat_type WHERE event_id = ?`;
+		const values = [event_id];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		return rows;
+	} catch (err) {
+		console.log(err);
+		return false;
+	}
+}
+
+// get event seat type price
+export async function getSeatTypePrice(event_id, seat_type_id) {
+	try {
+		const sql = `SELECT * FROM event_seat_type WHERE event_id = ? AND seat_type_id = ?`;
+		const values = [event_id, seat_type_id];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		return rows[0].price;
+	} catch (err) {
+		console.log(err);
+		return false;
+	}
+}
+
+// insert event & seat type number to redis
+export async function setEventSeatTypeNum(event_id, seat_type_id, num) {
+	await redis_connection.set(`${event_id}/${seat_type_id}`, num);
+}
+
+// check event availability in redis
+export async function checkEventAvailability(event_id, seat_type_id) {
+	const num = await redis_connection.get(`${event_id}/${seat_type_id}`);
+	if (num === null || num < 0) {
+		return false;
+	}
+	return true;
+}
+
+// reduce event availability in redis
+export async function reduceEventAvailability(event_id, seat_type_id, number) {
+	const num = await redis_connection.get(`${event_id}/${seat_type_id}`);
+	if (num === null || num < 0) {
+		return false;
+	}
+	await redis_connection.decrBy(`${event_id}/${seat_type_id}`, number);
+
+	return true;
 }
 
 router.use(handleMulterError);

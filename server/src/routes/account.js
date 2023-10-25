@@ -14,7 +14,7 @@ import {
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken, refreshToken, removeSession, userExists } from "./auth.js";
+import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 
@@ -212,6 +212,19 @@ export async function verifyAccountPassword(password, passwordToCompare) {
 		return result;
 	} catch (error) {
 		console.error(error);
+		return false;
+	}
+}
+
+// get user id
+export async function getUserId(email) {
+	try {
+		const sql = `SELECT * FROM user WHERE email = ?`;
+		const values = [email];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		return rows[0].user_id;
+	} catch (err) {
+		console.log(err);
 		return false;
 	}
 }

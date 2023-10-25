@@ -1,7 +1,5 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
 const router = express.Router();
 
@@ -14,11 +12,11 @@ import {
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken, refreshToken, removeSession, userExists } from "./auth.js";
+import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { getAdminId, getNumAdmins, isSuperAdmin } from "./admin.js";
-import { startEvent } from "./event.js";
+import { getEventSeatType, setEventSeatTypeNum, startEvent } from "./event.js";
 
 // get all requests
 router.get("/:token", async (req, res) => {
@@ -125,6 +123,19 @@ router.post("/update", async (req, res) => {
 				const sql = `UPDATE request SET status = "accepted" WHERE request_id = ?`;
 				const values = [request_id];
 				const [rows] = await mysql_connection.promise().query(sql, values);
+
+				const sql2 = `SELECT event_id FROM request WHERE request_id = ?`;
+				const values2 = [request_id];
+				const [rows2] = await mysql_connection.promise().query(sql2, values2);
+				const event_id = rows2[0].event_id;
+				await redis_connection.set(`${event_id}/`, "started");
+
+				const event_seat_types = await getEventSeatType(event_id);
+				for(let i = 0; i < event_seat_types.length; i++) {
+					const event_seat_type = event_seat_types[i];
+					await setEventSeatTypeNum(event_seat_type.event_seat_type_id, event_seat_type.available_seats)
+				}
+
 				return res.status(200).json({ message: "Event started!" });
 			}
 			else{

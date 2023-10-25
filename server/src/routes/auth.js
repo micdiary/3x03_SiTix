@@ -24,11 +24,15 @@ router.post("/register", async (req, res) => {
 	const { username, first_name, last_name, email, password } = req.body;
 	try {
 		// Checking if user exists
-		if (await userExists(email)) {
+		if (await emailExists(email)) {
 			return res.status(409).json({ error: "User already exists" });
 		}
 
-		// Hashing password
+		if (await usernameExists(username)) {
+			return res.status(409).json({ error: "Username already exists" });
+		}
+
+		// Hashing password (brcrypt does not require salt to be stored separately as it is already included in the hashed password)
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		// uuidv4
@@ -43,7 +47,6 @@ router.post("/register", async (req, res) => {
 			last_name,
 			email,
 			hashedPassword,
-			false,
 			0,
 			0,
 		];
@@ -132,7 +135,7 @@ router.post("/login", async (req, res) => {
 
 		let userType = user[0].admin_id !== undefined ? "admin" : "customer";
 
-		if(user[0].role_id === 2) {
+		if (user[0].role_id === 2) {
 			userType = "superadmin";
 		}
 
@@ -193,10 +196,18 @@ router.post("/refresh-token", async (req, res) => {
 	}
 });
 
-// User Exists
-export async function userExists(email) {
+// Email Exists
+export async function emailExists(email) {
 	const sql = `SELECT * FROM user WHERE email = ?`;
 	const values = [email];
+	const [user] = await mysql_connection.promise().query(sql, values);
+	return user.length > 0;
+}
+
+// Username Exists
+export async function usernameExists(username) {
+	const sql = `SELECT * FROM user WHERE username = ?`;
+	const values = [username];
 	const [user] = await mysql_connection.promise().query(sql, values);
 	return user.length > 0;
 }
