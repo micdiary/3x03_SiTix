@@ -19,14 +19,16 @@ pipeline {
                 always {
                     junit '**/junit.xml'
         }
-        stage('OWASP Dependency Check') {
+        stage('Check OWASP Dependency') {
             steps {
-                dependencyCheck additionalArguments: '--project 3x03_SiTix --scan 3x03_SiTix/client 3x03_SiTix/server --out 3x03_SiTix/dependency-check-reports'
-            }
-            post {
-                always {
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
+                echo 'Check OWASP'
+                // Add your OWASP Dependency-Check configuration here if needed
+                dependencyCheck additionalArguments: ''' 
+                     -o './'
+                     -s './'
+                     -f 'ALL' 
+                     --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml' 
             }
         }
     }
