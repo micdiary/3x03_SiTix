@@ -12,6 +12,7 @@ import { inputStyle, marginBottomOneStyle } from "../PagesStyles";
 import { useNavigate } from "react-router-dom";
 
 const Password = () => {
+    let navigate = useNavigate();
     const [passwordForm] = Form.useForm();
 
     const onChangePasswordFinish = (values) => {
@@ -23,6 +24,7 @@ const Password = () => {
         resetPassword(req)
             .then((res) => {
                 showNotification(res.message);
+                navigate(constants.ADMIN_URL);
             })
             .catch((err) => {
                 showNotification(err.message);

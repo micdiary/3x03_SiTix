@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Form, Input, Row, Col, Typography, Space } from "antd";
+import { Table, Modal, Form, Input, Row, Col, Typography } from "antd";
 import Modals from "../../components/Modal";
 import Buttons from "../../components/Buttons";
 import { showNotification } from "../../components/Notification";
@@ -42,7 +42,6 @@ const AdminManagement = () => {
         addNewAdmin(req)
             .then((res) => {
                 showNotification(res.message);
-                showNotification("done");
             })
             .catch((err) => {
                 showNotification(err.message);
@@ -76,7 +75,6 @@ const AdminManagement = () => {
             token: getToken(),
             adminId: adminID,
         };
-        console.log(req);
         deleteAdmin(req)
             .then((res) => {
                 showNotification(res.message);
