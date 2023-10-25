@@ -5,7 +5,7 @@ pipeline {
         stage('Install dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'npm ci'
+                sh 'npm install'
                 sh 'cd 3x03_SiTix/client && npm install'
                 sh 'cd 3x03_SiTix/server && npm install'
             }
