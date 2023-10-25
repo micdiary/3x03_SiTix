@@ -104,6 +104,12 @@ const Login = () => {
                   required: true,
                   message: "Please enter your Password.",
                 },
+                {
+                  max: 50,
+                  message: "Password can be at most 50 characters long.",
+                  //Extremely long characters can potentially be used to perform denial-of-service attacks, either unintentionally or intentionally
+                  //Prevent consuming significant server resources or leads to application instability.
+                },
               ]}
             >
               <Input.Password
