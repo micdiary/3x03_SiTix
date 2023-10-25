@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+    node:
+        container_name: sotox
+        expose:
+            - '3001'
+        environment:
+            - VIRTUAL_HOST=tix.busy-shannon.cloud
+            - VIRTUAL_PATH=/api/
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
+        image: node
