@@ -19,17 +19,15 @@ pipeline {
                 }
             } 
         }
-        stage('Check OWASP Dependency') {
+        stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
-                echo 'Check OWASP'
-                // Add your OWASP Dependency-Check configuration here if needed
-                dependencyCheck additionalArguments: """ 
-                -o './'
-                -s './'
-                -f 'ALL' 
-                --prettyPrint""", odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml' 
-            }
-        }
+                dependencyCheck additionalArguments: ''' 
+                    -o './'
+                    -s './'
+                    -f 'ALL' 
+                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+      }
+    }
     }
 }
