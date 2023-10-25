@@ -19,8 +19,8 @@ describe('Login', () => {
   it('shows an error if the form is submitted without a username', async () => {
     const { getByRole, getAllByRole } = render(<BrowserRouter><Login /></BrowserRouter>);
     
-    fireEvent.click(getByRole('button', {name: /login button/i}));
-    
+    fireEvent.click(document.getElementsByClassName('ant-btn')[0]);
+
     await waitFor(() => {
       const alerts = getAllByRole('alert');
       // find the specific alert you expect based on its text content
@@ -32,7 +32,7 @@ describe('Login', () => {
   it('shows an error if the form is submitted without a password', async () => {
     const { getByText, getByRole, getAllByRole } = render(<BrowserRouter><Login /></BrowserRouter>);
     
-    fireEvent.click(getByRole('button', {name: /login button/i}));
+    fireEvent.click(document.getElementsByClassName('ant-btn')[0]);
     
     await waitFor(() => {
       const alerts = getAllByRole('alert');
