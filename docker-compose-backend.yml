@@ -11,7 +11,6 @@ services:
             - '/var/run/docker.sock:/var/run/docker.sock'
         image: node
     node:
-    tty: true
     container_name: sitix
     expose:
         - '3000'
