@@ -22,7 +22,6 @@ services:
         image: node
 services:
     redis:
-        tty: true
         container_name: redis
         expose:
             - '6379'
