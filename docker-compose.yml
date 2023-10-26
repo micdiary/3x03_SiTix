@@ -12,7 +12,6 @@ services:
         version: '3.3'
 services:
   redis:
-      tty: true
       container_name: redis
       expose:
           - '6379'
