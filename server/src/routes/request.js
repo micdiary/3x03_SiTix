@@ -98,9 +98,9 @@ router.post("/update", async (req, res) => {
 			return res.status(409).json({ error: "Invalid status" });
 		}		
 
-		if(status === "accepted") {
-			const admin_id = await getAdminId(email);
+		const admin_id = await getAdminId(email);
 
+		if(status === "accepted") {
 			await redis_connection.rPush(`${request_id}/accepted`, admin_id);
 
 			const sql = `UPDATE request SET approval_num = approval_num + 1 WHERE request_id = ?`;
