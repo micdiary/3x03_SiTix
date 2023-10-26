@@ -10,3 +10,14 @@ services:
         volumes:
             - '/var/run/docker.sock:/var/run/docker.sock'
         image: node
+    node:
+    tty: true
+    container_name: sitix
+    expose:
+        - '3000'
+    volumes:
+        - '/var/run/docker.sock:/var/run/docker.sock'
+    environment:
+        - VIRTUAL_HOST=tix.busy-shannon.cloud
+    image: node
+    
