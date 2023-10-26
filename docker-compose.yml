@@ -1,8 +1,28 @@
+version: '3.3'
+services:
+    node:
+        container_name: sitix
+        expose:
+            - '3000'
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
+        environment:
+            - VIRTUAL_HOST=tix.busy-shannon.cloud
+        image: node
+        version: '3.3'
 services:
   redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./redis:/data
-    command: redis-server --appendonly yes
+      tty: true
+      container_name: redis
+      expose:
+          - '6379'
+      networks:
+          - internal_stuff
+      volumes:
+          - './redis:/data'
+      image: 'redis:latest'
+      command: 'redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}'
+networks:
+  internal_stuff:
+      external:
+          name: internal_stuff
