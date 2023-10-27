@@ -14,7 +14,7 @@ import {
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken, refreshToken, userExists } from "./auth.js";
+import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 
@@ -23,21 +23,29 @@ router.get("/profile/:token", async (req, res) => {
 	const { token } = req.params;
 
 	try {
-		const { email } = jwt.verify(token, JWT_SECRET);
+		const { email, userType } = jwt.verify(token, JWT_SECRET);
 		if (!(await checkToken(email, token))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
 		}
 
-		const sql = `SELECT * FROM user WHERE email = ?`;
-		const values = [email];
-		const [rows] = await mysql_connection.promise().query(sql, values);
+		let user = [];
 
-		const user = rows[0];
-		delete user.password_hash;
-		delete user.failed_tries;
-		delete user.updated_at;
+		if (userType !== "customer") {
+			const sql = `SELECT * FROM admin WHERE email = ?`;
+			const values = [email];
+			[user] = await mysql_connection.promise().query(sql, values);
+		} else {
+			const sql = `SELECT * FROM user WHERE email = ?`;
+			const values = [email];
+			[user] = await mysql_connection.promise().query(sql, values);
+		}
+
+		delete user[0].password_hash;
+		delete user[0].failed_tries;
+		delete user[0].updated_at;
+		delete user[0].role_id;
 
 		return res.status(200).json({ user });
 	} catch (err) {
@@ -51,16 +59,22 @@ router.post("/edit", async (req, res) => {
 	const { token, username, first_name, last_name } = req.body;
 
 	try {
-		const { email } = jwt.verify(token, JWT_SECRET);
+		const { email, userType } = jwt.verify(token, JWT_SECRET);
 		if (!(await checkToken(email, token))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
 		}
 
-		const sql = `UPDATE user SET username = ?, first_name = ?, last_name = ? WHERE email = ?`;
-		const values = [username, first_name, last_name, email];
-		await mysql_connection.promise().query(sql, values);
+		if (userType !== "customer") {
+			const sql = `UPDATE admin SET username = ? WHERE email = ?`;
+			const values = [username, email];
+			await mysql_connection.promise().query(sql, values);
+		} else {
+			const sql = `UPDATE user SET username = ?, first_name = ?, last_name = ? WHERE email = ?`;
+			const values = [username, first_name, last_name, email];
+			await mysql_connection.promise().query(sql, values);
+		}
 
 		return res.status(200).json({ message: "Profile updated" });
 	} catch (err) {
@@ -74,16 +88,24 @@ router.get("/delete/:token", async (req, res) => {
 	const { token } = req.params;
 
 	try {
-		const { email } = jwt.verify(token, JWT_SECRET);
+		const { email, userType } = jwt.verify(token, JWT_SECRET);
 		if (!(await checkToken(email, token))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
 		}
 
-		const sql = `DELETE FROM user WHERE email = ?`;
-		const values = [email];
-		await mysql_connection.promise().query(sql, values);
+		if (userType !== "customer") {
+			const sql = `DELETE FROM admin WHERE email = ?`;
+			const values = [email];
+			await mysql_connection.promise().query(sql, values);
+		} else {
+			const sql = `DELETE FROM user WHERE email = ?`;
+			const values = [email];
+			await mysql_connection.promise().query(sql, values);
+		}
+
+		await removeSession(email);
 
 		return res.status(200).json({ message: "Account deleted" });
 	} catch (err) {
@@ -152,9 +174,8 @@ router.post("/reset-password", async (req, res) => {
 		}
 
 		if (password !== undefined) {
-			const hashedPassword = await bcrypt.hash(password, 10);
 			const passwordCheck = await verifyAccountPassword(
-				hashedPassword,
+				password,
 				user[0].password_hash
 			);
 
@@ -167,7 +188,12 @@ router.post("/reset-password", async (req, res) => {
 		const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
 		// update password
-		const update_sql = `UPDATE user SET password_hash = ? WHERE email = ?`;
+		let update_sql = "";
+		if (user[0].admin_id !== undefined) {
+			update_sql = `UPDATE admin SET password_hash = ? WHERE email = ?`;
+		} else {
+			update_sql = `UPDATE user SET password_hash = ? WHERE email = ?`;
+		}
 		const update_values = [newPasswordHash, user[0].email];
 		await mysql_connection.promise().query(update_sql, update_values);
 
@@ -179,13 +205,26 @@ router.post("/reset-password", async (req, res) => {
 });
 
 // verify account password
-async function verifyAccountPassword(password, passwordToCompare) {
+export async function verifyAccountPassword(password, passwordToCompare) {
 	try {
 		const result = await bcrypt.compare(password, passwordToCompare);
 		console.log(result);
 		return result;
 	} catch (error) {
 		console.error(error);
+		return false;
+	}
+}
+
+// get user id
+export async function getUserId(email) {
+	try {
+		const sql = `SELECT * FROM user WHERE email = ?`;
+		const values = [email];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		return rows[0].user_id;
+	} catch (err) {
+		console.log(err);
 		return false;
 	}
 }

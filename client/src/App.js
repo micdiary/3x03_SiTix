@@ -25,6 +25,21 @@ function App() {
                     element={<Layout page={"event"} />}
                 />
                 <Route
+                    path={constants.USER_VERIFICATION_URL}
+                    element={<UserVerification />}
+                />
+                <Route path={constants.LOGIN_URL} element={<Login />} />
+                <Route path={constants.REGISTER_URL} element={<Register />} />
+                <Route
+                    path={constants.FORGET_PASSWORD_URL}
+                    element={<ForgetPassword />}
+                />
+                <Route
+                    path={constants.RESET_PASSWORD_URL}
+                    element={<ResetPassword />}
+                />
+                {/* User */}
+                <Route
                     path={constants.TICKET_URL}
                     element={<Layout page={"ticket"} />}
                 />
@@ -40,20 +55,7 @@ function App() {
                     path={constants.PROFILE_URL}
                     element={<Layout page={"profile"} />}
                 />
-                <Route
-                    path={constants.USER_VERIFICATION_URL}
-                    element={<UserVerification />}
-                />
-                <Route path={constants.LOGIN_URL} element={<Login />} />
-                <Route path={constants.REGISTER_URL} element={<Register />} />
-                <Route
-                    path={constants.FORGET_PASSWORD_URL}
-                    element={<ForgetPassword />}
-                />
-                <Route
-                    path={constants.RESET_PASSWORD_URL}
-                    element={<ResetPassword />}
-                />
+                {/* Can remove later */}
                 <Route path={constants.QUEUE_URL} element={<Queue />} />
 
                 {/* SuperAdmin */}
