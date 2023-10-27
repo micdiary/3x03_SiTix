@@ -14,6 +14,8 @@ import { eventRouter } from "./routes/event.js";
 import { requestRouter } from "./routes/request.js";
 import { orderRouter } from "./routes/order.js";
 
+import rateLimit from "express-rate-limit";
+
 const app = express();
 
 app.use(express.json());
@@ -24,13 +26,13 @@ const uploadDir = "uploads/";
 
 // Create uploads folder if it doesn't exist
 if (!fs.existsSync(uploadDir)) {
-	fs.mkdirSync(uploadDir);
+  fs.mkdirSync(uploadDir);
 }
 
 // SSL certificate and key files
 const serverOptions = {
-	key: fs.readFileSync("../server.key"),
-	cert: fs.readFileSync("../server.crt"),
+  key: fs.readFileSync("server.key"),
+  cert: fs.readFileSync("server.crt"),
 };
 
 const server = https.createServer(serverOptions, app);
@@ -46,25 +48,35 @@ app.use(`${prefix}/request`, requestRouter);
 app.use(`${prefix}/order`, orderRouter);
 
 mysql_connection.connect((err) => {
-	if (err) console.error("Error connecting to the database:", err);
-	console.log("MySQL Connected!");
+  if (err) console.error("Error connecting to the database:", err);
+  console.log("MySQL Connected!");
 });
 
 redis_connection.connect(
-	console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
+  console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
 );
 
 app.get("/set-cookie", (req, res) => {
-	res.cookie("name", "value", {
-		secure: true, // set to true if your using https
-		httpOnly: true,
-		// This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
-		sameSite: "Strict", // None, Lax, or Strict
-		path: "/", // specify cookie path
-		expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
-	});
+  res.cookie("name", "value", {
+    secure: true, // set to true if your using https
+    httpOnly: true,
+    // This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
+    sameSite: "Strict", // None, Lax, or Strict
+    path: "/", // specify cookie path
+    expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
+  });
 
-	res.send("Cookie is set");
+  res.send("Cookie is set");
 });
+
+// Define rate limiting middleware
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 3, // limit each IP to 1 request per minute
+  message: "Too many requests, please try again later. You got rate limited",
+  headers: true,
+});
+
+app.use(limiter);
 
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
