@@ -24,8 +24,8 @@ import { getSeatTypes, isVenueValid, seatTypeExists } from "./venue.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
 import { getCurrentTime } from "../utils/time.js";
 import { createRequest } from "./request.js";
+import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
 
-const maxMB = 5; // Set file size limit to 5MB
 const uploadDir = "uploads/event";
 
 // Create uploads folder if it doesn't exist
@@ -46,27 +46,12 @@ const storage = multer.diskStorage({
 // Create Multer instance with the storage engine
 const upload = multer({
 	storage: storage,
+	fileFilter: fileFilter,
 	limits: {
+		files: 1, // Allow only 1 file per request
 		fileSize: maxMB * 1024 * 1024, // Set file size limit
 	},
 });
-
-// Custom error handling function for multer
-const handleMulterError = (err, req, res, next) => {
-	if (err instanceof multer.MulterError) {
-		if (err.code === "LIMIT_FILE_SIZE") {
-			return res.status(400).json({
-				error:
-					"File size limit exceeded. Maximum file size allowed is" +
-					maxMB +
-					"MB.",
-			});
-		}
-		// Handle other multer errors if needed
-		return res.status(500).json({ error: "File upload error" });
-	}
-	next(err);
-};
 
 // get all events
 router.get("/:token", async (req, res) => {
