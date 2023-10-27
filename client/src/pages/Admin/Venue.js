@@ -34,61 +34,63 @@ const Venue = ({ venueData, updated, setUpdated }) => {
         </Space>
     );
 
-    const items = venueData.map((venue) => ({
-        key: venue.venue_id,
-        label: venue.venue_name,
-        children: (
-            <div>
-                <Table
-                    dataSource={[
-                        {
-                            key: "1",
-                            label: "Name",
-                            value: venue.venue_name,
-                        },
-                        {
-                            key: "2",
-                            label: "Seat Types",
-                            value: (
-                                <Table
-                                    dataSource={venue.seat_type}
-                                    columns={[
-                                        {
-                                            title: "Type Name",
-                                            dataIndex: "type_name",
-                                            key: "type_name",
-                                        },
-                                        {
-                                            title: "Description",
-                                            dataIndex: "description",
-                                            key: "description",
-                                        },
-                                    ]}
-                                    pagination={3}
-                                />
-                            ),
-                        },
-                    ]}
-                    columns={[
-                        {
-                            dataIndex: "label",
-                            key: "label",
-                        },
-                        {
-                            dataIndex: "value",
-                            key: "value",
-                        },
-                    ]}
-                    pagination={false}
-                />
-                <img
-                    src={`data:image/jpg;base64,${venue.img}`}
-                    alt={venue.venue_name}
-                />
-            </div>
-        ),
-        extra: editVenue(venue.venue_id),
-    }));
+    const items =
+        venueData &&
+        venueData.map((venue) => ({
+            key: venue.venue_id,
+            label: venue.venue_name,
+            children: (
+                <div>
+                    <Table
+                        dataSource={[
+                            {
+                                key: "1",
+                                label: "Name",
+                                value: venue.venue_name,
+                            },
+                            {
+                                key: "2",
+                                label: "Seat Types",
+                                value: (
+                                    <Table
+                                        dataSource={venue.seat_type}
+                                        columns={[
+                                            {
+                                                title: "Type Name",
+                                                dataIndex: "type_name",
+                                                key: "type_name",
+                                            },
+                                            {
+                                                title: "Description",
+                                                dataIndex: "description",
+                                                key: "description",
+                                            },
+                                        ]}
+                                        pagination={{ pageSize: 3 }}
+                                    />
+                                ),
+                            },
+                        ]}
+                        columns={[
+                            {
+                                dataIndex: "label",
+                                key: "label",
+                            },
+                            {
+                                dataIndex: "value",
+                                key: "value",
+                            },
+                        ]}
+                        pagination={false}
+                    />
+                    <img
+                        src={`data:image/jpg;base64,${venue.img}`}
+                        alt={venue.venue_name}
+                    />
+                </div>
+            ),
+            extra: editVenue(venue.venue_id),
+        }));
 
     useEffect(() => {
         if (editVenueID) {
