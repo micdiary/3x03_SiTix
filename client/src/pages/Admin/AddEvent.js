@@ -11,6 +11,7 @@ import {
     Typography,
     Upload,
 } from "antd";
+import dayjs from "dayjs";
 import * as constants from "../../constants";
 import React, { useEffect, useState } from "react";
 import Buttons from "../../components/Buttons";
@@ -90,7 +91,14 @@ const AddEvent = () => {
             label: "Event Date",
             name: "event_date",
             rules: [{ required: true, message: "Required" }],
-            input: <DatePicker style={inputStyle} />,
+            input: (
+                <DatePicker
+                    showTime={{
+                        defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+                    }}
+                    style={inputStyle}
+                />
+            ),
         },
         {
             label: "Event Image Upload",
@@ -131,13 +139,19 @@ const AddEvent = () => {
             ),
         },
         ...Array.from({ length: categoryCount }, (_, index) => ({
-            label: `Price (${selectedVenue.seat_type[index].type_name})`,
+            label: `Price (${
+                selectedVenue.seat_type[index] &&
+                selectedVenue.seat_type[index].type_name
+            })`,
             name: `price[${index}]`,
             rules: [{ required: true, message: "Required" }],
             input: <Input style={inputStyle} />,
         })),
         ...Array.from({ length: categoryCount }, (_, index) => ({
-            label: `Available Seats (${selectedVenue.seat_type[index].type_name})`,
+            label: `Available Seats (${
+                selectedVenue.seat_type[index] &&
+                selectedVenue.seat_type[index].type_name
+            })`,
             name: `available_seats[${index}]`,
             rules: [{ required: true, message: "Required" }],
             input: <Input style={inputStyle} />,
