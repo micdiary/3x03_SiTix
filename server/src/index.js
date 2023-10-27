@@ -27,6 +27,14 @@ if (!fs.existsSync(uploadDir)) {
 	fs.mkdirSync(uploadDir);
 }
 
+// SSL certificate and key files
+const serverOptions = {
+	key: fs.readFileSync("../server.key"),
+	cert: fs.readFileSync("../server.crt"),
+};
+
+const server = https.createServer(serverOptions, app);
+
 // Routes
 const prefix = "/api";
 app.use(`${prefix}/auth`, authRouter);
@@ -45,8 +53,6 @@ mysql_connection.connect((err) => {
 redis_connection.connect(
 	console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
 );
-
-const server = https.createServer(app);
 
 app.get("/set-cookie", (req, res) => {
 	res.cookie("name", "value", {
