@@ -1,12 +1,10 @@
 import express from "express";
 import cors from "cors";
-import http from "http";
+import https from "https";
 import fs from "fs";
-import { Server } from "socket.io";
 
 import { PORT } from "./constants.js";
 import { authRouter } from "./routes/auth.js";
-import { queueRouter } from "./routes/queue.js";
 import { mysql_connection } from "./mysql_db.js";
 import { redis_connection } from "./redis.js";
 import { accountRouter } from "./routes/account.js";
@@ -31,7 +29,6 @@ if (!fs.existsSync(uploadDir)) {
 
 // Routes
 app.use("/auth", authRouter);
-app.use("/queue", queueRouter);
 app.use("/account", accountRouter);
 app.use("/admin", adminRouter);
 app.use("/venue", venueRouter);
@@ -48,32 +45,19 @@ redis_connection.connect(
 	console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
 );
 
-const server = http.createServer(app);
-export const io = new Server(server, {
-	cors: {
-		origin: "http://localhost:3000",
-		credentials: true,
-	},
-});
+const server = https.createServer(app);
 
-export let sequenceNumberByClient = new Map();
-
-io.on("connection", (socket) => {
-	console.log(`User connected with socket id: ${socket.id}`);
-
-	// initialize this client's sequence number
-	sequenceNumberByClient.set(socket, sequenceNumberByClient.size);
-
-	socket.on("queueUpdate", (message) => {
-		// Send a message to a specific client or broadcast it to all clients
-		socket.emit("queueUpdate", message); // To a specific client
-		// io.emit('queueUpdate', message); // Broadcast to all connected clients
+app.get("/set-cookie", (req, res) => {
+	res.cookie("name", "value", {
+		secure: true, // set to true if your using https
+		httpOnly: true,
+		// This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
+		sameSite: "Strict", // None, Lax, or Strict
+		path: "/", // specify cookie path
+		expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
 	});
 
-	socket.on("disconnect", () => {
-		sequenceNumberByClient.delete(socket);
-		console.log("User disconnected");
-	});
+	res.send("Cookie is set");
 });
 
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
