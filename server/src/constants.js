@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 // Environment variables
+const URL = "https://tix.busy-shannon.cloud";
 export const MYSQL_HOST = process.env.MYSQL_HOST;
 export const MYSQL_PORT = process.env.MYSQL_PORT;
 export const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
@@ -29,12 +30,12 @@ Thank you for registering on our website. Please click on the link below to veri
 
 To activate your account, click on the button below:<br>
 <p>
-  <a href="http://sitix:3000/user-verification?token={token}" style="display:inline-block; background-color:#007bff; color:#fff; padding:10px 20px; text-decoration:none; border-radius: 4px;">
+  <a href="${URL}/user-verification?token={token}" style="display:inline-block; background-color:#007bff; color:#fff; padding:10px 20px; text-decoration:none; border-radius: 4px;">
     Activate account
   </a>
 </p>
 
-Alternatively, you can click on this <a href="https://sitix:3000/user-verification?token={token}">link.</a><br><br>
+Alternatively, you can click on this <a href="${URL}user-verification?token={token}">link.</a><br><br>
 
 If you did not sign up for an account, please ignore this email.
 `;
@@ -45,12 +46,12 @@ You have requested to reset your password. Please click on the link below to res
 
 To reset your password, click on the button below:<br>
 <p>
-  <a href="https://sitix:3000/reset-password?token={token}" style="display:inline-block; background-color:#007bff; color:#fff; padding:10px 20px; text-decoration:none; border-radius: 4px;">
+  <a href="${URL}/reset-password?token={token}" style="display:inline-block; background-color:#007bff; color:#fff; padding:10px 20px; text-decoration:none; border-radius: 4px;">
     Reset password
   </a>
 </p>
 
-Alternatively, you can click on this <a href="http://sitix:3000/reset-password?token={token}">link.</a><br><br>
+Alternatively, you can click on this <a href="${URL}/reset-password?token={token}">link.</a><br><br>
 
 If you did not request to reset your password, please ignore this email.
 `;
