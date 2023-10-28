@@ -69,7 +69,7 @@ router.get("/:token", async (req, res) => {
 				i--;
 			}
 		}
-		
+
 		return res.status(200).json({ requests });
 	} catch (err) {
 		console.log(err);
@@ -94,20 +94,19 @@ router.post("/update", async (req, res) => {
 			return res.status(409).json({ error: "Invalid token used" });
 		}
 
-		if(status !== "accepted" && status !== "rejected") {
+		if (status !== "accepted" && status !== "rejected") {
 			return res.status(409).json({ error: "Invalid status" });
-		}		
+		}
 
 		const admin_id = await getAdminId(email);
 
-		if(status === "accepted") {
+		if (status === "accepted") {
 			await redis_connection.rPush(`${request_id}/accepted`, admin_id);
 
 			const sql = `UPDATE request SET approval_num = approval_num + 1 WHERE request_id = ?`;
 			const values = [request_id];
 			const [rows] = await mysql_connection.promise().query(sql, values);
-		}
-		else{
+		} else {
 			await redis_connection.rPush(`${request_id}/rejected`, admin_id);
 		}
 
@@ -117,9 +116,12 @@ router.post("/update", async (req, res) => {
 		const approval_num = rows[0].approval_num;
 
 		const numAdmins = await getNumAdmins();
-		if((approval_num >= numAdmins/2) && await redis_connection.lLen(`${request_id}/accepted`) >= numAdmins/2) {
+		if (
+			approval_num >= numAdmins / 2 &&
+			(await redis_connection.lLen(`${request_id}/accepted`)) >= numAdmins / 2
+		) {
 			const response = await startEvent(request_id);
-			if(response){
+			if (response) {
 				const sql = `UPDATE request SET status = "accepted" WHERE request_id = ?`;
 				const values = [request_id];
 				const [rows] = await mysql_connection.promise().query(sql, values);
@@ -131,14 +133,19 @@ router.post("/update", async (req, res) => {
 				await redis_connection.set(`${event_id}/`, "started");
 
 				const event_seat_types = await getEventSeatType(event_id);
-				for(let i = 0; i < event_seat_types.length; i++) {
+				console.log(event_seat_types);
+				for (let i = 0; i < event_seat_types.length; i++) {
 					const event_seat_type = event_seat_types[i];
-					await setEventSeatTypeNum(event_seat_type.event_seat_type_id, event_seat_type.available_seats)
+					console.log(event_seat_type);
+					await setEventSeatTypeNum(
+						event_seat_type.event_id,
+						event_seat_type.seat_type_id,
+						event_seat_type.available_seats
+					);
 				}
 
 				return res.status(200).json({ message: "Event started!" });
-			}
-			else{
+			} else {
 				return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 			}
 		}

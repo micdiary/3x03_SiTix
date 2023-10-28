@@ -56,7 +56,7 @@ export const fileFilter = (req, file, cb) => {
 		);
 	}
 
-	if (!validateFileName(file.originalname)) {
+	if (validateFileName(file.originalname)) {
 		return cb(
 			createError(
 				400,
