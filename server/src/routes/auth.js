@@ -120,6 +120,18 @@ router.post("/login", async (req, res) => {
 			}
 		}
 
+		if (user[0].failed_tries >= 5) {
+			sendEmail(
+				user[0].email,
+				"Account Locked",
+				"Your account has been locked due to too many failed login attempts. Please reset your password to unlock your account."
+			);
+
+			return res.status(401).json({
+				error: "Account has been locked. Please check your email.",
+			});
+		}
+
 		if (user[0].is_verified === 0) {
 			return res.status(401).json({ error: "User not verified" });
 		}
@@ -130,6 +142,11 @@ router.post("/login", async (req, res) => {
 			user[0].password_hash
 		);
 		if (!passwordMatch) {
+			if (user[0].failed_tries !== undefined) {
+				const sql = `UPDATE user SET failed_tries = ? WHERE email = ?`;
+				const values = [user[0].failed_tries + 1, user[0].email];
+				await mysql_connection.promise().query(sql, values);
+			}
 			return res.status(401).json({ error: "Invalid credentials" });
 		}
 

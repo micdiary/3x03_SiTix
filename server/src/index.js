@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import https from "https";
+import http from "http";
 import fs from "fs";
 
 import { PORT } from "./constants.js";
@@ -26,7 +26,7 @@ const uploadDir = "uploads/";
 
 // Create uploads folder if it doesn't exist
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+	fs.mkdirSync(uploadDir);
 }
 
 // Routes
@@ -39,50 +39,37 @@ app.use("/request", requestRouter);
 app.use("/order", orderRouter);
 
 mysql_connection.connect((err) => {
-  if (err) console.error("Error connecting to the database:", err);
-  console.log("MySQL Connected!");
+	if (err) console.error("Error connecting to the database:", err);
+	console.log("MySQL Connected!");
 });
 
 redis_connection.connect(
-  console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
+	console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
 );
 
-const server = https.createServer(app);
+const server = http.createServer(app);
 
 app.get("/set-cookie", (req, res) => {
-  res.cookie("name", "value", {
-    secure: true, // set to true if your using https
-    httpOnly: true,
-    // This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
-    sameSite: "Strict", // None, Lax, or Strict
-    path: "/", // specify cookie path
-    expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
-  });
+	res.cookie("name", "value", {
+		secure: true, // set to true if your using https
+		httpOnly: true,
+		// This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
+		sameSite: "Strict", // None, Lax, or Strict
+		path: "/", // specify cookie path
+		expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
+	});
 
-  res.send("Cookie is set");
+	res.send("Cookie is set");
 });
 
 // Define rate limiting middleware
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5, // limit each IP to 5 request per minute
-  message: "Too many requests, please wait to try again later.", // message to send back when rate-limited
-  headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
+	windowMs: 60 * 1000, // 1 minute
+	max: 5, // limit each IP to 5 request per minute
+	message: "Too many requests, please wait to try again later.", // message to send back when rate-limited
+	headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
 });
 
 app.use(limiter);
-
-//please check the codes below
-// app.post("/api/*", limiter, (req, res) => {
-//   // Your POST route handler logic
-//   res.send("POST Request Called");
-// });
-
-// // Apply rate limiting middleware to GET routes
-// app.get("/api/*", limiter, (req, res) => {
-//   // Your GET route handler logic
-//   res.send("GET Request Called");
-// });
-//please check the codes above
 
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));

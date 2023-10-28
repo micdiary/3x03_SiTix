@@ -197,6 +197,13 @@ router.post("/reset-password", async (req, res) => {
 		const update_values = [newPasswordHash, user[0].email];
 		await mysql_connection.promise().query(update_sql, update_values);
 
+		// reset failed tries
+		if (user[0].admin_id === undefined) {
+			const reset_sql = `UPDATE user SET failed_tries = 0 WHERE email = ?`;
+			const reset_values = [user[0].email];
+			await mysql_connection.promise().query(reset_sql, reset_values);
+		}
+
 		return res.status(200).json({ message: "Password updated" });
 	} catch (err) {
 		console.log(err);
@@ -208,7 +215,7 @@ router.post("/reset-password", async (req, res) => {
 export async function verifyAccountPassword(password, passwordToCompare) {
 	try {
 		const result = await bcrypt.compare(password, passwordToCompare);
-		console.log(result);
+		console.log(`password match :${result}`);
 		return result;
 	} catch (error) {
 		console.error(error);
