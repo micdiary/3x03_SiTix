@@ -41,7 +41,6 @@ const RightMenu = ({ userType, token }) => {
     const logoutButton = () => {
         logout()
             .then((res) => {
-                console.log("logout", res);
                 showNotification(res.message);
                 removeToken();
                 removeUser();

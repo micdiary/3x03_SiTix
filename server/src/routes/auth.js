@@ -196,6 +196,9 @@ router.get("/logout/:token", async (req, res) => {
 router.post("/refresh-token", async (req, res) => {
 	const { token } = req.body;
 	try {
+		if (!token) {
+			return res.status(401).json({ error: "Invalid token" });
+		}
 		const decoded = jwt.verify(token, JWT_SECRET);
 		const { email } = decoded;
 
