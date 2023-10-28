@@ -18,8 +18,6 @@ import {
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, removeSession } from "./auth.js";
-import { sendEmail } from "../utils/email.js";
-import { toProperCase } from "../utils/string.js";
 import { getSeatTypes, isVenueValid, seatTypeExists } from "./venue.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
 import { getCurrentTime } from "../utils/time.js";
@@ -54,18 +52,8 @@ const upload = multer({
 });
 
 // get all events
-router.get("/:token", async (req, res) => {
-	const { token } = req.params;
-
+router.get("/", async (req, res) => {
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
-
-		if (!(await checkToken(email, token))) {
-			return res
-				.status(409)
-				.json({ error: "Invalid token used. Please relogin" });
-		}
-
 		const sql = `SELECT * FROM event where status = "active"`; // only show active events
 		const [rows] = await mysql_connection.promise().query(sql);
 		const events = rows;
@@ -148,9 +136,9 @@ router.get("/details/:token/:event_id", async (req, res) => {
 			// Convert it to a base64 string
 			const base64Image = new Buffer.from(fileData).toString("base64");
 			// Attach it to your response object
-			venue[i].img = base64Image;
+			venue.img = base64Image;
 		} else {
-			venue[i].img = "";
+			venue.img = "";
 		}
 
 		delete venue.created_at;
