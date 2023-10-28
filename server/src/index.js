@@ -65,6 +65,7 @@ app.get("/set-cookie", (req, res) => {
 // Define rate limiting middleware
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
+  max: 5, // limit each IP to 5 request per minute
 });
 
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
