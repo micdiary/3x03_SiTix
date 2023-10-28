@@ -42,3 +42,6 @@ export const EVENT_DETAILS_API = `${URL}/event/details`;
 
 export const REQUEST_API = `${URL}/request`;
 export const UPDATE_REQUEST_API = `${URL}/request/update`;
+
+export const ORDER_API = `${URL}/order`;
+export const CREATE_ORDER_API = `${URL}/order/checkout`;
