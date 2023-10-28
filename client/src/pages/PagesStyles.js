@@ -36,7 +36,7 @@ export const cardStyletwo = {
 };
 // Home.js
 export const carouselStyle = { margin: "10px 0" };
-export const bodyContentStyle = { margin: "60px" };
+export const bodyContentStyle = { margin: "50px" };
 // AdminManagement.js
 export const tableStyle = {
     border: "2px solid #dcdcdc",
@@ -45,7 +45,7 @@ export const tableStyle = {
 };
 // Events.js
 export const liStyle = {
-    fontSize: "16px",
+    fontSize: "14px",
     margin: "10px",
 };
 // Profile.js

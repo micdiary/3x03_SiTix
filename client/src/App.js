@@ -1,5 +1,4 @@
 import Login from "./pages/Login";
-import Queue from "./pages/Queue";
 import Layout from "./layout/Layout";
 import Register from "./pages/Register";
 import * as constants from "./constants";
@@ -21,7 +20,7 @@ function App() {
                     element={<Layout page={"category"} />}
                 />
                 <Route
-                    path={constants.EVENT_URL}
+                    path={`${constants.EVENT_URL}/:event_id`}
                     element={<Layout page={"event"} />}
                 />
                 <Route
@@ -55,8 +54,6 @@ function App() {
                     path={constants.PROFILE_URL}
                     element={<Layout page={"profile"} />}
                 />
-                {/* Can remove later */}
-                <Route path={constants.QUEUE_URL} element={<Queue />} />
 
                 {/* SuperAdmin */}
                 <Route
