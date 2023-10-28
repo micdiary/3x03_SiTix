@@ -62,4 +62,7 @@ app.get("/set-cookie", (req, res) => {
   res.send("Cookie is set");
 });
 
+// Define rate limiting middleware
+const limiter = rateLimit({});
+
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
