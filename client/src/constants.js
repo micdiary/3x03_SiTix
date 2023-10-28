@@ -6,7 +6,6 @@ export const RESET_PASSWORD_URL = "/reset-password";
 export const USER_VERIFICATION_URL = "/user-verification";
 export const CATEGORY_URL = "/category";
 export const EVENT_URL = "/event";
-export const QUEUE_URL = "/queue";
 export const TICKET_URL = "/ticket";
 export const PURCHASE_URL = "/purchase";
 export const HISTORY_URL = "/history";
