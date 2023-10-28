@@ -3,29 +3,29 @@ import { Card, Col, Divider, Row, Typography } from "antd";
 import { dividerStyle } from "../pages/PagesStyles";
 
 const OrderCard = ({
-    orderNumber,
-    eventTitle,
-    eventVenue,
-    eventDate,
-    eventDay,
-    eventTime,
-    seatNumber,
-    eventCat,
-    eventPrice,
+    event_name,
+    event_venue,
+    date,
+    event_day,
+    event_time,
+    seat_number,
+    ticket_type,
+    event_price,
     qty,
-    totalPrice,
+    booking_fee,
+    total_price,
 }) => {
     return (
-        <Card title={`Order No. ${orderNumber}`} bordered={false}>
+        <Card title={`Order`} bordered={false}>
             <Row>
                 <Col span={24}>
                     <Typography.Text strong style={{ fontSize: "16px" }}>
-                        {eventTitle}
+                        {event_name}
                     </Typography.Text>
                     <div>
-                        {eventVenue}
+                        {event_venue}
                         <br />
-                        {eventDate} {`(${eventDay})`}, {eventTime}
+                        {date} {`(${event_day})`}, {event_time}
                     </div>
                     <Divider style={dividerStyle} />
                 </Col>
@@ -43,7 +43,7 @@ const OrderCard = ({
                         </Col>
                         <Col span={5}>
                             <div>
-                                {`Seat ${seatNumber}`}
+                                {`${seat_number}`}
                                 <br />
                                 {"-"}
                             </div>
@@ -63,8 +63,8 @@ const OrderCard = ({
                         </Col>
                         <Col span={5}>
                             <div>
-                                {`CAT ${eventCat}`}
-                                <br /> {`$ ${eventPrice}`}
+                                {`${ticket_type}`}
+                                <br /> {`$ ${event_price}`}
                             </div>
                         </Col>
                     </Row>
@@ -79,8 +79,8 @@ const OrderCard = ({
                 </Col>
                 <Col xs={12} sm={12} md={4} lg={2}>
                     <p>{qty}</p>
-                    <p>$ 4</p>
-                    <p style={{ color: "red" }}>{`$ ${totalPrice}`}</p>
+                    <p>{`$ ${booking_fee}`}</p>
+                    <p style={{ color: "red" }}>{`$ ${total_price}`}</p>
                 </Col>
             </Row>
         </Card>

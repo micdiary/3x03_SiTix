@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import * as constants from "../constants";
 import { Row, Col, Typography, Divider, Table } from "antd";
+import * as constants from "../constants";
 import Buttons from "../components/Buttons";
-import { useNavigate, useParams } from "react-router-dom";
-import { getToken } from "../utils/account";
-import { liStyle } from "./PagesStyles";
-import { eventStore } from "../store/User";
-import { getEventDetails } from "../api/event";
 import { showNotification } from "../components/Notification";
+import { liStyle } from "./PagesStyles";
+import { eventStore } from "../store/Order";
+import { getEventDetails } from "../api/event";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Event = () => {
     let navigate = useNavigate();
-    const localToken = getToken();
-    const { event_id } = useParams();
+    let location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const event_id = queryParams.get("event");
 
     const [eventData, setEventData] = useState([]);
     const [venueData, setVenueData] = useState([]);
@@ -32,23 +32,11 @@ const Event = () => {
             .catch((err) => {
                 showNotification(err.message);
             });
-    }, []);
-
-    const [isLoggedIn, setIsLoggedIn] = useState();
-    useEffect(() => {
-        setIsLoggedIn(localToken);
-    }, [localToken]);
+    }, [event_id]);
 
     const buyButton = () => {
-        navigate(constants.TICKET_URL);
+        navigate(`${constants.TICKET_URL}?event=${event_id}`);
         eventStore.setState({ eventData });
-        eventStore.setState({ venueData });
-        eventStore.setState({ seatType });
-        eventStore.setState({ seatData });
-    };
-
-    const loginButton = () => {
-        navigate(constants.LOGIN_URL);
     };
 
     const dataSource =
@@ -117,7 +105,7 @@ const Event = () => {
                         <Buttons
                             text="Buy Now"
                             marginTop="20px"
-                            onClick={isLoggedIn ? buyButton : loginButton}
+                            onClick={buyButton}
                         />
                     </Col>
                     <Divider />

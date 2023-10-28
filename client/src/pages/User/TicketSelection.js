@@ -1,89 +1,79 @@
 import React, { useState } from "react";
 import * as constants from "../../constants";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Buttons from "../../components/Buttons";
-import seatingMap from "../../assets/Capitol_Seating_Map-1.png";
 import { Row, Col, Typography, Table, Select, Divider } from "antd";
+import { eventStore, purchaseStore } from "../../store/Order";
 
 const TicketSelection = () => {
     let navigate = useNavigate();
+    let location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const event_id = queryParams.get("event");
 
-    const nextButton = () => {
-        navigate(constants.PURCHASE_URL);
-    };
+    const eventData = eventStore((state) => state.eventData);
 
-    const dummyPricingTable = [
-        {
-            category: "Cat 1",
-            color: "#EDE83F",
-            price: "128",
-        },
-        {
-            category: "Cat 2",
-            color: "#32A6DA",
-            price: "98",
-        },
-        {
-            category: "Cat 3",
-            color: "#EF5454",
-            price: "68",
-        },
-        {
-            category: "Cat 4",
-            color: "#5FBA46",
-            price: "48",
-        },
-    ];
+    const dataSource = eventData.seat_type.map((seat) => {
+        const seatId = eventData.venue_seat_type.find(
+            (type) => type.seat_type_id === seat.seat_type_id
+        );
+        return {
+            description: seatId ? seatId.description : "Unknown",
+            type_name: seatId ? seatId.type_name : "Unknown Type",
+            price: seat.price,
+            key: seat.seat_type_id,
+        };
+    });
 
     const priceColumns = [
         {
             title: "Color",
-            dataIndex: "color",
-            key: "color",
-            render: (color) => (
+            dataIndex: "description",
+            key: "description",
+            render: (description) => (
                 <div
                     style={{
                         width: "30px",
                         height: "15px",
-                        backgroundColor: color,
+                        backgroundColor: description,
                     }}
                 ></div>
             ),
             width: "10%",
         },
         {
-            title: "Category",
-            dataIndex: "category",
-            key: "category",
+            dataIndex: "type_name",
+            key: "type_name",
         },
         {
-            title: "Price",
             dataIndex: "price",
             key: "price",
             render: (text) => `$${text}`,
         },
     ];
 
-    const [selectedTicketType, setSelectedTicketType] = useState("Cat 1");
+    const [selectedTicket, setSelectedTicket] = useState(
+        eventData.venue_seat_type[0].type_name
+    );
     const [selectedQuantity, setSelectedQuantity] = useState(1);
 
     const ticketColumns = [
         {
-            title: "*Ticket Type",
-            dataIndex: "ticketType",
-            key: "ticketType",
+            title: "Ticket Type",
+            dataIndex: "type_name",
+            key: "type_name",
             render: () => (
                 <Select
                     style={{ width: "100%" }}
-                    value={selectedTicketType}
-                    onChange={(value) => setSelectedTicketType(value)}
+                    value={selectedTicket}
+                    onChange={(value) => setSelectedTicket(value)}
                 >
-                    {dummyPricingTable.map((pricingItem) => (
+                    {dataSource.map((item) => (
                         <Select.Option
-                            key={pricingItem.category}
-                            value={pricingItem.category}
+                            key={item.seat_type_id}
+                            value={item.type_name}
                         >
-                            {pricingItem.category}
+                            {item.type_name}
                         </Select.Option>
                     ))}
                 </Select>
@@ -95,8 +85,8 @@ const TicketSelection = () => {
             dataIndex: "price",
             key: "price",
             render: () => {
-                const selectedPrice = dummyPricingTable.find(
-                    (item) => item.category === selectedTicketType
+                const selectedPrice = dataSource.find(
+                    (item) => item.type_name === selectedTicket
                 );
                 return `$${selectedPrice ? selectedPrice.price : 0}`;
             },
@@ -125,44 +115,52 @@ const TicketSelection = () => {
             dataIndex: "total",
             key: "total",
             render: () => {
-                const selectedPrice = dummyPricingTable.find(
-                    (item) => item.category === selectedTicketType
+                const selectedPrice = dataSource.find(
+                    (item) => item.type_name === selectedTicket
                 );
                 const total = selectedPrice
                     ? selectedPrice.price * selectedQuantity
                     : 0;
                 return `$${total}`;
             },
+            width: "25%",
         },
     ];
+
+    const nextButton = () => {
+        const purchaseData = {
+            ticket: selectedTicket,
+            quantity: selectedQuantity,
+        };
+        purchaseStore.setState({ purchaseData });
+        navigate(`${constants.PURCHASE_URL}?event=${event_id}`);
+    };
 
     return (
         <div style={{ minHeight: "100vh" }}>
             <Row justify="center" align="middle">
                 <Col xs={22} sm={20} md={20} lg={20}>
-                    <Row justify="center">
-                        <Typography.Title level={5} style={{ color: "red" }}>
-                            Timer
-                        </Typography.Title>
-                    </Row>
-                    <Typography.Title level={2}> Event Name </Typography.Title>
-                    <Typography.Title level={5}> Event Venue </Typography.Title>
+                    <Typography.Title level={2}>
+                        {eventData.event_name}
+                    </Typography.Title>
+                    <Typography.Title level={5}>
+                        {eventData.venue.venue_name}
+                    </Typography.Title>
                     <div align="middle">
                         <img
-                            src={seatingMap}
-                            alt="Seating Map"
+                            src={`data:image/jpg;base64,${eventData.venue.img}`}
+                            alt={eventData.venue.venue_name}
                             style={{ maxWidth: "100%", height: "auto" }}
                         />
                     </div>
-                    <Row>
+                    <Row style={{ margin: "10px 0" }}>
                         <Col xs={14} sm={12} md={10} lg={8}>
                             <Table
-                                dataSource={dummyPricingTable}
+                                dataSource={dataSource}
                                 columns={priceColumns}
                                 pagination={false}
                                 showHeader={false}
                                 size="small"
-                                rowKey={(record) => record.category}
                             />
                             <Typography.Title level={5}>Note:</Typography.Title>
                             <Typography.Text>
@@ -181,7 +179,7 @@ const TicketSelection = () => {
             <Row justify="center" align="middle">
                 <Col xs={22} sm={20} md={20} lg={20}>
                     <Table
-                        dataSource={[{ ticketType: selectedTicketType }]}
+                        dataSource={[{ ticketType: selectedTicket }]}
                         columns={ticketColumns}
                         pagination={false}
                         size="small"
@@ -189,9 +187,8 @@ const TicketSelection = () => {
                         style={{ marginTop: "10px" }}
                     />
                     <Typography.Text italic style={{ fontSize: "11px" }}>
-                        *We will find you the best available seat in the section
-                        you have selected. If you are purchasing more than one
-                        ticket, we will do our best to locate consecutive seats.
+                        *Please note that this is free seating within the
+                        seating section.
                     </Typography.Text>
                     <Row justify="end" style={{ marginTop: "20px" }}>
                         <Col xs={24} sm={12} md={8} lg={4}>
