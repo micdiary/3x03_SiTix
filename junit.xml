@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="9" failures="0" errors="0" time="85.472">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-25T14:04:55" time="51.982" tests="1">
-    <testcase classname=" renders the home component" name=" renders the home component" time="0.383">
+<testsuites name="jest tests" tests="13" failures="0" errors="0" time="26.123">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-27T18:22:37" time="16.922" tests="1">
+    <testcase classname=" renders ResetPassword and triggers onSubmit" name=" renders ResetPassword and triggers onSubmit" time="0.454">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-25T14:04:55" time="52.315" tests="1">
-    <testcase classname=" renders ResetPassword and triggers onSubmit" name=" renders ResetPassword and triggers onSubmit" time="0.453">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-27T18:22:37" time="17.414" tests="1">
+    <testcase classname=" renders without crashing" name=" renders without crashing" time="0.344">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-25T14:04:55" time="52.43" tests="1">
-    <testcase classname=" renders without crashing" name=" renders without crashing" time="0.303">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-27T18:22:37" time="17.454" tests="1">
+    <testcase classname=" renders the home component" name=" renders the home component" time="0.352">
     </testcase>
   </testsuite>
-  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-25T14:04:55" time="82.064" tests="1">
-    <testcase classname="Login renders login elements" name="Login renders login elements" time="0.359">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-10-27T18:22:37" time="23.534" tests="2">
+    <testcase classname=" renders ForgetPassword component" name=" renders ForgetPassword component" time="0.382">
+    </testcase>
+    <testcase classname=" show notification on successful password reset" name=" show notification on successful password reset" time="0.149">
     </testcase>
   </testsuite>
-  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-25T14:04:55" time="82.915" tests="3">
-    <testcase classname="Login renders correctly" name="Login renders correctly" time="0.326">
+  <testsuite name="ForgetPassword" errors="0" failures="0" skipped="0" timestamp="2023-10-27T18:22:37" time="23.641" tests="2">
+    <testcase classname="ForgetPassword renders ForgetPassword component" name="ForgetPassword renders ForgetPassword component" time="0.358">
     </testcase>
-    <testcase classname="Login shows an error if the form is submitted without a username" name="Login shows an error if the form is submitted without a username" time="0.562">
-    </testcase>
-    <testcase classname="Login shows an error if the form is submitted without a password" name="Login shows an error if the form is submitted without a password" time="0.296">
+    <testcase classname="ForgetPassword show notification on successful password reset" name="ForgetPassword show notification on successful password reset" time="0.143">
     </testcase>
   </testsuite>
-  <testsuite name="ForgetPassword" errors="0" failures="0" skipped="0" timestamp="2023-10-25T14:04:55" time="83.761" tests="2">
-    <testcase classname="ForgetPassword renders ForgetPassword component" name="ForgetPassword renders ForgetPassword component" time="0.268">
+  <testsuite name="ForgetPassword" errors="0" failures="0" skipped="0" timestamp="2023-10-27T18:22:37" time="23.635" tests="2">
+    <testcase classname="ForgetPassword renders ForgetPassword component" name="ForgetPassword renders ForgetPassword component" time="0.383">
     </testcase>
-    <testcase classname="ForgetPassword show notification on successful password reset" name="ForgetPassword show notification on successful password reset" time="0.222">
+    <testcase classname="ForgetPassword show notification on successful password reset" name="ForgetPassword show notification on successful password reset" time="0.138">
+    </testcase>
+  </testsuite>
+  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-27T18:22:37" time="23.821" tests="1">
+    <testcase classname="Login renders login elements" name="Login renders login elements" time="0.316">
+    </testcase>
+  </testsuite>
+  <testsuite name="Login" errors="0" failures="0" skipped="0" timestamp="2023-10-27T18:22:37" time="24.443" tests="3">
+    <testcase classname="Login renders correctly" name="Login renders correctly" time="0.355">
+    </testcase>
+    <testcase classname="Login shows an error if the form is submitted without a username" name="Login shows an error if the form is submitted without a username" time="0.466">
+    </testcase>
+    <testcase classname="Login shows an error if the form is submitted without a password" name="Login shows an error if the form is submitted without a password" time="0.266">
     </testcase>
   </testsuite>
 </testsuites>

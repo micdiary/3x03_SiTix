@@ -26,7 +26,7 @@ describe('Login', () => {
   });
 
   test('renders login elements', () => {
-    //render(<YourComponent />); // render your component
+    // render your component
     render(
       <Router history={history}>
         <Login />
