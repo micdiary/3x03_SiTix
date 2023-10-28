@@ -66,7 +66,7 @@ app.get("/set-cookie", (req, res) => {
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5, // limit each IP to 5 request per minute
-  message: "Too many requests, please try again later.",
+  message: "Too many requests, please wait to try again later.", // message to send back when rate-limited
   headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
 });
 
