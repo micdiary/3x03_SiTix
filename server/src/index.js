@@ -72,4 +72,17 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+//please check the codes below
+// app.post("/api/*", limiter, (req, res) => {
+//   // Your POST route handler logic
+//   res.send("POST Request Called");
+// });
+
+// // Apply rate limiting middleware to GET routes
+// app.get("/api/*", limiter, (req, res) => {
+//   // Your GET route handler logic
+//   res.send("GET Request Called");
+// });
+//please check the codes above
+
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
