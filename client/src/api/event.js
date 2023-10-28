@@ -3,7 +3,7 @@ import { ADD_EVENT_API, EVENT_API, EVENT_DETAILS_API } from "../constants";
 import { getToken } from "../utils/account";
 
 export async function getEvent() {
-    return requestGet(`${EVENT_API}/${getToken()}`);
+    return requestGet(`${EVENT_API}`);
 }
 
 export async function getEventDetails(req) {

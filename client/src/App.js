@@ -20,7 +20,7 @@ function App() {
                     element={<Layout page={"category"} />}
                 />
                 <Route
-                    path={`${constants.EVENT_URL}/:event_id`}
+                    path={constants.EVENT_URL}
                     element={<Layout page={"event"} />}
                 />
                 <Route
@@ -39,11 +39,11 @@ function App() {
                 />
                 {/* User */}
                 <Route
-                    path={constants.TICKET_URL}
+                    path={`${constants.TICKET_URL}`}
                     element={<Layout page={"ticket"} />}
                 />
                 <Route
-                    path={constants.PURCHASE_URL}
+                    path={`${constants.PURCHASE_URL}`}
                     element={<Layout page={"purchase"} />}
                 />
                 <Route

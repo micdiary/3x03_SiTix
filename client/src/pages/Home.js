@@ -3,9 +3,12 @@ import EventCardList from "../components/EventCards";
 import { Row, Col, Carousel, Divider, Typography } from "antd";
 import { bodyContentStyle, carouselStyle } from "./PagesStyles";
 import { getEvent } from "../api/event";
+import { getToken } from "../utils/account";
 
 const Home = () => {
+    const localToken = getToken();
     const [events, setEvents] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState();
 
     useEffect(() => {
         getEvent().then((res) => {
@@ -16,6 +19,10 @@ const Home = () => {
             setEvents(events);
         });
     }, []);
+
+    useEffect(() => {
+        setIsLoggedIn(localToken);
+    }, [localToken]);
 
     return (
         <div style={{ minHeight: "100vh" }}>
@@ -43,7 +50,7 @@ const Home = () => {
                 <Typography.Title level={2}>All Events</Typography.Title>
                 <Divider />
                 <Row>
-                    <EventCardList events={events} />
+                    <EventCardList events={events} isLoggedIn={isLoggedIn} />
                 </Row>
             </div>
         </div>

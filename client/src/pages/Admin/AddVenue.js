@@ -83,7 +83,7 @@ const AddVenue = () => {
             input: <Input style={inputStyle} />,
         })),
         ...Array.from({ length: categoryCount }, (_, index) => ({
-            label: `Description ${index + 1}`,
+            label: `Color (Seat Type ${index + 1})`,
             name: `description[${index}]`,
             rules: [{ required: true, message: "Required" }],
             input: <Input style={inputStyle} />,

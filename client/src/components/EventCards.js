@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import * as constants from "../constants";
 import { Row, Col, Card } from "antd";
 import { Link } from "react-router-dom";
-import { eventStore } from "../store/User";
 const { Meta } = Card;
 
-const EventCard = ({ event_id, event_name, date, image }) => {
+const EventCard = ({ event_id, event_name, date, image, isLoggedIn }) => {
     return (
-        <Link to={`${constants.EVENT_URL}/${event_id}`}>
+        <Link
+            to={{
+                pathname: isLoggedIn
+                    ? constants.EVENT_URL
+                    : constants.LOGIN_URL,
+                search: `?event=${event_id}`,
+            }}
+        >
             <Card
                 style={{ margin: "10px" }}
                 cover={<img alt={event_name} src={image} />}
@@ -21,7 +27,7 @@ const EventCard = ({ event_id, event_name, date, image }) => {
     );
 };
 
-const EventCardList = ({ events }) => {
+const EventCardList = ({ events, isLoggedIn }) => {
     return (
         <>
             <Row justify="left" gutter={16}>
@@ -40,6 +46,7 @@ const EventCardList = ({ events }) => {
                                 event_name={eventData.event_name}
                                 date={`${event_date} ${time}`}
                                 image={`data:image/jpg;base64,${eventData.banner_img}`}
+                                isLoggedIn={isLoggedIn}
                             />
                         </Col>
                     );

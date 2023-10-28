@@ -7,14 +7,3 @@ export const userStore = create((set) => ({
     setUserType: (type) => set((_) => ({ userType: type })),
     removeUser: () => set((_) => ({ token: null, userType: null })),
 }));
-
-export const eventStore = create((set) => ({
-    eventData: [],
-    venueData: [],
-    seatType: [],
-    seatData: [],
-    setEventData: (data) => set({ eventData: data }),
-    setVenueData: (data) => set({ venueData: data }),
-    setSeatType: (data) => set({ seatType: data }),
-    setSeatData: (data) => set({ seatData: data }),
-}));
