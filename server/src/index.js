@@ -70,4 +70,6 @@ const limiter = rateLimit({
   headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
 });
 
+app.use(limiter);
+
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
