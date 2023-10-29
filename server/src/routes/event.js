@@ -163,6 +163,7 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		event.venue = venue;
 		event.seat_type = seat_type;
 		event.venue_seat_type = venue_seat_type;
+		event.date = convertToDate(event.date);
 
 		return res.status(200).json({ event });
 	} catch (err) {

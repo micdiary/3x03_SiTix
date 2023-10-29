@@ -35,7 +35,7 @@ router.get("/:token", async (req, res) => {
 			return res.status(409).json({ error: "Invalid token used" });
 		}
 
-		const sql = `SELECT r.request_id , a.admin_id, e.event_id, e.event_name, v.venue_name, v.venue_id, r.approval_num
+		const sql = `SELECT r.request_id , a.admin_id, a.username AS admin, e.event_id, e.event_name, v.venue_name, v.venue_id, r.approval_num
             FROM request r
             JOIN admin a ON r.admin_id = a.admin_id
             JOIN event e ON r.event_id = e.event_id
