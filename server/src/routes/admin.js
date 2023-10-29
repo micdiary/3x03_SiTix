@@ -18,6 +18,7 @@ import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken } from "./auth.js";
 import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
+import { getCurrentTimeInUnix } from "../utils/time.js";
 
 // Get Admins
 router.get("/:token", async (req, res) => {
@@ -79,8 +80,8 @@ router.post("/add", async (req, res) => {
 		// generate uuid
 		const uuid = uuidv4();
 		// Create new user
-		const sql = `INSERT INTO admin (admin_id,role_id, username, email, password_hash) VALUES ( ?,?, ?, ?,?)`;
-		const values = [uuid, 1, username, admin_email, hashedPassword];
+		const sql = `INSERT INTO admin (admin_id,role_id, username, email, password_hash, created_at) VALUES ( ?,?, ?, ?, ?, ?)`;
+		const values = [uuid, 1, username, admin_email, hashedPassword, getCurrentTimeInUnix()];
 		await mysql_connection.promise().query(sql, values);
 
 		// send email to admin with login details

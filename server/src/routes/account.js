@@ -17,6 +17,7 @@ import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
+import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
 
 // Get Profile
 router.get("/profile/:token", async (req, res) => {
@@ -42,8 +43,10 @@ router.get("/profile/:token", async (req, res) => {
 			[user] = await mysql_connection.promise().query(sql, values);
 		}
 
+		// delete sensitive data
 		delete user[0].password_hash;
 		delete user[0].failed_tries;
+		delete user[0].created_at;
 		delete user[0].updated_at;
 		delete user[0].role_id;
 
@@ -66,13 +69,15 @@ router.post("/edit", async (req, res) => {
 				.json({ error: "Invalid token used. Please relogin" });
 		}
 
+		const updated_at = getCurrentTimeInUnix();
+
 		if (userType !== "customer") {
-			const sql = `UPDATE admin SET username = ? WHERE email = ?`;
-			const values = [username, email];
+			const sql = `UPDATE admin SET username = ?, updated_at = ? WHERE email = ?`;
+			const values = [username, updated_at, email];
 			await mysql_connection.promise().query(sql, values);
 		} else {
-			const sql = `UPDATE user SET username = ?, first_name = ?, last_name = ? WHERE email = ?`;
-			const values = [username, first_name, last_name, email];
+			const sql = `UPDATE user SET username = ?, first_name = ?, last_name = ?, updated_at = ? WHERE email = ?`;
+			const values = [username, first_name, last_name, updated_at, email];
 			await mysql_connection.promise().query(sql, values);
 		}
 

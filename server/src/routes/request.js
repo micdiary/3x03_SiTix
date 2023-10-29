@@ -35,7 +35,7 @@ router.get("/:token", async (req, res) => {
 			return res.status(409).json({ error: "Invalid token used" });
 		}
 
-		const sql = `SELECT r.request_id , a.username AS admin, e.event_id, e.event_name, v.venue_name, v.venue_id, r.approval_num
+		const sql = `SELECT r.request_id , a.admin_id, e.event_id, e.event_name, v.venue_name, v.venue_id, r.approval_num
             FROM request r
             JOIN admin a ON r.admin_id = a.admin_id
             JOIN event e ON r.event_id = e.event_id
@@ -65,6 +65,12 @@ router.get("/:token", async (req, res) => {
 			);
 
 			if (accepted.includes(admin_id) || rejected.includes(admin_id)) {
+				requests.splice(i, 1);
+				i--;
+			}
+
+			// hide their own request
+			if (request.admin_id === admin_id) {
 				requests.splice(i, 1);
 				i--;
 			}
@@ -130,13 +136,10 @@ router.post("/update", async (req, res) => {
 				const values2 = [request_id];
 				const [rows2] = await mysql_connection.promise().query(sql2, values2);
 				const event_id = rows2[0].event_id;
-				await redis_connection.set(`${event_id}/`, "started");
 
 				const event_seat_types = await getEventSeatType(event_id);
-				console.log(event_seat_types);
 				for (let i = 0; i < event_seat_types.length; i++) {
 					const event_seat_type = event_seat_types[i];
-					console.log(event_seat_type);
 					await setEventSeatTypeNum(
 						event_seat_type.event_id,
 						event_seat_type.seat_type_id,

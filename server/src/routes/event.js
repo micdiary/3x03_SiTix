@@ -20,7 +20,7 @@ import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { getSeatTypes, isVenueValid, seatTypeExists } from "./venue.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
-import { getCurrentTime } from "../utils/time.js";
+import { convertToUnixTime, getCurrentTimeInUnix } from "../utils/time.js";
 import { createRequest } from "./request.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
 
@@ -128,7 +128,7 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const [rows2] = await mysql_connection.promise().query(sql2, values2);
 		const venue = rows2[0];
 
-		const venueImgPath = `${uploadDir}/${img}`;
+		const venueImgPath = `uploads/venue${venue.img}`;
 
 		if (fs.existsSync(venueImgPath)) {
 			// Read the file from the file system
@@ -167,7 +167,7 @@ router.get("/details/:token/:event_id", async (req, res) => {
 });
 
 // add event
-// seat_type = [{"seat_type_id": 1, "price": 1000, "available_seats": 30}, {"seat_type_id": 2, "price": 500,"available_seats": 40}}]
+// seat_type = [{"seat_type_id": 1, "price": 1000, "available_seats": 30}, {"seat_type_id": 2, "price": 500,"available_seats": 40}]
 router.post("/add", upload.single("file"), async (req, res) => {
 	const {
 		token,
@@ -227,7 +227,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		const uuid = uuidv4();
 
 		// get current time
-		const created_at = getCurrentTime();
+		const created_at = getCurrentTimeInUnix();
 
 		// get admin id
 		const admin_id = await getAdminId(email);
@@ -242,7 +242,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 			uuid,
 			venue_id,
 			event_name,
-			new Date(date),
+			convertToUnixTime(date),
 			description,
 			category,
 			img,

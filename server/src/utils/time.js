@@ -1,4 +1,15 @@
-export const getCurrentTime = () => {
-    const current_time = new Date().toISOString().slice(0, 19).replace("T", " ");
-    return current_time;
-}
+export const getCurrentTimeInUnix = () => {
+	const date = new Date();
+	const unixTime = Math.floor(date.getTime() / 1000);
+	return unixTime;
+};
+
+export const convertToDate = (unixTime) => {
+	const date = new Date(unixTime * 1000);
+	return date;
+};
+
+export const convertToUnixTime = (date) => {
+	const dateObj = new Date(date); // Adding 'UTC' to consider the date as UTC
+	return Math.floor(dateObj.getTime() / 1000); // Convert milliseconds to seconds
+};

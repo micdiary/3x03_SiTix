@@ -93,7 +93,7 @@ router.post("/checkout", async (req, res) => {
 
 		const user_id = await getUserId(email);
 
-		const sql = `INSERT INTO \`order\` (order_id, user_id, event_id, seat_type_id, venue_id, total_price) VALUES (?, ?, ?, ?, ?, ?)`;
+		const sql = `INSERT INTO \`order\` (order_id, user_id, event_id, seat_type_id, venue_id, total_price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 		const values = [
 			uuidv4(),
 			user_id,
@@ -101,6 +101,7 @@ router.post("/checkout", async (req, res) => {
 			seat_type_id,
 			venue_id,
 			total_price,
+			getCurrentTimeInUnix(),
 		];
 		await mysql_connection.promise().query(sql, values);
 

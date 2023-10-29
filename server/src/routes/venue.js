@@ -10,7 +10,7 @@ import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { checkToken } from "./auth.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
-import { getCurrentTime } from "../utils/time.js";
+import { getCurrentTimeInUnix } from "../utils/time.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
 
 const uploadDir = "uploads/venue";
@@ -72,7 +72,7 @@ router.get("/:token", async (req, res) => {
 				// Read the file from the file system
 				const fileData = fs.readFileSync(imgPath);
 				// Convert it to a base64 string
-				const base64Image = new Buffer.from(fileData).toString('base64');
+				const base64Image = new Buffer.from(fileData).toString("base64");
 				// Attach it to your response object
 				venues[i].img = base64Image;
 			} else {
@@ -127,10 +127,10 @@ router.post("/add", upload.single("file"), async (req, res) => {
 
 		await mysql_connection.promise().beginTransaction();
 
-		const sql = `INSERT INTO venue (venue_id, venue_name, img, updated_by) VALUES (?, ?, ?, ?)`;
+		const sql = `INSERT INTO venue (venue_id, venue_name, img, created_at ,updated_by) VALUES (?, ?, ?, ?, ?)`;
 		const [rows] = await mysql_connection
 			.promise()
-			.query(sql, [uuid, venue_name, img, admin_id]);
+			.query(sql, [uuid, venue_name, img, getCurrentTimeInUnix() ,admin_id]);
 
 		for (const seat of JSON.parse(seat_type)) {
 			if (
@@ -183,7 +183,7 @@ router.post("/update", upload.single("file"), async (req, res) => {
 
 		const admin_id = await getAdminId(email);
 
-		const updated_at = getCurrentTime();
+		const updated_at = getCurrentTimeInUnix();
 
 		if (!req.file) {
 			sql = `UPDATE venue SET venue_name = ?, updated_by = ?, updated_at = ? WHERE venue_id = ?`;
