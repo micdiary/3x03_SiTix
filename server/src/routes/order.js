@@ -47,6 +47,27 @@ router.get("/:token", async (req, res) => {
 		const [rows] = await mysql_connection.promise().query(sql, values);
 		const orders = rows;
 
+		const event_sql = "SELECT * FROM event WHERE event_id = ?";
+		const venue_sql = "SELECT * FROM venue WHERE venue_id = ?";
+		const seat_type_sql = "SELECT * FROM seat_type WHERE seat_type_id = ?";
+		for (let i = 0; i < orders.length; i++) {
+			const event_values = [orders[i].event_id];
+			const venue_values = [orders[i].venue_id];
+			const seat_type_values = [orders[i].seat_type_id];
+			const [event_rows] = await mysql_connection
+				.promise()
+				.query(event_sql, event_values);
+			const [venue_rows] = await mysql_connection
+				.promise()
+				.query(venue_sql, venue_values);
+			const [seat_type_rows] = await mysql_connection
+				.promise()
+				.query(seat_type_sql, seat_type_values);
+			orders[i].event = event_rows[0];
+			orders[i].venue = venue_rows[0];
+			orders[i].seat_type = seat_type_rows[0];
+		}
+
 		return res.status(200).json({ orders });
 	} catch (err) {
 		console.log(err);
