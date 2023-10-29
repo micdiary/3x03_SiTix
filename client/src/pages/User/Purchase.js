@@ -4,6 +4,7 @@ import Payment from "./Payment";
 import OrderCard from "../../components/OrderCard";
 import { useLocation } from "react-router-dom";
 import { eventStore, purchaseStore } from "../../store/Order";
+import { formatDate } from "../../utils/date";
 
 const Purchase = () => {
     let location = useLocation();
@@ -13,12 +14,7 @@ const Purchase = () => {
     const eventData = eventStore((state) => state.eventData);
 
     const eventDate = new Date(eventData.date);
-    const event_date = eventDate.toLocaleDateString("en-US");
-    const day = eventDate.toLocaleDateString("en-US", { weekday: "long" });
-    const time = eventDate.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+    const { date, day, time } = formatDate(eventDate);
 
     let price = "0";
     let seat_id = "0";
@@ -38,7 +34,7 @@ const Purchase = () => {
     const orderData = {
         event_name: eventData.event_name,
         event_venue: eventData.venue.venue_name,
-        date: event_date,
+        event_date: date,
         event_day: day,
         event_time: time,
         seat_number: "Free Seating",

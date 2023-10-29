@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import dayjs from "dayjs";
 import * as constants from "../constants";
 import { Row, Col, Card } from "antd";
 import { Link } from "react-router-dom";
+import { dateTimeToUnix, formatDate } from "../utils/date";
 const { Meta } = Card;
 
 const EventCard = ({ event_id, event_name, date, image, isLoggedIn }) => {
@@ -33,18 +35,14 @@ const EventCardList = ({ events, isLoggedIn }) => {
             <Row justify="left" gutter={16}>
                 {events.map((eventData, index) => {
                     const eventDate = new Date(eventData.date);
-                    const event_date = eventDate.toLocaleDateString("en-US");
-                    const time = eventDate.toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                    });
+                    const { date, day, time } = formatDate(eventDate);
 
                     return (
                         <Col key={index} xs={24} sm={22} md={12} lg={10} xl={8}>
                             <EventCard
                                 event_id={eventData.event_id}
                                 event_name={eventData.event_name}
-                                date={`${event_date} ${time}`}
+                                date={`${date} ${time}`}
                                 image={`data:image/jpg;base64,${eventData.banner_img}`}
                                 isLoggedIn={isLoggedIn}
                             />
