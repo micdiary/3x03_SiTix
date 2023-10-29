@@ -97,4 +97,8 @@ app.get("/set-cookie", (req, res) => {
   res.send("Cookie is set");
 });
 
-server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+server.listen(PORT, () => {
+	logger.info(`Server started on port: ${PORT}`);
+	console.log(`Server started on port ${PORT}`);
+});
+
