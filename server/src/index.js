@@ -97,6 +97,20 @@ app.get("/set-cookie", (req, res) => {
   res.send("Cookie is set");
 });
 
+//Error Handling with Winston
+app.use((err, req, res, next) => {
+	logger.error(err.stack);
+
+	if (err.response) {
+		logger.error(`Error Response: ${JSON.stringify(err.response.data)}`);
+	}
+	else {
+		logger.error(`Error Object: ${JSON.stringify(err)}`);
+	}
+
+	res.status(500).send('Something went wrong!');
+});
+
 server.listen(PORT, () => {
 	logger.info(`Server started on port: ${PORT}`);
 	console.log(`Server started on port ${PORT}`);
