@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Typography, Divider, Table } from "antd";
-import * as constants from "../constants";
-import Buttons from "../components/Buttons";
-import { showNotification } from "../components/Notification";
-import { liStyle } from "./PagesStyles";
-import { eventStore } from "../store/Order";
-import { getEventDetails } from "../api/event";
+import * as constants from "../../constants";
+import Buttons from "../../components/Buttons";
+import { showNotification } from "../../components/Notification";
+import { liStyle } from "../PagesStyles";
+import { eventStore } from "../../store/Order";
+import { getEventDetails } from "../../api/event";
 import { useLocation, useNavigate } from "react-router-dom";
+import { formatDate } from "../../utils/date";
 
 const Event = () => {
     let navigate = useNavigate();
@@ -68,12 +69,7 @@ const Event = () => {
     ];
 
     const eventDate = new Date(eventData.date);
-    const event_date = eventDate.toLocaleDateString("en-US");
-    const day = eventDate.toLocaleDateString("en-US", { weekday: "long" });
-    const time = eventDate.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+    const { date, day, time } = formatDate(eventDate);
 
     return (
         <div style={{ minHeight: "100vh" }}>
@@ -97,7 +93,7 @@ const Event = () => {
                     <Col xs={24} sm={16} md={18} lg={18} xl={16}>
                         <div>
                             <Typography.Title level={4}>
-                                {event_date} ({day}) / {venueData.venue_name}
+                                {date} ({day}) / {venueData.venue_name}
                             </Typography.Title>
                         </div>
                     </Col>
@@ -122,8 +118,8 @@ const Event = () => {
                                 </Typography.Title>
                                 <Typography.Text>
                                     {eventData.description} The event will take
-                                    place on {event_date} at{" "}
-                                    {venueData.venue_name}, {time}.
+                                    place on {date} at {venueData.venue_name},{" "}
+                                    {time}.
                                 </Typography.Text>
                             </Col>
                         </Row>

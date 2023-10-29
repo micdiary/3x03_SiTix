@@ -4,7 +4,7 @@ import { Layout as AntdLayout } from "antd";
 import Footer from "./Footer";
 import Header from "./Header";
 import Home from "../pages/Home";
-import Event from "../pages/Event";
+import Event from "../pages/User/Event";
 import Purchase from "../pages/User/Purchase";
 import Category from "../pages/Cateogry";
 import TicketSelection from "../pages/User/TicketSelection";
