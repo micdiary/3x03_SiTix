@@ -77,6 +77,11 @@ redis_connection.connect(
   console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
 );
 
+redis_connection.on('error',(err) => {
+  logger.error(`Error connecting to Redis: ${err}`);
+  console.error("Error connecting to the database:", err);
+});
+
 const server = http.createServer(app);
 
 app.get("/set-cookie", (req, res) => {
