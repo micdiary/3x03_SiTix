@@ -17,6 +17,19 @@ import { orderRouter } from "./routes/order.js";
 import rateLimit from "express-rate-limit";
 import winston from "winston"; //Add winston import
 
+//Configure Winston to log to file
+const logger = winston.createLogger({
+	level: 'debug',
+	format: winston.format.combine(
+		winston.format.timestamp(),
+		winston.format.json()
+	),
+	transports: [
+		new winston.transports.File({filename: 'src/Server.log'}),
+		new winston.transports.Console(console)
+	]
+});
+
 const app = express();
 
 app.use(express.json());
