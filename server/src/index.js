@@ -63,8 +63,14 @@ app.use("/request", requestRouter);
 app.use("/order", orderRouter);
 
 mysql_connection.connect((err) => {
-  if (err) console.error("Error connecting to the database:", err);
-  console.log("MySQL Connected!");
+	if (err) {
+		logger.error(`Error connecting to the database: ${err}`);
+		console.error("Error connecting to the database:", err);
+	}
+	else{
+		logger.info("MySQL Connected!");
+		console.log("MySQL Connected!");
+	}
 });
 
 redis_connection.connect(
