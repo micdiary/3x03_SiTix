@@ -32,6 +32,18 @@ const logger = winston.createLogger({
 
 const app = express();
 
+// Use winston middleware for logging incoming requests with route information
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  const method = req.method;
+  const url = req.originalUrl;
+
+  // Log the route information
+  logger.info(`[${timestamp}] ${method} ${url}`);
+
+  next();
+});
+
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
