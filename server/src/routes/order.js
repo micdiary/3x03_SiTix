@@ -89,7 +89,7 @@ router.get("/:token", async (req, res) => {
 
 // checkout
 router.post("/checkout", async (req, res) => {
-	const { token, event_id, seat_type_id, venue_id, total_price, credit_card } =
+	const { token, event_id, seat_type_id, venue_id, total_price, credit_card, quantity } =
 		req.body;
 
 	try {
@@ -110,15 +110,15 @@ router.post("/checkout", async (req, res) => {
 			return res.status(409).json({ error: "Payment failed" });
 		}
 
-		if (!checkEventAvailability(event_id, seat_type_id)) {
+		if (!await checkEventAvailability(event_id, seat_type_id)) {
 			return res.status(409).json({ error: "Seat type not available" });
 		}
 
 		if (
-			!reduceEventAvailability(
+			 !await reduceEventAvailability(
 				event_id,
 				seat_type_id,
-				getSeatTypePrice(event_id, seat_type_id)
+				quantity
 			)
 		) {
 			return res.status(409).json({ error: "Seat type not available" });
@@ -153,7 +153,7 @@ const simulatePayment = async (credit_card) => {
 	}
 	await new Promise((resolve) => setTimeout(resolve, 3000));
 
-	return Math.random() > 0.2;
+	return true;
 };
 
 export { router as orderRouter };

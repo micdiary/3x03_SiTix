@@ -133,7 +133,7 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const [rows2] = await mysql_connection.promise().query(sql2, values2);
 		const venue = rows2[0];
 
-		const venueImgPath = `uploads/venue${venue.img}`;
+		const venueImgPath = `uploads/venue/${venue.img}`;
 
 		if (fs.existsSync(venueImgPath)) {
 			// Read the file from the file system
