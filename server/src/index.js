@@ -109,6 +109,15 @@ app.get("/set-cookie", (req, res) => {
   res.send("Cookie is set");
 });
 
+// //test to see if curl /test will get back response
+// app.get('/', (req, res) => {
+// 	logger.info('Got get request');
+// 	const responseData = "response from express";
+// 	logger.info(`Response: ${responseData}`);
+// 	//res.send('response from express');
+// 	res.send(responseData);
+// }) 
+
 //Error Handling with Winston
 app.use((err, req, res, next) => {
 	logger.error(err.stack);
