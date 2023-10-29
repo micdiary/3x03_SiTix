@@ -20,7 +20,11 @@ import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { getSeatTypes, isVenueValid, seatTypeExists } from "./venue.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
-import { convertToUnixTime, getCurrentTimeInUnix } from "../utils/time.js";
+import {
+	convertToDate,
+	convertToUnixTime,
+	getCurrentTimeInUnix,
+} from "../utils/time.js";
 import { createRequest } from "./request.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
 
@@ -72,6 +76,7 @@ router.get("/", async (req, res) => {
 			} else {
 				event.banner_img = "";
 			}
+			event.date = convertToDate(event.date);
 			delete event.created_at;
 			delete event.updated_at;
 			delete event.updated_by;
