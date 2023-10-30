@@ -19,6 +19,7 @@ services:
             - '/var/run/docker.sock:/var/run/docker.sock'
         environment:
             - VIRTUAL_HOST=tix.busy-shannon.cloud
+            - VIRTUAL_PATH=/
         image: node
 services:
     redis:
