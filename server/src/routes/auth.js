@@ -24,6 +24,11 @@ import { logger } from "../utils/logger.js";
 // Register new user
 router.post("/register", async (req, res) => {
 	const { username, first_name, last_name, email, password } = req.body;
+
+	if(!validateParams(req.body, ["username", "first_name", "last_name", "email", "password"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		// Checking if user exists
 		if (await emailExists(email)) {
@@ -99,6 +104,11 @@ router.post("/register", async (req, res) => {
 // verify email
 router.post("/verify-email", async (req, res) => {
 	const { token } = req.body;
+
+	if(!validateParams(req.body, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
 		const { email } = decoded;
@@ -199,6 +209,11 @@ router.post("/login", async (req, res) => {
 // logout
 router.get("/logout/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
 		const { email } = decoded;
@@ -216,6 +231,11 @@ router.get("/logout/:token", async (req, res) => {
 // refresh token
 router.post("/refresh-token", async (req, res) => {
 	const { token } = req.body;
+
+	if(!validateParams(req.body, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		if (!token) {
 			return res.status(401).json({ error: "Invalid token" });

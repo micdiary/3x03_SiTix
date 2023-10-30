@@ -19,12 +19,17 @@ import {
 } from "./event.js";
 import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
 import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
 const router = express.Router();
 
 // get orders by customer
 router.get("/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -92,6 +97,10 @@ router.get("/:token", async (req, res) => {
 router.post("/checkout", async (req, res) => {
 	const { token, event_id, seat_type_id, venue_id, total_price, credit_card, quantity } =
 		req.body;
+
+	if(!validateParams(req.body, ["token", "event_id", "seat_type_id", "venue_id", "total_price", "credit_card", "quantity"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);

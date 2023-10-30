@@ -13,6 +13,7 @@ import { getAdminId, isSuperAdmin } from "./admin.js";
 import { getCurrentTimeInUnix } from "../utils/time.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
 import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
 const uploadDir = "uploads/venue";
 
@@ -44,6 +45,11 @@ const upload = multer({
 // Get Venues
 router.get("/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
+
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
 
@@ -99,6 +105,10 @@ router.get("/:token", async (req, res) => {
 // seat_type = [{"type_name": "VIP", "description":"VIP seats"}, {"type_name": "Regular", "description":"Regular seats"}]
 router.post("/add", upload.single("file"), async (req, res) => {
 	const { token, venue_name, seat_type } = req.body;
+
+	if(!validateParams(req.body, ["token", "venue_name", "seat_type"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -166,6 +176,10 @@ router.post("/add", upload.single("file"), async (req, res) => {
 // seat_type = [{"seat_type_id":"1" ,"type_name": "VIP", "description":"VIP seats"}, {"seat_type_id":"2" ,"type_name": "Regular", "description":"Regular seats"}]
 router.post("/update", upload.single("file"), async (req, res) => {
 	const { token, venue_id, venue_name, seat_type } = req.body;
+
+	if(!validateParams(req.body, ["token", "venue_id", "venue_name", "seat_type"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);

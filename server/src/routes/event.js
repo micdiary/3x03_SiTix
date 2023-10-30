@@ -28,6 +28,7 @@ import {
 import { createRequest } from "./request.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
 import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
 const uploadDir = "uploads/event";
 
@@ -95,6 +96,10 @@ router.get("/", async (req, res) => {
 router.get("/search/:event_name", async (req, res) => {
 	const { event_name } = req.params;
 
+	if(!validateParams(req.params, ["event_name"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		const sql = `SELECT * FROM event WHERE event_name LIKE ? AND status = "active"`;
 		const values = [`%${event_name}%`];
@@ -131,6 +136,10 @@ router.get("/search/:event_name", async (req, res) => {
 // get event details (venue + event seat type)
 router.get("/details/:token/:event_id", async (req, res) => {
 	const { token, event_id } = req.params;
+
+	if(!validateParams(req.params, ["token", "event_id"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -224,6 +233,10 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		category,
 		seat_type,
 	} = req.body;
+
+	if(!validateParams(req.body, ["token", "venue_id", "event_name", "date", "description", "category", "seat_type"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
