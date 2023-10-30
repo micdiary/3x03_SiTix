@@ -22,7 +22,7 @@ import ProtectedRoute from "./ProtectedRoute";
 
 const { Header: AntHeader, Content, Footer: AntFooter } = AntdLayout;
 
-const Layout = (page) => {
+const Layout = ({page}) => {
     const localToken = getToken();
     const storeToken = userStore((state) => state.token);
     const [userID, setUserID] = useState(
@@ -32,12 +32,16 @@ const Layout = (page) => {
         setUserID(localToken !== null ? localToken : storeToken);
     }, [localToken, storeToken]);
 
-    const [userType, setUserType] = useState(null);
+    const localUserType = getUserType();
+    const storeUserType = userStore((state) => state.userType);
+    const [userType, setUserType] = useState(
+        localUserType !== null ? localUserType : storeUserType
+    );
     useEffect(() => {
-        setUserType(getUserType());
-    });
+        setUserType(localUserType !== null ? localUserType : storeUserType);
+    }, [localUserType,storeUserType]);
 
-    const renderPage = ({ page }) => {
+    const renderPage = (page, userID, userType ) => {
         switch (page) {
             case "home":
                 return <Home />;
@@ -73,19 +77,19 @@ const Layout = (page) => {
                 );
             case "superadmin":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "superadmin"}>
                         <AdminManagement />
                     </ProtectedRoute>
                 );
             case "admin":
                 return (
-                    <ProtectedRoute user={userType === "customer"}>
+                    <ProtectedRoute user={userType === "admin"}>
                         <Admin />
                     </ProtectedRoute>
                 );
             case "add-event":
                 return (
-                    <ProtectedRoute user={userType === "customer"}>
+                    <ProtectedRoute user={userType === "admin"}>
                         <AddEvent />
                     </ProtectedRoute>
                 );
@@ -111,7 +115,7 @@ const Layout = (page) => {
             <AntHeader style={{ padding: "0px" }}>
                 <Header />
             </AntHeader>
-            <Content>{renderPage(page, userID)}</Content>
+            <Content>{renderPage(page, userID, userType)}</Content>
             <AntFooter>
                 <Footer />
             </AntFooter>

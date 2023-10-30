@@ -88,7 +88,8 @@ router.post("/register", async (req, res) => {
 		).replace(/{token}/g, token);
 
 		sendEmail(email, "Email Verification", emailBody).then((info) => {
-			logger.log("Email sent: " + info.response);
+			console.log("Email sent: " + info.response)
+			logger.info("Email sent: " + info.response);
 		});
 
 		return res.status(201).json({
@@ -96,7 +97,7 @@ router.post("/register", async (req, res) => {
 		});
 	} catch (err) {
 		console.log(err);
-		logger.log(err);
+		logger.error(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -120,7 +121,7 @@ router.post("/verify-email", async (req, res) => {
 		return res.status(200).json({ message: "User verified successfully" });
 	} catch (err) {
 		console.log(err);
-		logger.log(err);
+		logger.error(err);
 		return res.status(401).json({ error: "Invalid token" });
 	}
 });

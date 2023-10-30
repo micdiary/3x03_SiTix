@@ -171,7 +171,7 @@ router.post("/forget-password", async (req, res) => {
 
 	sendEmail(email, "Reset Password", emailBody).then((info) => {
 		console.log("Email sent: " + info.response);
-		logger.log("Email sent: " + info.response);
+		logger.info("Email sent: " + info.response);
 	});
 
 	return res.status(200).json({
