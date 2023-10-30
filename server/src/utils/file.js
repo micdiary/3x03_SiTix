@@ -1,4 +1,5 @@
 import multer from "multer";
+import { logger } from "./logger.js";
 
 export const maxMB = 5; // Set file size limit to 5MB
 
@@ -25,7 +26,8 @@ export const handleMulterError = (err, req, res, next) => {
 		res.status(err.status).json({ error: err.message });
 	} else {
 		// An unknown error occurred.
-		console.error(err); // or log with your preferred logging solution
+		console.error(err);
+		logger.error(err);
 		res.status(500).json({ error: "An unknown error occurred." });
 	}
 	next(err);

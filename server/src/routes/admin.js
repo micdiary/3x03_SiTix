@@ -47,6 +47,7 @@ router.get("/:token", async (req, res) => {
 		return res.status(200).json({ admins });
 	} catch (err) {
 		console.log(err);
+		logger.log(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -103,11 +104,13 @@ router.post("/add", async (req, res) => {
 
 		sendEmail(admin_email, "Account Created", emailBody).then((info) => {
 			console.log("Email sent: " + info.response);
+			logger.log("Email sent: " + info.response)
 		});
 
 		return res.status(200).json({ message: "Admin added successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.log(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -136,6 +139,7 @@ router.post("/delete", async (req, res) => {
 		return res.status(200).json({ message: "Admin deleted successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.log(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });

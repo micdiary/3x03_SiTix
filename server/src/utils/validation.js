@@ -1,33 +1,37 @@
+import fs from 'fs'
+
 export const validateParams = (input, keysToCheck) => {
-    if (input === undefined || input === null || typeof input !== 'object') {
-      return false;
-    }
-  
-    const inputKeys = Object.keys(input);
-  
-    // Check for missing or extra parameters
-    if (inputKeys.length !== keysToCheck.length || 
-        inputKeys.some(key => !keysToCheck.includes(key))) {
-      return false;
-    }
-  
-    for (let i = 0; i < keysToCheck.length; i++) {
-      if (
-        input[keysToCheck[i]] === undefined ||
-        input[keysToCheck[i]] === null ||
-        input[keysToCheck[i]] === ''
-      ) {
-        return false;
-      }
-  
-      // validate field
-      if (!validateField(input[keysToCheck[i]])) {
-        return false;
-      }
-    }
-  
-    return true;
+  if (input === undefined || input === null || typeof input !== 'object') {
+    return false
   }
+
+  const inputKeys = Object.keys(input)
+
+  // Check for missing or extra parameters
+  if (
+    inputKeys.length !== keysToCheck.length ||
+    inputKeys.some((key) => !keysToCheck.includes(key))
+  ) {
+    return false
+  }
+
+  for (let i = 0; i < keysToCheck.length; i++) {
+    if (
+      input[keysToCheck[i]] === undefined ||
+      input[keysToCheck[i]] === null ||
+      input[keysToCheck[i]] === ''
+    ) {
+      return false
+    }
+
+    // validate field
+    if (!validateField(input[keysToCheck[i]])) {
+      return false
+    }
+  }
+
+  return true
+}
 
 export const validateField = (field) => {
   if (field === undefined || field === null || field === '') {
@@ -52,4 +56,17 @@ export const validateField = (field) => {
 
     return true
   }
+}
+
+export const checkPassword = async (password) => {
+  //open txt file
+  const commonPasswords = fs.readFileSync(
+    './10-million-password-list-top-1000.txt',
+    'utf8',
+  )
+  //check if password is in file
+  if (commonPasswords.includes(password)) {
+    return false
+  }
+  return true
 }

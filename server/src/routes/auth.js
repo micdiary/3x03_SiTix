@@ -18,7 +18,8 @@ import { redis_connection } from "../redis.js";
 import { toProperCase } from "../utils/string.js";
 import { sendEmail } from "../utils/email.js";
 import { verifyAccountPassword } from "./account.js";
-import { validateParams } from "../utils/validation.js";
+import { checkPassword, validateParams } from "../utils/validation.js";
+import { logger } from "../utils/logger.js";
 
 // Register new user
 router.post("/register", async (req, res) => {
@@ -34,8 +35,13 @@ router.post("/register", async (req, res) => {
 		}
 
 		// email validation
-		if (!isValidEmailFormat(email)) {
+		if (!await isValidEmailFormat(email)) {
 			return res.status(409).json({ error: "Invalid email format" });
+		}
+
+		// password validation
+		if(!await checkPassword(password)){
+			return res.status(409).json({ error: "Password too weak" });
 		}
 
 		// Hashing password (brcrypt does not require salt to be stored separately as it is already included in the hashed password)
@@ -77,7 +83,7 @@ router.post("/register", async (req, res) => {
 		).replace(/{token}/g, token);
 
 		sendEmail(email, "Email Verification", emailBody).then((info) => {
-			console.log("Email sent: " + info.response);
+			logger.log("Email sent: " + info.response);
 		});
 
 		return res.status(201).json({
@@ -85,6 +91,7 @@ router.post("/register", async (req, res) => {
 		});
 	} catch (err) {
 		console.log(err);
+		logger.log(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -103,6 +110,7 @@ router.post("/verify-email", async (req, res) => {
 		return res.status(200).json({ message: "User verified successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.log(err);
 		return res.status(401).json({ error: "Invalid token" });
 	}
 });
@@ -183,6 +191,7 @@ router.post("/login", async (req, res) => {
 		});
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -199,6 +208,7 @@ router.get("/logout/:token", async (req, res) => {
 		return res.status(200).json({ message: "User logged out successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(401).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -223,6 +233,7 @@ router.post("/refresh-token", async (req, res) => {
 		return res.status(200).json({ token: token, message: "Token refreshed" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(401).json({ error: "Invalid token" });
 	}
 });

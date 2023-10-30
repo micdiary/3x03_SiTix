@@ -27,6 +27,7 @@ import {
 } from "../utils/time.js";
 import { createRequest } from "./request.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
+import { logger } from "../utils/logger.js";
 
 const uploadDir = "uploads/event";
 
@@ -85,6 +86,7 @@ router.get("/", async (req, res) => {
 		return res.status(200).json({ events });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -121,6 +123,7 @@ router.get("/search/:event_name", async (req, res) => {
 		return res.status(200).json({ events });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -204,6 +207,7 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		return res.status(200).json({ event });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -328,6 +332,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		return res.status(200).json({ message: "Event added successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -346,6 +351,7 @@ export async function startEvent(request_id) {
 		return true;
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return false;
 	}
 }
@@ -359,6 +365,7 @@ export async function getEventSeatType(event_id) {
 		return rows;
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return false;
 	}
 }
@@ -372,6 +379,7 @@ export async function getSeatTypePrice(event_id, seat_type_id) {
 		return rows[0].price;
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return false;
 	}
 }

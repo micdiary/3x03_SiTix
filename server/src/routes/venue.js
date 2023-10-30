@@ -12,6 +12,7 @@ import { checkToken } from "./auth.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
 import { getCurrentTimeInUnix } from "../utils/time.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
+import { logger } from "../utils/logger.js";
 
 const uploadDir = "uploads/venue";
 
@@ -88,6 +89,7 @@ router.get("/:token", async (req, res) => {
 		return res.status(200).json({ venues });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -155,6 +157,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		return res.status(200).json({ message: "Venue added successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });

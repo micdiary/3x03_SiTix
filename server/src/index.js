@@ -15,20 +15,7 @@ import { requestRouter } from "./routes/request.js";
 import { orderRouter } from "./routes/order.js";
 
 import rateLimit from "express-rate-limit";
-import winston from "winston"; //Add winston import
-
-//Configure Winston to log to file
-const logger = winston.createLogger({
-	level: 'debug',
-	format: winston.format.combine(
-		winston.format.timestamp(),
-		winston.format.json()
-	),
-	transports: [
-		new winston.transports.File({filename: 'src/Server.log'}),
-		new winston.transports.Console(console)
-	]
-});
+import { logger } from "./utils/logger.js";
 
 const app = express();
 
@@ -48,7 +35,7 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 // Define rate limiting middleware
 const limiter = rateLimit({
 	windowMs: 60 * 1000, // 1 minute
-  	max: 5, // limit each IP to 5 request per minute
+  	max: 120, // limit each IP to 5 request per minute
   	message: "Too many requests, please wait to try again later.", // message to send back when rate-limited
   	headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
 });
@@ -78,14 +65,14 @@ mysql_connection.connect((err) => {
 		console.error("Error connecting to the database:", err);
 	}
 	else{
-		logger.info("MySQL Connected!");
+		// logger.info("MySQL Connected!");
 		console.log("MySQL Connected!");
 	}
 });
 
 redis_connection.connect(
 	console.log("Redis Connected on redis://busy-Shannon.cloud!"),
-	logger.info("Redis Connected on redis://busy-Shannon.cloud!")
+	// logger.info("Redis Connected on redis://busy-Shannon.cloud!")
 );
 
 redis_connection.on('error',(err) => {
@@ -132,7 +119,7 @@ app.use((err, req, res, next) => {
 });
 
 server.listen(PORT, () => {
-	logger.info(`Server started on port: ${PORT}`);
+	logger.info(`Server started on port ${PORT}`);
 	console.log(`Server started on port ${PORT}`);
 });
 

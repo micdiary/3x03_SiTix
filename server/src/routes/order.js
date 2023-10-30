@@ -1,10 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { checkToken, refreshToken, removeSession } from "./auth.js";
-import { sendEmail } from "../utils/email.js";
-import { toProperCase } from "../utils/string.js";
-import { getAdminId, getNumAdmins, isSuperAdmin } from "./admin.js";
+import { checkToken} from "./auth.js";
 import {
 	JWT_SECRET,
 	INTERNAL_SERVER_ERROR,
@@ -21,6 +18,7 @@ import {
 	reduceEventAvailability,
 } from "./event.js";
 import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
+import { logger } from "../utils/logger.js";
 
 const router = express.Router();
 
@@ -85,6 +83,7 @@ router.get("/:token", async (req, res) => {
 		return res.status(200).json({ orders });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -143,6 +142,7 @@ router.post("/checkout", async (req, res) => {
 		return res.status(200).json({ message: "Order created" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });

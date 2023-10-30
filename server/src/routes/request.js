@@ -17,6 +17,7 @@ import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { getAdminId, getNumAdmins, isSuperAdmin } from "./admin.js";
 import { getEventSeatType, setEventSeatTypeNum, startEvent } from "./event.js";
+import { logger } from "../utils/logger.js";
 
 // get all requests
 router.get("/:token", async (req, res) => {
@@ -79,6 +80,7 @@ router.get("/:token", async (req, res) => {
 		return res.status(200).json({ requests });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -155,6 +157,7 @@ router.post("/update", async (req, res) => {
 		return res.status(200).json({ message: "Request updated" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });

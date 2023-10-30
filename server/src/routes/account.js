@@ -18,6 +18,7 @@ import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
+import { logger } from "../utils/logger.js";
 
 // Get Profile
 router.get("/profile/:token", async (req, res) => {
@@ -53,6 +54,7 @@ router.get("/profile/:token", async (req, res) => {
 		return res.status(200).json({ user });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -84,6 +86,7 @@ router.post("/edit", async (req, res) => {
 		return res.status(200).json({ message: "Profile updated" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -115,6 +118,7 @@ router.get("/delete/:token", async (req, res) => {
 		return res.status(200).json({ message: "Account deleted" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -150,6 +154,7 @@ router.post("/forget-password", async (req, res) => {
 
 	sendEmail(email, "Reset Password", emailBody).then((info) => {
 		console.log("Email sent: " + info.response);
+		logger.log("Email sent: " + info.response);
 	});
 
 	return res.status(200).json({
@@ -212,6 +217,7 @@ router.post("/reset-password", async (req, res) => {
 		return res.status(200).json({ message: "Password updated" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: "Invalid token" });
 	}
 });
@@ -220,7 +226,7 @@ router.post("/reset-password", async (req, res) => {
 export async function verifyAccountPassword(password, passwordToCompare) {
 	try {
 		const result = await bcrypt.compare(password, passwordToCompare);
-		console.log(`password match :${result}`);
+		// console.log(`password match :${result}`);
 		return result;
 	} catch (error) {
 		console.error(error);
