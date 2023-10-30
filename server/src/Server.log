@@ -1,73 +1,13 @@
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T16:51:40.679Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T16:54:09.149Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T16:54:09.173Z"}
-{"level":"info","message":"Got get request","timestamp":"2023-10-29T16:54:44.319Z"}
-{"level":"info","message":"Response: response from express","timestamp":"2023-10-29T16:54:44.320Z"}
-{"level":"info","message":"Got get request","timestamp":"2023-10-29T16:56:01.960Z"}
-{"level":"info","message":"Response: response from express","timestamp":"2023-10-29T16:56:01.961Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T16:56:29.893Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T16:56:29.925Z"}
-{"level":"info","message":"Got get request","timestamp":"2023-10-29T16:56:36.440Z"}
-{"level":"info","message":"Response: response from express","timestamp":"2023-10-29T16:56:36.440Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:02:01.320Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:02:01.344Z"}
-{"level":"info","message":"Request: GET /auth","timestamp":"2023-10-29T17:02:13.390Z"}
-{"level":"info","message":"Request: GET /","timestamp":"2023-10-29T17:02:15.454Z"}
-{"level":"info","message":"Got get request","timestamp":"2023-10-29T17:02:15.455Z"}
-{"level":"info","message":"Response: response from express","timestamp":"2023-10-29T17:02:15.455Z"}
-{"level":"info","message":"Request: GET /test","timestamp":"2023-10-29T17:02:17.131Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:03:44.266Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:03:44.291Z"}
-{"level":"info","message":"Request: GET /test","timestamp":"2023-10-29T17:03:49.568Z"}
-{"level":"info","message":"Request: GET /","timestamp":"2023-10-29T17:03:51.065Z"}
-{"level":"info","message":"Request: GET /","timestamp":"2023-10-29T17:03:53.417Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:04:14.502Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:04:14.528Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:06:02.497Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:06:02.522Z"}
-{"level":"info","message":"[2023-10-29T17:06:06.143Z] GET /","timestamp":"2023-10-29T17:06:06.143Z"}
-{"level":"info","message":"Got get request","timestamp":"2023-10-29T17:06:06.147Z"}
-{"level":"info","message":"Response: response from express","timestamp":"2023-10-29T17:06:06.147Z"}
-{"level":"info","message":"[2023-10-29T17:06:08.659Z] GET /test","timestamp":"2023-10-29T17:06:08.659Z"}
-{"level":"info","message":"[2023-10-29T17:06:11.651Z] GET /auth","timestamp":"2023-10-29T17:06:11.651Z"}
-{"level":"info","message":"[2023-10-29T17:06:15.336Z] GET /api/test","timestamp":"2023-10-29T17:06:15.336Z"}
-{"level":"info","message":"[2023-10-29T17:06:17.515Z] GET /api/auth","timestamp":"2023-10-29T17:06:17.516Z"}
-{"level":"info","message":"[2023-10-29T17:08:08.105Z] GET /account","timestamp":"2023-10-29T17:08:08.105Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:14:21.063Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:15:26.475Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:18:28.532Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:18:28.573Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:19:52.925Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:19:52.949Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:22:17.821Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:22:17.849Z"}
-{"level":"info","message":"[2023-10-29T17:22:31.164Z] GET /","timestamp":"2023-10-29T17:22:31.164Z"}
-{"level":"info","message":"[2023-10-29T17:22:32.833Z] GET /","timestamp":"2023-10-29T17:22:32.833Z"}
-{"level":"info","message":"[2023-10-29T17:22:35.066Z] GET /test","timestamp":"2023-10-29T17:22:35.066Z"}
-{"level":"info","message":"[2023-10-29T17:22:37.678Z] GET /auth","timestamp":"2023-10-29T17:22:37.678Z"}
-{"level":"info","message":"[2023-10-29T17:23:19.462Z] GET /","timestamp":"2023-10-29T17:23:19.462Z"}
-{"level":"info","message":"[2023-10-29T17:23:20.916Z] GET /","timestamp":"2023-10-29T17:23:20.916Z"}
-{"level":"info","message":"[2023-10-29T17:23:23.153Z] GET /test","timestamp":"2023-10-29T17:23:23.153Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:24:55.904Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:24:55.931Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:25:11.765Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:25:11.792Z"}
-{"level":"info","message":"[2023-10-29T17:25:16.951Z] GET /test","timestamp":"2023-10-29T17:25:16.951Z"}
-{"level":"info","message":"[2023-10-29T17:25:26.018Z] GET /","timestamp":"2023-10-29T17:25:26.018Z"}
-{"level":"info","message":"Got get request","timestamp":"2023-10-29T17:25:26.019Z"}
-{"level":"info","message":"Response: response from express","timestamp":"2023-10-29T17:25:26.019Z"}
-{"level":"info","message":"[2023-10-29T17:25:33.376Z] GET /","timestamp":"2023-10-29T17:25:33.377Z"}
-{"level":"info","message":"Got get request","timestamp":"2023-10-29T17:25:33.377Z"}
-{"level":"info","message":"Response: response from express","timestamp":"2023-10-29T17:25:33.377Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:26:05.485Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:26:05.515Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:27:10.928Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:27:10.956Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:27:41.001Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:27:41.028Z"}
-{"level":"info","message":"[2023-10-29T17:28:14.139Z] GET /test","timestamp":"2023-10-29T17:28:14.139Z"}
-{"level":"info","message":"[2023-10-29T17:28:18.687Z] GET /","timestamp":"2023-10-29T17:28:18.687Z"}
-{"level":"info","message":"Got get request","timestamp":"2023-10-29T17:28:18.688Z"}
-{"level":"info","message":"Response: response from express","timestamp":"2023-10-29T17:28:18.688Z"}
-{"level":"info","message":"Server started on port: 3001","timestamp":"2023-10-29T17:28:50.985Z"}
-{"level":"info","message":"MySQL Connected!","timestamp":"2023-10-29T17:28:51.010Z"}
+{"level":"info","message":"Server started on port 3001","timestamp":"2023-10-30T13:45:36.491Z"}
+{"level":"info","message":"Request: GET / http/1.1","timestamp":"2023-10-30T13:45:46.379Z"}
+{"level":"info","message":"Request: Got get request","timestamp":"2023-10-30T13:45:46.379Z"}
+{"level":"info","message":"Response: Got get response","timestamp":"2023-10-30T13:45:46.379Z"}
+{"level":"info","message":"Response for GET /: 200 undefined","timestamp":"2023-10-30T13:45:46.380Z"}
+{"level":"info","message":"Response Body: Got get response","timestamp":"2023-10-30T13:45:46.381Z"}
+{"level":"info","message":"Request: GET /auth http/1.1","timestamp":"2023-10-30T13:46:42.416Z"}
+{"level":"info","message":"Response for GET /auth: 404 Not Found","timestamp":"2023-10-30T13:46:42.417Z"}
+{"level":"info","message":"Response Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot GET /auth</pre>\n</body>\n</html>\n","timestamp":"2023-10-30T13:46:42.417Z"}
+{"level":"info","message":"Server started on port 3001","timestamp":"2023-10-30T14:22:08.767Z"}
+{"level":"info","message":"Request: GET /admin http/1.1","timestamp":"2023-10-30T14:22:22.695Z"}
+{"level":"info","message":"Response for GET /admin: 404 Not Found","timestamp":"2023-10-30T14:22:22.697Z"}
+{"level":"info","message":"Response Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot GET /admin</pre>\n</body>\n</html>\n","timestamp":"2023-10-30T14:22:22.697Z"}
