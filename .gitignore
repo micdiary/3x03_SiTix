@@ -2,5 +2,5 @@
 /client/package-lock.json
 /redis
 /node_modules
-node_modules
+node_modules/
 node_modules
