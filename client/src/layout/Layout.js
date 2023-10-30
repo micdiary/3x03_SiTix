@@ -4,7 +4,7 @@ import { Layout as AntdLayout } from "antd";
 import Footer from "./Footer";
 import Header from "./Header";
 import Home from "../pages/Home";
-import Event from "../pages/Event";
+import Event from "../pages/User/Event";
 import Purchase from "../pages/User/Purchase";
 import Category from "../pages/Cateogry";
 import TicketSelection from "../pages/User/TicketSelection";
@@ -14,6 +14,7 @@ import Admin from "../pages/Admin/Admin";
 import AddEvent from "../pages/Admin/AddEvent";
 import AddVenue from "../pages/Admin/AddVenue";
 import Profile from "../pages/Profile/Profile";
+import SearchContent from "../pages/SearchContent";
 
 import { getToken, getUserType } from "../utils/account";
 import { userStore } from "../store/User";
@@ -21,7 +22,7 @@ import ProtectedRoute from "./ProtectedRoute";
 
 const { Header: AntHeader, Content, Footer: AntFooter } = AntdLayout;
 
-const Layout = (page) => {
+const Layout = ({page}) => {
     const localToken = getToken();
     const storeToken = userStore((state) => state.token);
     const [userID, setUserID] = useState(
@@ -31,12 +32,16 @@ const Layout = (page) => {
         setUserID(localToken !== null ? localToken : storeToken);
     }, [localToken, storeToken]);
 
-    const [userType, setUserType] = useState(null);
+    const localUserType = getUserType();
+    const storeUserType = userStore((state) => state.userType);
+    const [userType, setUserType] = useState(
+        localUserType !== null ? localUserType : storeUserType
+    );
     useEffect(() => {
-        setUserType(getUserType());
-    });
+        setUserType(localUserType !== null ? localUserType : storeUserType);
+    }, [localUserType,storeUserType]);
 
-    const renderPage = ({ page }) => {
+    const renderPage = (page, userID, userType ) => {
         switch (page) {
             case "home":
                 return <Home />;
@@ -44,15 +49,17 @@ const Layout = (page) => {
                 return <Category />;
             case "event":
                 return <Event />;
+            case "search-content":
+                return <SearchContent />;
             case "ticket":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "customer"}>
                         <TicketSelection />
                     </ProtectedRoute>
                 );
             case "purchase":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "customer"}>
                         <Purchase />
                     </ProtectedRoute>
                 );
@@ -70,25 +77,25 @@ const Layout = (page) => {
                 );
             case "superadmin":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "superadmin"}>
                         <AdminManagement />
                     </ProtectedRoute>
                 );
             case "admin":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "admin"}>
                         <Admin />
                     </ProtectedRoute>
                 );
             case "add-event":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "admin"}>
                         <AddEvent />
                     </ProtectedRoute>
                 );
             case "add-venue":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "admin"}>
                         <AddVenue />
                     </ProtectedRoute>
                 );
@@ -108,7 +115,7 @@ const Layout = (page) => {
             <AntHeader style={{ padding: "0px" }}>
                 <Header />
             </AntHeader>
-            <Content>{renderPage(page, userID)}</Content>
+            <Content>{renderPage(page, userID, userType)}</Content>
             <AntFooter>
                 <Footer />
             </AntFooter>

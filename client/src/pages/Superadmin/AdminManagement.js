@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Form, Input, Row, Col, Typography, Space } from "antd";
+import { Table, Modal, Form, Input, Row, Col, Typography } from "antd";
 import Modals from "../../components/Modal";
 import Buttons from "../../components/Buttons";
 import { showNotification } from "../../components/Notification";
@@ -9,6 +9,7 @@ import { addNewAdmin, deleteAdmin, getAdmins } from "../../api/admin";
 
 const AdminManagement = () => {
     const [data, setData] = useState([]);
+    const [update, setUpdate] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [form] = Form.useForm();
 
@@ -23,11 +24,12 @@ const AdminManagement = () => {
                     key: admin.admin_id,
                 }));
                 setData(admins);
+                console.log(res);
             })
             .catch((err) => {
                 showNotification(err.message);
             });
-    }, [data]);
+    }, [update]);
 
     const handleAddAdmin = () => {
         setModalVisible(true);
@@ -42,7 +44,7 @@ const AdminManagement = () => {
         addNewAdmin(req)
             .then((res) => {
                 showNotification(res.message);
-                showNotification("done");
+                setUpdate(!update);
             })
             .catch((err) => {
                 showNotification(err.message);
@@ -74,12 +76,12 @@ const AdminManagement = () => {
     const handleDelete = (adminID) => {
         const req = {
             token: getToken(),
-            adminId: adminID,
+            admin_id: adminID,
         };
-        console.log(req);
         deleteAdmin(req)
             .then((res) => {
                 showNotification(res.message);
+                setUpdate(!update);
             })
             .catch((err) => {
                 showNotification(err.message);
@@ -168,7 +170,7 @@ const AdminManagement = () => {
         <div style={{ minHeight: "100vh" }}>
             <Row justify="center" align="middle">
                 <Typography.Title level={3}>Super Admin</Typography.Title>
-                <Col xs={23} sm={23} md={22} lg={22} xl={22}>
+                <Col span={23}>
                     <Row justify="end" style={{ margin: "15px 0" }}>
                         <Col xs={24} sm={12} md={8} lg={4}>
                             <div>

@@ -7,6 +7,7 @@ import {
     Input,
     Select,
     Upload,
+    Table,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
@@ -15,31 +16,12 @@ import { showNotification } from "../../components/Notification";
 import Modals from "../../components/Modal";
 import { inputStyle, marginBottomOneStyle } from "../PagesStyles";
 
-const Venue = () => {
+const Venue = ({ venueData, updated, setUpdated }) => {
     const { Option } = Select;
     const [modalVisible, setModalVisible] = useState(false);
     const [categoryCount, setCategoryCount] = useState(1);
     const [editVenueID, setEditVenueID] = useState(null);
-    const [venueName, setVenueName] = useState("");
-    const [venueData, setVenueData] = useState([]);
-    const [updated, setUpdated] = useState([]);
     const [form] = Form.useForm();
-
-    // display venue
-    useEffect(() => {
-        getVenue()
-            .then((res) => {
-                console.log(res.venues);
-                const venues = res.venues.map((venue) => ({
-                    ...venue,
-                    key: venue.admin_id,
-                }));
-                setVenueData(venues);
-            })
-            .catch((err) => {
-                showNotification(err.message);
-            });
-    }, [updated]);
 
     const editVenue = (venueId) => (
         <Space>
@@ -52,27 +34,69 @@ const Venue = () => {
         </Space>
     );
 
-    const items = venueData.map((venue) => ({
-        key: venue.venue_id,
-        label: venue.venue_name,
-        children: (
-            <div>
-                <p>Name: {venue.venue_name}</p>
-                <img src={venue.img} alt={venue.venue_name} />
-                <p>Seat Types:</p>
-                <ul>
-                    {venue.seat_type.map((type, typeIndex) => (
-                        <div key={typeIndex}>
-                            <p>
-                                {type.type_name} : {type.description}
-                            </p>
-                        </div>
-                    ))}
-                </ul>
-            </div>
-        ),
-        extra: editVenue(venue.venue_id),
-    }));
+    const items =
+        venueData &&
+        venueData.map((venue) => ({
+            key: venue.venue_id,
+            label: venue.venue_name,
+            children: (
+                <div>
+                    <Table
+                        dataSource={[
+                            {
+                                key: "1",
+                                label: "Name",
+                                value: venue.venue_name,
+                            },
+                            {
+                                key: "2",
+                                label: "Seat Types",
+                                value: (
+                                    <Table
+                                        dataSource={venue.seat_type}
+                                        columns={[
+                                            {
+                                                title: "Type Name",
+                                                dataIndex: "type_name",
+                                                key: "type_name",
+                                            },
+                                            {
+                                                title: "Description",
+                                                dataIndex: "description",
+                                                key: "description",
+                                            },
+                                        ]}
+                                        pagination={{ pageSize: 3 }}
+                                    />
+                                ),
+                            },
+                        ]}
+                        columns={[
+                            {
+                                dataIndex: "label",
+                                key: "label",
+                            },
+                            {
+                                dataIndex: "value",
+                                key: "value",
+                            },
+                        ]}
+                        pagination={false}
+                    />
+                    <img
+                        src={`data:image/jpg;base64,${venue.img}`}
+                        alt={venue.venue_name}
+                    />
+                </div>
+            ),
+            extra: editVenue(venue.venue_id),
+        }));
+
+    useEffect(() => {
+        if (editVenueID) {
+            setCategoryCount(editVenueID.seat_type.length);
+        }
+    }, [editVenueID]);
 
     // edit venue
     const handleEditVenue = (venueId) => {
@@ -88,14 +112,11 @@ const Venue = () => {
 
         for (let i = 0; i < selectedVenue.seat_type.length; i++) {
             form.setFieldsValue({
-                [`seat_type_id[${i}]`]: selectedVenue.seat_type[i].seat_type_id,
                 [`type_name[${i}]`]: selectedVenue.seat_type[i].type_name,
                 [`description[${i}]`]: selectedVenue.seat_type[i].description,
             });
         }
-        setCategoryCount(selectedVenue.seat_type.length);
-        setVenueName(selectedVenue.venue_name);
-        setEditVenueID(venueId);
+        setEditVenueID(selectedVenue);
         setModalVisible(true);
     };
 
@@ -103,17 +124,18 @@ const Venue = () => {
         const seatArray = [];
         for (let i = 0; i < categoryCount; i++) {
             seatArray.push({
-                seat_type_id: values[`seat_type_id[${i}]`],
+                seat_type_id: editVenueID.seat_type[i].seat_type_id,
                 type_name: values[`type_name[${i}]`],
                 description: values[`description[${i}]`],
             });
         }
         const req = {
-            venue_id: editVenueID,
+            venue_id: editVenueID.venue_id,
             venue_name: values.venue_name,
             seat_type: JSON.stringify(seatArray),
             file: values.image.file,
         };
+        console.log(req);
         updateVenue(req)
             .then((res) => {
                 showNotification(res.message);
@@ -159,11 +181,6 @@ const Venue = () => {
                 </Select>
             ),
         },
-        ...Array.from({ length: categoryCount }, (_, index) => ({
-            label: `Seat Type ID ${index + 1}`,
-            name: `seat_type_id[${index}]`,
-            input: <Input disabled />,
-        })),
         ...Array.from({ length: categoryCount }, (_, index) => ({
             label: `Seat Type ${index + 1}`,
             name: `type_name[${index}]`,
@@ -215,7 +232,6 @@ const Venue = () => {
             <Modals
                 modal2Open={modalVisible}
                 closeModal={handleModalCancel}
-                modalTitle={`Edit ${venueName}`}
                 modalContent={
                     <Form
                         form={form}

@@ -17,15 +17,19 @@ import {
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken, refreshToken, removeSession, userExists } from "./auth.js";
-import { sendEmail } from "../utils/email.js";
-import { toProperCase } from "../utils/string.js";
+import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { getSeatTypes, isVenueValid, seatTypeExists } from "./venue.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
-import { getCurrentTime } from "../utils/time.js";
+import {
+	convertToDate,
+	convertToUnixTime,
+	getCurrentTimeInUnix,
+} from "../utils/time.js";
 import { createRequest } from "./request.js";
+import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
+import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
-const maxMB = 5; // Set file size limit to 5MB
 const uploadDir = "uploads/event";
 
 // Create uploads folder if it doesn't exist
@@ -46,41 +50,16 @@ const storage = multer.diskStorage({
 // Create Multer instance with the storage engine
 const upload = multer({
 	storage: storage,
+	fileFilter: fileFilter,
 	limits: {
+		files: 1, // Allow only 1 file per request
 		fileSize: maxMB * 1024 * 1024, // Set file size limit
 	},
 });
 
-// Custom error handling function for multer
-const handleMulterError = (err, req, res, next) => {
-	if (err instanceof multer.MulterError) {
-		if (err.code === "LIMIT_FILE_SIZE") {
-			return res.status(400).json({
-				error:
-					"File size limit exceeded. Maximum file size allowed is" +
-					maxMB +
-					"MB.",
-			});
-		}
-		// Handle other multer errors if needed
-		return res.status(500).json({ error: "File upload error" });
-	}
-	next(err);
-};
-
 // get all events
-router.get("/:token", async (req, res) => {
-	const { token } = req.params;
-
+router.get("/", async (req, res) => {
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
-		
-		if (!(await checkToken(email, token))) {
-			return res
-				.status(409)
-				.json({ error: "Invalid token used. Please relogin" });
-		}
-
 		const sql = `SELECT * FROM event where status = "active"`; // only show active events
 		const [rows] = await mysql_connection.promise().query(sql);
 		const events = rows;
@@ -89,16 +68,17 @@ router.get("/:token", async (req, res) => {
 		for (const event of events) {
 			const img = event.banner_img;
 			const imgPath = `${uploadDir}/${img}`;
-			if(fs.existsSync(imgPath)) {
+			if (fs.existsSync(imgPath)) {
 				// Read the file from the file system
 				const fileData = fs.readFileSync(imgPath);
 				// Convert it to a base64 string
-				const base64Image = new Buffer.from(fileData).toString('base64');
+				const base64Image = new Buffer.from(fileData).toString("base64");
 				// Attach it to your response object
 				event.banner_img = base64Image;
 			} else {
 				event.banner_img = "";
 			}
+			event.date = convertToDate(event.date);
 			delete event.created_at;
 			delete event.updated_at;
 			delete event.updated_by;
@@ -107,6 +87,48 @@ router.get("/:token", async (req, res) => {
 		return res.status(200).json({ events });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
+		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
+	}
+});
+
+// get event by event name
+router.get("/search/:event_name", async (req, res) => {
+	const { event_name } = req.params;
+
+	if(!validateParams(req.params, ["event_name"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
+	try {
+		const sql = `SELECT * FROM event WHERE event_name LIKE ? AND status = "active"`;
+		const values = [`%${event_name}%`];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		const events = rows;
+
+		// get events image
+		for (const event of events) {
+			const img = event.banner_img;
+			const imgPath = `${uploadDir}/${img}`;
+			if (fs.existsSync(imgPath)) {
+				// Read the file from the file system
+				const fileData = fs.readFileSync(imgPath);
+				// Convert it to a base64 string
+				const base64Image = new Buffer.from(fileData).toString("base64");
+				// Attach it to your response object
+				event.banner_img = base64Image;
+			} else {
+				event.banner_img = "";
+			}
+			event.date = convertToDate(event.date);
+			delete event.created_at;
+			delete event.updated_at;
+			delete event.updated_by;
+		}
+		return res.status(200).json({ events });
+	} catch (err) {
+		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -114,6 +136,10 @@ router.get("/:token", async (req, res) => {
 // get event details (venue + event seat type)
 router.get("/details/:token/:event_id", async (req, res) => {
 	const { token, event_id } = req.params;
+
+	if(!validateParams(req.params, ["token", "event_id"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -131,11 +157,11 @@ router.get("/details/:token/:event_id", async (req, res) => {
 
 		const img = event.banner_img;
 		const imgPath = `${uploadDir}/${img}`;
-		if(fs.existsSync(imgPath)) {
+		if (fs.existsSync(imgPath)) {
 			// Read the file from the file system
 			const fileData = fs.readFileSync(imgPath);
 			// Convert it to a base64 string
-			const base64Image = new Buffer.from(fileData).toString('base64');
+			const base64Image = new Buffer.from(fileData).toString("base64");
 			// Attach it to your response object
 			event.banner_img = base64Image;
 		} else {
@@ -154,6 +180,20 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const values2 = [event.venue_id];
 		const [rows2] = await mysql_connection.promise().query(sql2, values2);
 		const venue = rows2[0];
+
+		const venueImgPath = `uploads/venue/${venue.img}`;
+
+		if (fs.existsSync(venueImgPath)) {
+			// Read the file from the file system
+			const fileData = fs.readFileSync(venueImgPath);
+			// Convert it to a base64 string
+			const base64Image = new Buffer.from(fileData).toString("base64");
+			// Attach it to your response object
+			venue.img = base64Image;
+		} else {
+			venue.img = "";
+		}
+
 		delete venue.created_at;
 		delete venue.updated_at;
 		delete venue.updated_by;
@@ -167,21 +207,22 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const values4 = [event.venue_id];
 		const [rows4] = await mysql_connection.promise().query(sql4, values4);
 		const venue_seat_type = rows4;
-		
+
 		event.venue = venue;
 		event.seat_type = seat_type;
 		event.venue_seat_type = venue_seat_type;
-		
-		return res.status(200).json({ event });
+		event.date = convertToDate(event.date);
 
+		return res.status(200).json({ event });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
 
 // add event
-// seat_type = [{"seat_type_id": 1, "price": 1000, "available_seats": 30}, {"seat_type_id": 2, "price": 500,"available_seats": 40}}]
+// seat_type = [{"seat_type_id": 1, "price": 1000, "available_seats": 30}, {"seat_type_id": 2, "price": 500,"available_seats": 40}]
 router.post("/add", upload.single("file"), async (req, res) => {
 	const {
 		token,
@@ -192,6 +233,10 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		category,
 		seat_type,
 	} = req.body;
+
+	if(!validateParams(req.body, ["token", "venue_id", "event_name", "date", "description", "category", "seat_type"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -236,12 +281,12 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		if (diffDays < 7) {
 			return res.status(409).json({ error: "Invalid event date" });
 		}
-		
+
 		// generate uuid
 		const uuid = uuidv4();
 
 		// get current time
-		const created_at = getCurrentTime();
+		const created_at = getCurrentTimeInUnix();
 
 		// get admin id
 		const admin_id = await getAdminId(email);
@@ -256,7 +301,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 			uuid,
 			venue_id,
 			event_name,
-			new Date(date),
+			convertToUnixTime(date),
 			description,
 			category,
 			img,
@@ -300,6 +345,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		return res.status(200).json({ message: "Event added successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -318,8 +364,62 @@ export async function startEvent(request_id) {
 		return true;
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return false;
 	}
+}
+
+// get event seat type
+export async function getEventSeatType(event_id) {
+	try {
+		const sql = `SELECT * FROM event_seat_type WHERE event_id = ?`;
+		const values = [event_id];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		return rows;
+	} catch (err) {
+		console.log(err);
+		logger.error(err);
+		return false;
+	}
+}
+
+// get event seat type price
+export async function getSeatTypePrice(event_id, seat_type_id) {
+	try {
+		const sql = `SELECT * FROM event_seat_type WHERE event_id = ? AND seat_type_id = ?`;
+		const values = [event_id, seat_type_id];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		return rows[0].price;
+	} catch (err) {
+		console.log(err);
+		logger.error(err);
+		return false;
+	}
+}
+
+// insert event & seat type number to redis
+export async function setEventSeatTypeNum(event_id, seat_type_id, num) {
+	await redis_connection.set(`${event_id}/${seat_type_id}`, num);
+}
+
+// check event availability in redis
+export async function checkEventAvailability(event_id, seat_type_id) {
+	const num = await redis_connection.get(`${event_id}/${seat_type_id}`);
+	if (num === null || num < 0) {
+		return false;
+	}
+	return true;
+}
+
+// reduce event availability in redis
+export async function reduceEventAvailability(event_id, seat_type_id, number) {
+	const num = await redis_connection.get(`${event_id}/${seat_type_id}`);
+	if (num === null || num < 0) {
+		return false;
+	}
+	await redis_connection.decrBy(`${event_id}/${seat_type_id}`, number);
+
+	return true;
 }
 
 router.use(handleMulterError);
