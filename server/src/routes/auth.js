@@ -20,6 +20,7 @@ import { sendEmail } from "../utils/email.js";
 import { verifyAccountPassword } from "./account.js";
 import { checkPassword, validateParams } from "../utils/validation.js";
 import { logger } from "../utils/logger.js";
+import { getCurrentTimeInUnix } from "../utils/time.js";
 
 // Register new user
 router.post("/register", async (req, res) => {
@@ -282,11 +283,11 @@ export async function usernameExists(username) {
 
 export async function isValidEmailFormat(email) {
 	const emailRegex = /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,4}$/;
-	if (emailRegex.test(field)) {
+	if (emailRegex.test(email)) {
     return true;
-}
-
-}
+	}
+	return false;
+}	
 
 // refresh token
 export async function refreshToken(email, token) {
