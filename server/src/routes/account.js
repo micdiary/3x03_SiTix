@@ -182,8 +182,9 @@ router.post("/forget-password", async (req, res) => {
 // reset password
 router.post("/reset-password", async (req, res) => {
 	const { token, password, newPassword } = req.body;
+	console.log(req.body)
 
-	if(!validateParams(req.body, ["token", "password", "newPassword"])){
+	if(!validateParams(req.body, ["token", "newPassword"])){
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
