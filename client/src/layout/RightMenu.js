@@ -1,21 +1,27 @@
 import "./Layout.css";
 import React, { useState, useRef, useEffect } from "react";
-import { Input, Button, Dropdown } from "antd";
-import * as constants from "../constants";
 import { useNavigate } from "react-router-dom";
-import { useMediaQuery } from "react-responsive";
+import { Button, Dropdown } from "antd";
 import { UserOutlined, SearchOutlined } from "@ant-design/icons";
+import { useMediaQuery } from "react-responsive";
+import * as constants from "../constants";
+import Search from "../components/Search";
+import { showNotification } from "../components/Notification";
 import { buttonBlack, buttonWhite } from "../components/Buttons";
 import { logout } from "../api/account";
-import { showNotification } from "../components/Notification";
-import { removeToken, removeUserType } from "../utils/account";
 import { userStore } from "../store/User";
+import { getUserType, removeToken, removeUserType } from "../utils/account";
 
 const RightMenu = ({ userType, token }) => {
-    const removeUser = userStore((state) => state.removeUser);
-
     let navigate = useNavigate();
+
+    const inputRef = useRef(null);
     const isLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isSearchExpanded, setSearchExpanded] = useState(false);
+
+    const removeUser = userStore((state) => state.removeUser);
 
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
@@ -23,9 +29,6 @@ const RightMenu = ({ userType, token }) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-
-    const [isSearchExpanded, setSearchExpanded] = useState(false);
-    const inputRef = useRef(null);
     const toggleSearch = () => {
         setSearchExpanded(!isSearchExpanded);
     };
@@ -37,7 +40,6 @@ const RightMenu = ({ userType, token }) => {
     const loginButton = () => {
         navigate(constants.LOGIN_URL);
     };
-
     const logoutButton = () => {
         logout()
             .then((res) => {
@@ -55,7 +57,7 @@ const RightMenu = ({ userType, token }) => {
     // after login
     const profileItems = [];
 
-    if (userType === "customer") {
+    if ((userType || getUserType()) === "customer") {
         profileItems.push({
             key: "1",
             label: <a href={constants.PROFILE_URL}>Profile</a>,
@@ -79,15 +81,22 @@ const RightMenu = ({ userType, token }) => {
         });
     }
 
+    const items = [
+        { id: 1, name: "Item 1" },
+        { id: 2, name: "Item 2" },
+        // Add more items here
+    ];
+
+    const handleSearchInputChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
     if (isLaptop) {
+        console.log(userType);
         return (
             <div className="right-icons">
                 {(userType === "customer" || userType === null) && (
-                    <Input
-                        prefix={<SearchOutlined />}
-                        placeholder="Search..."
-                        className="search-input"
-                    />
+                    <Search className={"search-input"} />
                 )}
 
                 {token === null ? (
@@ -115,20 +124,17 @@ const RightMenu = ({ userType, token }) => {
     } else {
         return (
             <div className="right-icons">
-                {isSearchExpanded ? (
-                    <div ref={inputRef}>
-                        <Input
-                            prefix={<SearchOutlined />}
-                            placeholder="Search..."
-                            className="search-input-two"
+                {(getUserType() === "customer" || getUserType() === null) &&
+                    (isSearchExpanded ? (
+                        <div ref={inputRef}>
+                            <Search className={"search-input-two"} />
+                        </div>
+                    ) : (
+                        <SearchOutlined
+                            className="search-icon"
+                            onClick={toggleSearch}
                         />
-                    </div>
-                ) : (
-                    <SearchOutlined
-                        className="search-icon"
-                        onClick={toggleSearch}
-                    />
-                )}{" "}
+                    ))}{" "}
                 {token === null ? (
                     <UserOutlined
                         className="login-icon"

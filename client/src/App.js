@@ -6,6 +6,7 @@ import ResetPassword from "./pages/ResetPassword";
 import ForgetPassword from "./pages/ForgetPassword";
 import UserVerification from "./pages/UserVerification";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
+import SearchContent from "./pages/SearchContent";
 
 function App() {
     return (
@@ -36,6 +37,10 @@ function App() {
                 <Route
                     path={constants.RESET_PASSWORD_URL}
                     element={<ResetPassword />}
+                />
+                <Route
+                    path={`${constants.SEARCH_URL}`}
+                    element={<Layout page={"search-content"} />}
                 />
                 {/* User */}
                 <Route

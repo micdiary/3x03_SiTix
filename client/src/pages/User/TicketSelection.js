@@ -121,7 +121,7 @@ const TicketSelection = () => {
                 const total = selectedPrice
                     ? selectedPrice.price * selectedQuantity
                     : 0;
-                return `$${total}`;
+                return `$ ${total}`;
             },
             width: "25%",
         },
@@ -150,7 +150,7 @@ const TicketSelection = () => {
                         <img
                             src={`data:image/jpg;base64,${eventData.venue.img}`}
                             alt={eventData.venue.venue_name}
-                            style={{ maxWidth: "100%", height: "auto" }}
+                            style={{ maxWidth: "70%", height: "auto" }}
                         />
                     </div>
                     <Row style={{ margin: "10px 0" }}>

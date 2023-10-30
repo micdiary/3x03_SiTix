@@ -12,7 +12,6 @@ const History = () => {
     useEffect(() => {
         getOrder()
             .then((res) => {
-                console.log(res.orders);
                 setOrder(res.orders);
             })
             .catch((err) => {
@@ -44,8 +43,15 @@ const History = () => {
                                         ticket_type={
                                             orderItem.seat_type.type_name
                                         }
+                                        event_price={
+                                            orderItem.event_seat_type.price
+                                        }
                                         booking_fee={6}
                                         total_price={orderItem.total_price}
+                                        qty={
+                                            (orderItem.total_price - 6) /
+                                            orderItem.event_seat_type.price
+                                        }
                                     />
                                 </div>
                             );

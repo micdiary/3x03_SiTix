@@ -5,6 +5,7 @@ export const FORGET_PASSWORD_URL = "/forget-password";
 export const RESET_PASSWORD_URL = "/reset-password";
 export const USER_VERIFICATION_URL = "/user-verification";
 export const CATEGORY_URL = "/category";
+export const SEARCH_URL = "/search";
 export const EVENT_URL = "/event";
 export const TICKET_URL = "/ticket";
 export const PURCHASE_URL = "/purchase";
@@ -38,6 +39,7 @@ export const UPDATE_VENUE_API = `${URL}/venue/update`;
 
 export const EVENT_API = `${URL}/event`;
 export const ADD_EVENT_API = `${URL}/event/add`;
+export const SEARCH_API = `${URL}/event/search`;
 export const EVENT_DETAILS_API = `${URL}/event/details`;
 
 export const REQUEST_API = `${URL}/request`;

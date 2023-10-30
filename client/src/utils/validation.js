@@ -11,7 +11,7 @@ export const validateCardNumber = (rule, value) => {
 };
 
 export const validateExpiryDate = (rule, value) => {
-    if (/^(0[1-9]|1[0-2])(202\d{1})$/.test(value)) {
+    if (/^(0[1-9]|1[0-2])(20\d{2})$/.test(value)) {
         return Promise.resolve();
     }
     return Promise.reject("Invalid expiry date (MMYYYY)");

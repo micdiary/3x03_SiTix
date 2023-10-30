@@ -14,6 +14,7 @@ import Admin from "../pages/Admin/Admin";
 import AddEvent from "../pages/Admin/AddEvent";
 import AddVenue from "../pages/Admin/AddVenue";
 import Profile from "../pages/Profile/Profile";
+import SearchContent from "../pages/SearchContent";
 
 import { getToken, getUserType } from "../utils/account";
 import { userStore } from "../store/User";
@@ -44,15 +45,17 @@ const Layout = (page) => {
                 return <Category />;
             case "event":
                 return <Event />;
+            case "search-content":
+                return <SearchContent />;
             case "ticket":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "customer"}>
                         <TicketSelection />
                     </ProtectedRoute>
                 );
             case "purchase":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "customer"}>
                         <Purchase />
                     </ProtectedRoute>
                 );
@@ -76,19 +79,19 @@ const Layout = (page) => {
                 );
             case "admin":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "customer"}>
                         <Admin />
                     </ProtectedRoute>
                 );
             case "add-event":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "customer"}>
                         <AddEvent />
                     </ProtectedRoute>
                 );
             case "add-venue":
                 return (
-                    <ProtectedRoute user={userID}>
+                    <ProtectedRoute user={userType === "admin"}>
                         <AddVenue />
                     </ProtectedRoute>
                 );

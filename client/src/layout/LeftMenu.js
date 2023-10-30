@@ -31,7 +31,9 @@ const LeftMenu = () => {
         <Menu mode={isLaptop ? "horizontal" : "vertical"}>
             {items.map((item) => (
                 <Menu.Item key={item.key} style={menuItemStyle}>
-                    {item.key === "category" ? (
+                    {item.key === "category" ||
+                    item.key === "event" ||
+                    item.key === "venue" ? (
                         <Link to={constants.CATEGORY_URL}>
                             {item.icon} {item.label}
                         </Link>
