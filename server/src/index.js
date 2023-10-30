@@ -34,8 +34,8 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 // Define rate limiting middleware
 const limiter = rateLimit({
-	windowMs: 60 * 1000, // 1 minute
-  	max: 120, // limit each IP to 5 request per minute
+	windowMs:  1000, // 1 sec
+  	max: 5, // limit each IP to 5 request per second
   	message: "Too many requests, please wait to try again later.", // message to send back when rate-limited
   	headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
 });

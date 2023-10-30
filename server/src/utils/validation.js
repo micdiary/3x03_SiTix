@@ -38,7 +38,7 @@ export const validateField = (field) => {
     return false
   } else {
     // allow alphanumeric, underscore, common special characters
-    const regex = /^[a-zA-Z0-9_!@#$%^&*()+\-=[\]{}|;:'",.<>?~]*$/
+    const regex = /^[a-zA-Z0-9_!@#$%^&*()+\-=[\]{}|;:'",.<>?~ ]*$/
     if (!regex.test(field)) {
       return false
     }
