@@ -17,10 +17,16 @@ import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { getAdminId, getNumAdmins, isSuperAdmin } from "./admin.js";
 import { getEventSeatType, setEventSeatTypeNum, startEvent } from "./event.js";
+import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
 // get all requests
 router.get("/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -35,7 +41,7 @@ router.get("/:token", async (req, res) => {
 			return res.status(409).json({ error: "Invalid token used" });
 		}
 
-		const sql = `SELECT r.request_id , a.username AS admin, e.event_id, e.event_name, v.venue_name, v.venue_id, r.approval_num
+		const sql = `SELECT r.request_id , a.admin_id, a.username AS admin, e.event_id, e.event_name, v.venue_name, v.venue_id, r.approval_num
             FROM request r
             JOIN admin a ON r.admin_id = a.admin_id
             JOIN event e ON r.event_id = e.event_id
@@ -68,11 +74,18 @@ router.get("/:token", async (req, res) => {
 				requests.splice(i, 1);
 				i--;
 			}
+
+			// hide their own request
+			if (request.admin_id === admin_id) {
+				requests.splice(i, 1);
+				i--;
+			}
 		}
-		
+
 		return res.status(200).json({ requests });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -80,6 +93,10 @@ router.get("/:token", async (req, res) => {
 // accept/reject request
 router.post("/update", async (req, res) => {
 	const { token, request_id, status } = req.body;
+
+	if(!validateParams(req.body, ["token", "request_id", "status"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -94,20 +111,19 @@ router.post("/update", async (req, res) => {
 			return res.status(409).json({ error: "Invalid token used" });
 		}
 
-		if(status !== "accepted" && status !== "rejected") {
+		if (status !== "accepted" && status !== "rejected") {
 			return res.status(409).json({ error: "Invalid status" });
-		}		
+		}
 
 		const admin_id = await getAdminId(email);
 
-		if(status === "accepted") {
+		if (status === "accepted") {
 			await redis_connection.rPush(`${request_id}/accepted`, admin_id);
 
 			const sql = `UPDATE request SET approval_num = approval_num + 1 WHERE request_id = ?`;
 			const values = [request_id];
 			const [rows] = await mysql_connection.promise().query(sql, values);
-		}
-		else{
+		} else {
 			await redis_connection.rPush(`${request_id}/rejected`, admin_id);
 		}
 
@@ -117,9 +133,12 @@ router.post("/update", async (req, res) => {
 		const approval_num = rows[0].approval_num;
 
 		const numAdmins = await getNumAdmins();
-		if((approval_num >= numAdmins/2) && await redis_connection.lLen(`${request_id}/accepted`) >= numAdmins/2) {
+		if (
+			approval_num >= numAdmins / 2 &&
+			(await redis_connection.lLen(`${request_id}/accepted`)) >= numAdmins / 2
+		) {
 			const response = await startEvent(request_id);
-			if(response){
+			if (response) {
 				const sql = `UPDATE request SET status = "accepted" WHERE request_id = ?`;
 				const values = [request_id];
 				const [rows] = await mysql_connection.promise().query(sql, values);
@@ -128,23 +147,26 @@ router.post("/update", async (req, res) => {
 				const values2 = [request_id];
 				const [rows2] = await mysql_connection.promise().query(sql2, values2);
 				const event_id = rows2[0].event_id;
-				await redis_connection.set(`${event_id}/`, "started");
 
 				const event_seat_types = await getEventSeatType(event_id);
-				for(let i = 0; i < event_seat_types.length; i++) {
+				for (let i = 0; i < event_seat_types.length; i++) {
 					const event_seat_type = event_seat_types[i];
-					await setEventSeatTypeNum(event_seat_type.event_seat_type_id, event_seat_type.available_seats)
+					await setEventSeatTypeNum(
+						event_seat_type.event_id,
+						event_seat_type.seat_type_id,
+						event_seat_type.available_seats
+					);
 				}
 
 				return res.status(200).json({ message: "Event started!" });
-			}
-			else{
+			} else {
 				return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 			}
 		}
 		return res.status(200).json({ message: "Request updated" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });

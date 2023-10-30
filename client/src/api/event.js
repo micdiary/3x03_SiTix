@@ -1,9 +1,18 @@
 import { requestGet, requestPost } from "../utils/request";
-import { ADD_EVENT_API, EVENT_API, EVENT_DETAILS_API } from "../constants";
+import {
+    ADD_EVENT_API,
+    EVENT_API,
+    EVENT_DETAILS_API,
+    SEARCH_API,
+} from "../constants";
 import { getToken } from "../utils/account";
 
 export async function getEvent() {
-    return requestGet(`${EVENT_API}/${getToken()}`);
+    return requestGet(`${EVENT_API}`);
+}
+
+export async function searchEvent(req) {
+    return requestGet(`${SEARCH_API}/${req.event_name}`);
 }
 
 export async function getEventDetails(req) {

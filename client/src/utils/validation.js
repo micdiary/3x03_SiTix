@@ -1,5 +1,5 @@
-export const validateCardNumber = (value) => {
-    const cardNumber = value.replace(/\s/g, "");
+export const validateCardNumber = (rule, value) => {
+    const cardNumber = String(value).replace(/\s/g, "");
     if (
         /^(2|5)\d{15}$/.test(cardNumber) ||
         /^4\d{15}$/.test(cardNumber) ||
@@ -10,8 +10,7 @@ export const validateCardNumber = (value) => {
     return Promise.reject("Invalid card number");
 };
 
-export const validateExpiryDate = (value) => {
-    // Check if the expiry date is in MMYYYY format
+export const validateExpiryDate = (rule, value) => {
     if (/^(0[1-9]|1[0-2])(20\d{2})$/.test(value)) {
         return Promise.resolve();
     }
@@ -26,7 +25,7 @@ export function getPasswordValidationRule(customRules = []) {
         },
         {
             max: 128,
-            message: "Password exceeded 128 characters!"
+            message: "Password exceeded 128 characters!",
             //long password characters may be used to perform Denial-Of-Service attacks
         },
         {

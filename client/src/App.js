@@ -1,5 +1,4 @@
 import Login from "./pages/Login";
-import Queue from "./pages/Queue";
 import Layout from "./layout/Layout";
 import Register from "./pages/Register";
 import * as constants from "./constants";
@@ -7,6 +6,7 @@ import ResetPassword from "./pages/ResetPassword";
 import ForgetPassword from "./pages/ForgetPassword";
 import UserVerification from "./pages/UserVerification";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
+import SearchContent from "./pages/SearchContent";
 
 function App() {
     return (
@@ -38,13 +38,17 @@ function App() {
                     path={constants.RESET_PASSWORD_URL}
                     element={<ResetPassword />}
                 />
+                <Route
+                    path={`${constants.SEARCH_URL}`}
+                    element={<Layout page={"search-content"} />}
+                />
                 {/* User */}
                 <Route
-                    path={constants.TICKET_URL}
+                    path={`${constants.TICKET_URL}`}
                     element={<Layout page={"ticket"} />}
                 />
                 <Route
-                    path={constants.PURCHASE_URL}
+                    path={`${constants.PURCHASE_URL}`}
                     element={<Layout page={"purchase"} />}
                 />
                 <Route
@@ -55,8 +59,6 @@ function App() {
                     path={constants.PROFILE_URL}
                     element={<Layout page={"profile"} />}
                 />
-                {/* Can remove later */}
-                <Route path={constants.QUEUE_URL} element={<Queue />} />
 
                 {/* SuperAdmin */}
                 <Route

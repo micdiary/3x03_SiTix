@@ -18,10 +18,18 @@ import { redis_connection } from "../redis.js";
 import { toProperCase } from "../utils/string.js";
 import { sendEmail } from "../utils/email.js";
 import { verifyAccountPassword } from "./account.js";
+import { checkPassword, validateParams } from "../utils/validation.js";
+import { logger } from "../utils/logger.js";
+import { getCurrentTimeInUnix } from "../utils/time.js";
 
 // Register new user
 router.post("/register", async (req, res) => {
 	const { username, first_name, last_name, email, password } = req.body;
+
+	if(!validateParams(req.body, ["username", "first_name", "last_name", "email", "password"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		// Checking if user exists
 		if (await emailExists(email)) {
@@ -32,6 +40,16 @@ router.post("/register", async (req, res) => {
 			return res.status(409).json({ error: "Username already exists" });
 		}
 
+		// email validation
+		if (!await isValidEmailFormat(email)) {
+			return res.status(409).json({ error: "Invalid email format" });
+		}
+
+		// password validation
+		if(!await checkPassword(password)){
+			return res.status(409).json({ error: "Password too weak" });
+		}
+
 		// Hashing password (brcrypt does not require salt to be stored separately as it is already included in the hashed password)
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -39,7 +57,7 @@ router.post("/register", async (req, res) => {
 		const uuid = uuidv4();
 
 		// Create new user
-		const sql = `INSERT INTO user (user_id, username, first_name, last_name, email, password_hash, is_verified, failed_tries) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)`;
+		const sql = `INSERT INTO user (user_id, username, first_name, last_name, email, password_hash, is_verified, created_at, failed_tries) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 		const values = [
 			uuid,
 			username,
@@ -48,6 +66,7 @@ router.post("/register", async (req, res) => {
 			email,
 			hashedPassword,
 			0,
+			getCurrentTimeInUnix(),
 			0,
 		];
 		await mysql_connection.promise().query(sql, values);
@@ -70,7 +89,8 @@ router.post("/register", async (req, res) => {
 		).replace(/{token}/g, token);
 
 		sendEmail(email, "Email Verification", emailBody).then((info) => {
-			console.log("Email sent: " + info.response);
+			console.log("Email sent: " + info.response)
+			logger.info("Email sent: " + info.response);
 		});
 
 		return res.status(201).json({
@@ -78,6 +98,7 @@ router.post("/register", async (req, res) => {
 		});
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -85,6 +106,11 @@ router.post("/register", async (req, res) => {
 // verify email
 router.post("/verify-email", async (req, res) => {
 	const { token } = req.body;
+
+	if(!validateParams(req.body, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
 		const { email } = decoded;
@@ -96,6 +122,7 @@ router.post("/verify-email", async (req, res) => {
 		return res.status(200).json({ message: "User verified successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(401).json({ error: "Invalid token" });
 	}
 });
@@ -103,6 +130,10 @@ router.post("/verify-email", async (req, res) => {
 // Login
 router.post("/login", async (req, res) => {
 	const { username, password } = req.body;
+
+	if(!validateParams(req.body, ["username", "password"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		let user = [];
@@ -120,6 +151,18 @@ router.post("/login", async (req, res) => {
 			}
 		}
 
+		if (user[0].failed_tries >= 5) {
+			sendEmail(
+				user[0].email,
+				"Account Locked",
+				"Your account has been locked due to too many failed login attempts. Please reset your password to unlock your account."
+			);
+
+			return res.status(401).json({
+				error: "Account has been locked. Please check your email.",
+			});
+		}
+
 		if (user[0].is_verified === 0) {
 			return res.status(401).json({ error: "User not verified" });
 		}
@@ -130,6 +173,11 @@ router.post("/login", async (req, res) => {
 			user[0].password_hash
 		);
 		if (!passwordMatch) {
+			if (user[0].failed_tries !== undefined) {
+				const sql = `UPDATE user SET failed_tries = ? WHERE email = ?`;
+				const values = [user[0].failed_tries + 1, user[0].email];
+				await mysql_connection.promise().query(sql, values);
+			}
 			return res.status(401).json({ error: "Invalid credentials" });
 		}
 
@@ -155,6 +203,7 @@ router.post("/login", async (req, res) => {
 		});
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -162,6 +211,11 @@ router.post("/login", async (req, res) => {
 // logout
 router.get("/logout/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
 		const { email } = decoded;
@@ -171,6 +225,7 @@ router.get("/logout/:token", async (req, res) => {
 		return res.status(200).json({ message: "User logged out successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(401).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -178,7 +233,15 @@ router.get("/logout/:token", async (req, res) => {
 // refresh token
 router.post("/refresh-token", async (req, res) => {
 	const { token } = req.body;
+
+	if(!validateParams(req.body, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
+		if (!token) {
+			return res.status(401).json({ error: "Invalid token" });
+		}
 		const decoded = jwt.verify(token, JWT_SECRET);
 		const { email } = decoded;
 
@@ -192,6 +255,7 @@ router.post("/refresh-token", async (req, res) => {
 		return res.status(200).json({ token: token, message: "Token refreshed" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(401).json({ error: "Invalid token" });
 	}
 });
@@ -209,8 +273,21 @@ export async function usernameExists(username) {
 	const sql = `SELECT * FROM user WHERE username = ?`;
 	const values = [username];
 	const [user] = await mysql_connection.promise().query(sql, values);
-	return user.length > 0;
+
+	const sql2 = `SELECT * FROM admin WHERE username = ?`;
+	const values2 = [username];
+	const [admin] = await mysql_connection.promise().query(sql2, values2);
+
+	return user.length > 0 || admin.length > 0;
 }
+
+export async function isValidEmailFormat(email) {
+	const emailRegex = /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,4}$/;
+	if (emailRegex.test(email)) {
+    return true;
+	}
+	return false;
+}	
 
 // refresh token
 export async function refreshToken(email, token) {

@@ -18,13 +18,17 @@ import {
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, removeSession } from "./auth.js";
-import { sendEmail } from "../utils/email.js";
-import { toProperCase } from "../utils/string.js";
 import { getSeatTypes, isVenueValid, seatTypeExists } from "./venue.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
-import { getCurrentTime } from "../utils/time.js";
+import {
+	convertToDate,
+	convertToUnixTime,
+	getCurrentTimeInUnix,
+} from "../utils/time.js";
 import { createRequest } from "./request.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
+import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
 const uploadDir = "uploads/event";
 
@@ -54,18 +58,8 @@ const upload = multer({
 });
 
 // get all events
-router.get("/:token", async (req, res) => {
-	const { token } = req.params;
-
+router.get("/", async (req, res) => {
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
-
-		if (!(await checkToken(email, token))) {
-			return res
-				.status(409)
-				.json({ error: "Invalid token used. Please relogin" });
-		}
-
 		const sql = `SELECT * FROM event where status = "active"`; // only show active events
 		const [rows] = await mysql_connection.promise().query(sql);
 		const events = rows;
@@ -84,6 +78,7 @@ router.get("/:token", async (req, res) => {
 			} else {
 				event.banner_img = "";
 			}
+			event.date = convertToDate(event.date);
 			delete event.created_at;
 			delete event.updated_at;
 			delete event.updated_by;
@@ -92,6 +87,48 @@ router.get("/:token", async (req, res) => {
 		return res.status(200).json({ events });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
+		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
+	}
+});
+
+// get event by event name
+router.get("/search/:event_name", async (req, res) => {
+	const { event_name } = req.params;
+
+	if(!validateParams(req.params, ["event_name"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
+	try {
+		const sql = `SELECT * FROM event WHERE event_name LIKE ? AND status = "active"`;
+		const values = [`%${event_name}%`];
+		const [rows] = await mysql_connection.promise().query(sql, values);
+		const events = rows;
+
+		// get events image
+		for (const event of events) {
+			const img = event.banner_img;
+			const imgPath = `${uploadDir}/${img}`;
+			if (fs.existsSync(imgPath)) {
+				// Read the file from the file system
+				const fileData = fs.readFileSync(imgPath);
+				// Convert it to a base64 string
+				const base64Image = new Buffer.from(fileData).toString("base64");
+				// Attach it to your response object
+				event.banner_img = base64Image;
+			} else {
+				event.banner_img = "";
+			}
+			event.date = convertToDate(event.date);
+			delete event.created_at;
+			delete event.updated_at;
+			delete event.updated_by;
+		}
+		return res.status(200).json({ events });
+	} catch (err) {
+		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -99,6 +136,10 @@ router.get("/:token", async (req, res) => {
 // get event details (venue + event seat type)
 router.get("/details/:token/:event_id", async (req, res) => {
 	const { token, event_id } = req.params;
+
+	if(!validateParams(req.params, ["token", "event_id"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -139,6 +180,20 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		const values2 = [event.venue_id];
 		const [rows2] = await mysql_connection.promise().query(sql2, values2);
 		const venue = rows2[0];
+
+		const venueImgPath = `uploads/venue/${venue.img}`;
+
+		if (fs.existsSync(venueImgPath)) {
+			// Read the file from the file system
+			const fileData = fs.readFileSync(venueImgPath);
+			// Convert it to a base64 string
+			const base64Image = new Buffer.from(fileData).toString("base64");
+			// Attach it to your response object
+			venue.img = base64Image;
+		} else {
+			venue.img = "";
+		}
+
 		delete venue.created_at;
 		delete venue.updated_at;
 		delete venue.updated_by;
@@ -156,16 +211,18 @@ router.get("/details/:token/:event_id", async (req, res) => {
 		event.venue = venue;
 		event.seat_type = seat_type;
 		event.venue_seat_type = venue_seat_type;
+		event.date = convertToDate(event.date);
 
 		return res.status(200).json({ event });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
 
 // add event
-// seat_type = [{"seat_type_id": 1, "price": 1000, "available_seats": 30}, {"seat_type_id": 2, "price": 500,"available_seats": 40}}]
+// seat_type = [{"seat_type_id": 1, "price": 1000, "available_seats": 30}, {"seat_type_id": 2, "price": 500,"available_seats": 40}]
 router.post("/add", upload.single("file"), async (req, res) => {
 	const {
 		token,
@@ -176,6 +233,10 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		category,
 		seat_type,
 	} = req.body;
+
+	if(!validateParams(req.body, ["token", "venue_id", "event_name", "date", "description", "category", "seat_type"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -225,7 +286,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		const uuid = uuidv4();
 
 		// get current time
-		const created_at = getCurrentTime();
+		const created_at = getCurrentTimeInUnix();
 
 		// get admin id
 		const admin_id = await getAdminId(email);
@@ -240,7 +301,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 			uuid,
 			venue_id,
 			event_name,
-			new Date(date),
+			convertToUnixTime(date),
 			description,
 			category,
 			img,
@@ -284,6 +345,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		return res.status(200).json({ message: "Event added successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -302,6 +364,7 @@ export async function startEvent(request_id) {
 		return true;
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return false;
 	}
 }
@@ -315,6 +378,7 @@ export async function getEventSeatType(event_id) {
 		return rows;
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return false;
 	}
 }
@@ -328,6 +392,7 @@ export async function getSeatTypePrice(event_id, seat_type_id) {
 		return rows[0].price;
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return false;
 	}
 }

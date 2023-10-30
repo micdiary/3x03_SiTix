@@ -17,10 +17,17 @@ import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken, removeSession } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
+import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
+import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
 // Get Profile
 router.get("/profile/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -42,14 +49,17 @@ router.get("/profile/:token", async (req, res) => {
 			[user] = await mysql_connection.promise().query(sql, values);
 		}
 
+		// delete sensitive data
 		delete user[0].password_hash;
 		delete user[0].failed_tries;
+		delete user[0].created_at;
 		delete user[0].updated_at;
 		delete user[0].role_id;
 
 		return res.status(200).json({ user });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -57,6 +67,10 @@ router.get("/profile/:token", async (req, res) => {
 // edit profile
 router.post("/edit", async (req, res) => {
 	const { token, username, first_name, last_name } = req.body;
+
+	if(!validateParams(req.body, ["token", "username", "first_name", "last_name"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -66,19 +80,22 @@ router.post("/edit", async (req, res) => {
 				.json({ error: "Invalid token used. Please relogin" });
 		}
 
+		const updated_at = getCurrentTimeInUnix();
+
 		if (userType !== "customer") {
-			const sql = `UPDATE admin SET username = ? WHERE email = ?`;
-			const values = [username, email];
+			const sql = `UPDATE admin SET username = ?, updated_at = ? WHERE email = ?`;
+			const values = [username, updated_at, email];
 			await mysql_connection.promise().query(sql, values);
 		} else {
-			const sql = `UPDATE user SET username = ?, first_name = ?, last_name = ? WHERE email = ?`;
-			const values = [username, first_name, last_name, email];
+			const sql = `UPDATE user SET username = ?, first_name = ?, last_name = ?, updated_at = ? WHERE email = ?`;
+			const values = [username, first_name, last_name, updated_at, email];
 			await mysql_connection.promise().query(sql, values);
 		}
 
 		return res.status(200).json({ message: "Profile updated" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -86,6 +103,10 @@ router.post("/edit", async (req, res) => {
 // delete account (hard delete)
 router.get("/delete/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -110,6 +131,7 @@ router.get("/delete/:token", async (req, res) => {
 		return res.status(200).json({ message: "Account deleted" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -117,6 +139,10 @@ router.get("/delete/:token", async (req, res) => {
 // forget password
 router.post("/forget-password", async (req, res) => {
 	const { email } = req.body;
+
+	if(!validateParams(req.body, ["email"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	const sql = `SELECT * FROM user WHERE email = ?`;
 	const values = [email];
@@ -145,6 +171,7 @@ router.post("/forget-password", async (req, res) => {
 
 	sendEmail(email, "Reset Password", emailBody).then((info) => {
 		console.log("Email sent: " + info.response);
+		logger.info("Email sent: " + info.response);
 	});
 
 	return res.status(200).json({
@@ -155,6 +182,10 @@ router.post("/forget-password", async (req, res) => {
 // reset password
 router.post("/reset-password", async (req, res) => {
 	const { token, password, newPassword } = req.body;
+
+	if(!validateParams(req.body, ["token", "password", "newPassword"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
@@ -197,9 +228,17 @@ router.post("/reset-password", async (req, res) => {
 		const update_values = [newPasswordHash, user[0].email];
 		await mysql_connection.promise().query(update_sql, update_values);
 
+		// reset failed tries
+		if (user[0].admin_id === undefined) {
+			const reset_sql = `UPDATE user SET failed_tries = 0 WHERE email = ?`;
+			const reset_values = [user[0].email];
+			await mysql_connection.promise().query(reset_sql, reset_values);
+		}
+
 		return res.status(200).json({ message: "Password updated" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: "Invalid token" });
 	}
 });
@@ -208,7 +247,7 @@ router.post("/reset-password", async (req, res) => {
 export async function verifyAccountPassword(password, passwordToCompare) {
 	try {
 		const result = await bcrypt.compare(password, passwordToCompare);
-		console.log(result);
+		// console.log(`password match :${result}`);
 		return result;
 	} catch (error) {
 		console.error(error);

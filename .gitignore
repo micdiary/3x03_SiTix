@@ -1,4 +1,6 @@
 /server/package-lock.json
 /client/package-lock.json
 /redis
-*.json
+/node_modules
+node_modules/
+node_modules
