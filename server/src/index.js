@@ -86,7 +86,7 @@ mysql_connection.connect((err) => {
 });
 
 redis_connection.connect(
-  console.log("Redis Connected on redis://www.busy-Shannon.cloud:8080!")
+  console.log("Redis Connected on redis://busy-Shannon.cloud!")
 );
 
 redis_connection.on('error',(err) => {
