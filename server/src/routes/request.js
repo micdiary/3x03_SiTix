@@ -18,10 +18,15 @@ import { toProperCase } from "../utils/string.js";
 import { getAdminId, getNumAdmins, isSuperAdmin } from "./admin.js";
 import { getEventSeatType, setEventSeatTypeNum, startEvent } from "./event.js";
 import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
 // get all requests
 router.get("/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -88,6 +93,10 @@ router.get("/:token", async (req, res) => {
 // accept/reject request
 router.post("/update", async (req, res) => {
 	const { token, request_id, status } = req.body;
+
+	if(!validateParams(req.body, ["token", "request_id", "status"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);

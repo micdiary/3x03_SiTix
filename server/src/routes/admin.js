@@ -19,10 +19,16 @@ import { checkToken, refreshToken } from "./auth.js";
 import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
+import { validateParams } from "../utils/validation.js";
 
 // Get Admins
 router.get("/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
 
@@ -55,6 +61,10 @@ router.get("/:token", async (req, res) => {
 // Add Admin
 router.post("/add", async (req, res) => {
 	const { token, username, admin_email } = req.body;
+
+	if(!validateParams(req.body, ["token", "username", "admin_email"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -118,6 +128,10 @@ router.post("/add", async (req, res) => {
 // delete admin account
 router.post("/delete", async (req, res) => {
 	const { token, admin_id } = req.body;
+
+	if(!validateParams(req.body, ["token", "admin_id"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);

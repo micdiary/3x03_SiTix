@@ -19,10 +19,15 @@ import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
 import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
 // Get Profile
 router.get("/profile/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -63,6 +68,10 @@ router.get("/profile/:token", async (req, res) => {
 router.post("/edit", async (req, res) => {
 	const { token, username, first_name, last_name } = req.body;
 
+	if(!validateParams(req.body, ["token", "username", "first_name", "last_name"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
 		if (!(await checkToken(email, token))) {
@@ -95,6 +104,10 @@ router.post("/edit", async (req, res) => {
 router.get("/delete/:token", async (req, res) => {
 	const { token } = req.params;
 
+	if(!validateParams(req.params, ["token"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
 		if (!(await checkToken(email, token))) {
@@ -126,6 +139,10 @@ router.get("/delete/:token", async (req, res) => {
 // forget password
 router.post("/forget-password", async (req, res) => {
 	const { email } = req.body;
+
+	if(!validateParams(req.body, ["email"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	const sql = `SELECT * FROM user WHERE email = ?`;
 	const values = [email];
@@ -165,6 +182,10 @@ router.post("/forget-password", async (req, res) => {
 // reset password
 router.post("/reset-password", async (req, res) => {
 	const { token, password, newPassword } = req.body;
+
+	if(!validateParams(req.body, ["token", "password", "newPassword"])){
+		return res.status(401).json({ error: "Invalid params" });
+	}
 
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
