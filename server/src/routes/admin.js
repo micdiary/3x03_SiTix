@@ -18,7 +18,7 @@ import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken } from "./auth.js";
 import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
-import { getCurrentTimeInUnix } from "../utils/time.js";
+import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
 
 // Get Admins
 router.get("/:token", async (req, res) => {
@@ -40,6 +40,10 @@ router.get("/:token", async (req, res) => {
 		const [rows] = await mysql_connection.promise().query(sql);
 
 		const admins = rows;
+		for (const admin of admins) {
+			admin.created_at = convertToDate(admin.created_at);
+			delete admin.password_hash;
+		}
 		return res.status(200).json({ admins });
 	} catch (err) {
 		console.log(err);
