@@ -34,14 +34,12 @@ const app = express();
 
 // Use winston middleware for logging incoming requests with route information
 app.use((req, res, next) => {
-  const timestamp = new Date().toISOString();
-  const method = req.method;
-  const url = req.originalUrl;
+  	const method = req.method;
+  	const url = req.originalUrl;
 
   // Log the route information
-  logger.info(`[${timestamp}] ${method} ${url}`);
-
-  next();
+	logger.info(`Received ${method} request for ${url}`);
+  	next();
 });
 
 app.use(express.json());
@@ -49,10 +47,10 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 // Define rate limiting middleware
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5, // limit each IP to 5 request per minute
-  message: "Too many requests, please wait to try again later.", // message to send back when rate-limited
-  headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
+	windowMs: 60 * 1000, // 1 minute
+  	max: 5, // limit each IP to 5 request per minute
+  	message: "Too many requests, please wait to try again later.", // message to send back when rate-limited
+  	headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
 });
 
 app.use(limiter);
@@ -62,7 +60,7 @@ const uploadDir = "uploads/";
 
 // Create uploads folder if it doesn't exist
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+  	fs.mkdirSync(uploadDir);
 }
 
 // Routes
@@ -86,37 +84,38 @@ mysql_connection.connect((err) => {
 });
 
 redis_connection.connect(
-  console.log("Redis Connected on redis://busy-Shannon.cloud!")
+	console.log("Redis Connected on redis://busy-Shannon.cloud!"),
+	logger.info("Redis Connected on redis://busy-Shannon.cloud!")
 );
 
 redis_connection.on('error',(err) => {
-  logger.error(`Error connecting to Redis: ${err}`);
-  console.error("Error connecting to the database:", err);
+  	logger.error(`Error connecting to Redis: ${err}`);
+  	console.error("Error connecting to the database:", err);
 });
 
 const server = http.createServer(app);
 
 app.get("/set-cookie", (req, res) => {
-  res.cookie("name", "value", {
-    secure: true, // set to true if your using https
-    httpOnly: true,
-    // This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
-    sameSite: "Strict", // None, Lax, or Strict
-    path: "/", // specify cookie path
-    expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
+  	res.cookie("name", "value", {
+    	secure: true, // set to true if your using https
+    	httpOnly: true,
+    	// This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
+    	sameSite: "Strict", // None, Lax, or Strict
+    	path: "/", // specify cookie path
+    	expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
   });
 
   res.send("Cookie is set");
 });
 
-// //test to see if curl /test will get back response
-// app.get('/', (req, res) => {
-// 	logger.info('Got get request');
-// 	const responseData = "response from express";
-// 	logger.info(`Response: ${responseData}`);
-// 	//res.send('response from express');
-// 	res.send(responseData);
-// }) 
+//test to see if curl /test will get back response
+app.get('/', (req, res) => {
+	logger.info('Got get request');
+	const responseData = "response from express";
+	logger.info(`Response: ${responseData}`);
+	//res.send('response from express');
+	res.send(responseData);
+}) 
 
 //Error Handling with Winston
 app.use((err, req, res, next) => {
