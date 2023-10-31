@@ -1,43 +1,51 @@
-import React from "react";
-import { BrowserRouter as Router } from 'react-router-dom';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import Home from "client/src/pages/Home";
+import React from 'react';
+import { render, screen, waitFor, act } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
+import { MemoryRouter } from 'react-router-dom'; // To wrap your component in a router
+import Home from 'client/src/pages/Home';
+import { getEvent } from 'client/src/api/event'; // Replace with your actual API module
 
-test('renders the home component', () => {
+// Mock the getEvent function
+jest.mock('client/src/api/event');
+
+describe('Home Component', () => {
+  const mockEvents = [
+    {
+      id: 1,
+      event_name: 'Event 1',
+      banner_img: 'base64encodedimage1', // Replace with your actual base64-encoded image
+    },
+    {
+      id: 2,
+      event_name: 'Event 2',
+      banner_img: 'base64encodedimage2', // Replace with your actual base64-encoded image
+    },
+  ];
+
+  beforeEach(() => {
+    // Mock the API response for getEvent
+    getEvent.mockResolvedValue({ events: mockEvents });
+  });
+
+  it('renders the home component with events', async () => {
     render(
-        <Router>
-            <Home />
-        </Router>
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>
     );
-    const title = screen.getByText(/All Events/i);
-    expect(title).toBeInTheDocument();
 
-//....
-// Check first event card
-const firstEventNames = screen.getAllByText('(G)i-dle');
-const firstEventDateTimes = screen.getAllByText('Date & Time 1');
+    // Wait for API data to be loaded
+    await waitFor(() => {
+      // Check if the title is rendered
+      const title = screen.getByText('All Events', { selector: 'h2' });
+      expect(title).toBeInTheDocument();
 
-// verify that there is at least one match
-expect(firstEventNames.length).toBeGreaterThan(0);
-expect(firstEventDateTimes.length).toBeGreaterThan(0);
+      // Check if the images from API data are rendered
+      const eventImages = screen.getAllByAltText(/^Event \d$/);
+      expect(eventImages).toHaveLength(mockEvents.length);
 
-// Check second event card
-const secondEventNames = screen.getAllByText('d4vd');
-const secondEventDateTimes = screen.getAllByText('Date & Time 2');
-
-// verify that there is at least one match
-expect(secondEventNames.length).toBeGreaterThan(0);
-expect(secondEventDateTimes.length).toBeGreaterThan(0);
-
-// Check third event card
-const thirdEventNames = screen.getAllByText('HallyuPopFest');
-const thirdEventDateTimes = screen.getAllByText('Date & Time 3');
-
-// verify that there is at least one match
-expect(thirdEventNames.length).toBeGreaterThan(0);
-expect(thirdEventDateTimes.length).toBeGreaterThan(0);
-//...
-
-    // You can add many more checks according to your needs
-}); 
+      // Verify that at least one image is loaded
+      expect(eventImages[0]).toBeInTheDocument();
+    });
+  });
+});
