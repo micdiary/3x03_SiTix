@@ -8,7 +8,17 @@ pipeline {
                 sh 'npm ci'
             }
         }
-        
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                sh 'npm test'
+            }
+            post {
+                always {
+                    junit '**/junit.xml'
+                }
+            } 
+        }
         stage('OWASP Dependency-Check Vulnerabilities') {
             steps { 
                 dependencyCheck additionalArguments: ''' 

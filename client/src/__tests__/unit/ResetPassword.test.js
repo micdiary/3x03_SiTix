@@ -1,43 +1,49 @@
 import React from 'react';
-import ForgetPassword from 'client/src/pages/ForgetPassword';
-import { BrowserRouter as Router } from 'react-router-dom';
-import '@testing-library/jest-dom';
 import { render, fireEvent, waitFor } from '@testing-library/react';
+import ForgetPassword from 'client/src/pages/ForgetPassword';
+import { MemoryRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
 
-// Mock the api call
+// Mock the API call and notification
 jest.mock('client/src/api/account', () => ({
   forgetPassword: jest.fn(() => Promise.resolve({ message: 'Success message' })),
 }));
-
-// Mock the notification
 jest.mock('client/src/components/Notification', () => ({
   showNotification: jest.fn(),
 }));
 
-describe('ForgetPassword', () => {
-  test('renders ForgetPassword component', () => {
-    render(<Router><ForgetPassword /></Router>);
+describe('ForgetPassword UI', () => {
+  it('renders the ForgetPassword component', () => {
+    render(
+      <MemoryRouter>
+        <ForgetPassword />
+      </MemoryRouter>
+    );
   });
 
-  test('show notification on successful password reset', async () => {
+  it('shows notification on successful password reset', async () => {
     const { forgetPassword } = require('client/src/api/account');
     const { showNotification } = require('client/src/components/Notification');
-    const { getByPlaceholderText, getByText } = render(<Router><ForgetPassword /></Router>);
+    const { getByPlaceholderText, getByText } = render(
+      <MemoryRouter>
+        <ForgetPassword />
+      </MemoryRouter>
+    );
 
-    // simulate user input
+    // Simulate user input
     const emailInput = getByPlaceholderText('Email');
     fireEvent.change(emailInput, { target: { value: 'test@test.com' } });
 
-    // simulate form submission
+    // Simulate form submission
     const submitButton = getByText('Reset Password');
     fireEvent.click(submitButton);
 
-    // wait for promises to be resolved
+    // Wait for promises to be resolved
     await waitFor(() => {
-      // check if the api was called with correct data
+      // Check if the API was called with the correct data
       expect(forgetPassword).toHaveBeenCalledWith({ email: 'test@test.com' });
 
-      // check if the notification was shown
+      // Check if the notification was shown
       expect(showNotification).toHaveBeenCalledWith('Success message');
     });
   });
