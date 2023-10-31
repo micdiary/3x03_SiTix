@@ -8,18 +8,19 @@ import {
     inputStyle,
     cardStyle,
 } from "./PagesStyles";
-import { getPasswordValidationRule } from "../utils/validation";
 import { useNavigate } from "react-router";
-import { getToken } from "../utils/account";
+import { useLocation } from "react-router-dom";
 import { resetPassword } from "../api/account";
 import { showNotification } from "../components/Notification";
 
 const ResetPassword = () => {
     let navigate = useNavigate();
+    let params = useLocation();
 
     const onFinish = (values) => {
+        console.log(params)
         const req = {
-            token: getToken(),
+            token: params.search.split("=")[1],
             newPassword: values.new_password,
         };
         resetPassword(req)

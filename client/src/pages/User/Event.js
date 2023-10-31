@@ -1,32 +1,75 @@
 import React, { useEffect, useState } from "react";
-import * as constants from "../constants";
-import { Row, Col, Typography, Divider } from "antd";
-import eventBackground from "../assets/d4vd.jpg";
-import Buttons from "../components/Buttons";
-import { useNavigate } from "react-router-dom";
-import { getToken } from "../utils/account";
-import { userStore } from "../store/User";
-import { liStyle } from "./PagesStyles";
+import { Row, Col, Typography, Divider, Table } from "antd";
+import * as constants from "../../constants";
+import Buttons from "../../components/Buttons";
+import { showNotification } from "../../components/Notification";
+import { liStyle } from "../PagesStyles";
+import { eventStore } from "../../store/Order";
+import { getEventDetails } from "../../api/event";
+import { useLocation, useNavigate } from "react-router-dom";
+import { formatDate } from "../../utils/date";
 
 const Event = () => {
     let navigate = useNavigate();
-    const localToken = getToken();
-    const storeToken = userStore((state) => state.token);
-    const [isLoggedIn, setIsLoggedIn] = useState(
-        localToken !== null ? localToken : storeToken
-    );
+    let location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const event_id = queryParams.get("event");
+
+    const [eventData, setEventData] = useState([]);
+    const [venueData, setVenueData] = useState([]);
+    const [seatType, setSeatType] = useState([]);
+    const [seatData, setSeatData] = useState([]);
 
     useEffect(() => {
-        setIsLoggedIn(localToken !== null ? localToken : storeToken);
-    }, [localToken, storeToken]);
+        const req = { event_id: event_id };
+        getEventDetails(req)
+            .then((res) => {
+                console.log(res.event);
+                setEventData(res.event);
+                setVenueData(res.event.venue);
+                setSeatData(res.event.seat_type);
+                setSeatType(res.event.venue_seat_type);
+            })
+            .catch((err) => {
+                showNotification(err.message);
+            });
+    }, [event_id]);
 
     const buyButton = () => {
-        navigate(constants.QUEUE_URL);
+        navigate(`${constants.TICKET_URL}?event=${event_id}`);
+        eventStore.setState({ eventData });
     };
 
-    const loginButton = () => {
-        navigate(constants.HOME_URL);
-    };
+    const dataSource =
+        seatData &&
+        seatData.map((seat) => {
+            const matchingSeatType = seatType.find(
+                (type) => type.seat_type_id === seat.seat_type_id
+            );
+
+            return {
+                type_name: matchingSeatType
+                    ? matchingSeatType.type_name
+                    : "Unknown Type",
+                price: seat.price,
+                key: seat.seat_type_id,
+            };
+        });
+
+    const priceColumns = [
+        {
+            dataIndex: "type_name",
+            key: "type_name",
+        },
+        {
+            dataIndex: "price",
+            key: "price",
+            render: (text) => `$${text}`,
+        },
+    ];
+
+    const eventDate = new Date(eventData.date);
+    const { date, day, time } = formatDate(eventDate);
 
     return (
         <div style={{ minHeight: "100vh" }}>
@@ -35,11 +78,11 @@ const Event = () => {
                     <Col>
                         <div style={{ margin: "0 10px" }}>
                             <Typography.Title level={2}>
-                                Event Name
+                                {eventData.event_name}
                             </Typography.Title>
                             <img
-                                src={eventBackground}
-                                alt="Event Background"
+                                src={`data:image/jpg;base64,${eventData.banner_img}`}
+                                alt={eventData.event_name}
                                 style={{ maxWidth: "100%", height: "100%" }}
                             />
                         </div>
@@ -50,7 +93,7 @@ const Event = () => {
                     <Col xs={24} sm={16} md={18} lg={18} xl={16}>
                         <div>
                             <Typography.Title level={4}>
-                                Date (Time) / Venue
+                                {date} ({day}) / {venueData.venue_name}
                             </Typography.Title>
                         </div>
                     </Col>
@@ -58,35 +101,65 @@ const Event = () => {
                         <Buttons
                             text="Buy Now"
                             marginTop="20px"
-                            onClick={isLoggedIn ? buyButton : loginButton}
+                            onClick={buyButton}
                         />
                     </Col>
                     <Divider />
                 </Row>
             </div>
-            <div className="body" style={{ margin: "0 10px" }}>
+            <div style={{ margin: "0 10px" }}>
                 <Row>
                     <Col xl={2}></Col>
                     <Col xs={24} sm={24} md={24} lg={24} xl={20}>
-                        <Row>
-                            <Col>
-                                <Typography.Title level={2}>
+                        <Row style={{ backgroundColor: "#ECECEC" }}>
+                            <Col style={{ margin: "0 0 15px 15px" }}>
+                                <Typography.Title level={3}>
                                     Details
                                 </Typography.Title>
-                                <Typography.Text>fk 3103</Typography.Text>
+                                <Typography.Text>
+                                    {eventData.description} The event will take
+                                    place on {date} at {venueData.venue_name},{" "}
+                                    {time}.
+                                </Typography.Text>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col style={{ margin: "0 0 15px 15px" }}>
+                                <Typography.Title level={3}>
+                                    Ticket Pricing
+                                </Typography.Title>
+                                <Typography.Text strong style={liStyle}>
+                                    Ticket Rules:
+                                </Typography.Text>
+                                <ul>
+                                    <li style={liStyle}>
+                                        Limited to 4 tickets per transaction.
+                                    </li>
+                                    <li style={liStyle}>
+                                        Each account can have unlimited
+                                        transactions.
+                                    </li>
+                                    <li style={liStyle}>
+                                        Ticket Pricing excludes Booking Fee.
+                                    </li>
+                                    <li style={liStyle}>
+                                        Booking fee is $6 per ticket.
+                                    </li>
+                                </ul>
+                                <Typography.Text>
+                                    <Table
+                                        dataSource={dataSource}
+                                        columns={priceColumns}
+                                        pagination={false}
+                                        showHeader={false}
+                                        size="small"
+                                    />
+                                </Typography.Text>
                             </Col>
                         </Row>
                         <Row style={{ backgroundColor: "#ECECEC" }}>
-                            <Col>
-                                <Typography.Title level={2}>
-                                    Ticket Pricing
-                                </Typography.Title>
-                                <Typography.Text>someshit</Typography.Text>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Typography.Title level={2}>
+                            <Col style={{ margin: "0 0 15px 15px" }}>
+                                <Typography.Title level={3}>
                                     Admission Policy
                                 </Typography.Title>
                                 <Typography.Text strong style={liStyle}>
@@ -119,9 +192,9 @@ const Event = () => {
                                 </ul>
                             </Col>
                         </Row>
-                        <Row style={{ backgroundColor: "#ECECEC" }}>
-                            <Col>
-                                <Typography.Title level={2}>
+                        <Row>
+                            <Col style={{ margin: "0 0 15px 15px" }}>
+                                <Typography.Title level={3}>
                                     Exchange & Refund Policy
                                 </Typography.Title>
                                 <ol>

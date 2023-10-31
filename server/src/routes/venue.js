@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import multer from "multer";
 import fs from "fs";
-import path from "path";
 
 const router = express.Router();
 
@@ -11,9 +10,11 @@ import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { checkToken } from "./auth.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
-import { getCurrentTime } from "../utils/time.js";
+import { getCurrentTimeInUnix } from "../utils/time.js";
+import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
+import { logger } from "../utils/logger.js";
+import { validateParams } from "../utils/validation.js";
 
-const maxMB = 5; // Set file size limit to 5MB
 const uploadDir = "uploads/venue";
 
 // Create uploads folder if it doesn't exist
@@ -34,31 +35,21 @@ const storage = multer.diskStorage({
 // Create Multer instance with the storage engine
 const upload = multer({
 	storage: storage,
+	fileFilter: fileFilter,
 	limits: {
+		files: 1, // Allow only 1 file per request
 		fileSize: maxMB * 1024 * 1024, // Set file size limit
 	},
 });
 
-// Custom error handling function for multer
-const handleMulterError = (err, req, res, next) => {
-	if (err instanceof multer.MulterError) {
-		if (err.code === "LIMIT_FILE_SIZE") {
-			return res.status(400).json({
-				error:
-					"File size limit exceeded. Maximum file size allowed is" +
-					maxMB +
-					"MB.",
-			});
-		}
-		// Handle other multer errors if needed
-		return res.status(500).json({ error: "File upload error" });
-	}
-	next(err);
-};
-
 // Get Venues
 router.get("/:token", async (req, res) => {
 	const { token } = req.params;
+
+	if(!validateParams(req.params, ["token"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
+
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
 
@@ -88,7 +79,7 @@ router.get("/:token", async (req, res) => {
 				// Read the file from the file system
 				const fileData = fs.readFileSync(imgPath);
 				// Convert it to a base64 string
-				const base64Image = new Buffer.from(fileData).toString('base64');
+				const base64Image = new Buffer.from(fileData).toString("base64");
 				// Attach it to your response object
 				venues[i].img = base64Image;
 			} else {
@@ -104,6 +95,7 @@ router.get("/:token", async (req, res) => {
 		return res.status(200).json({ venues });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -113,6 +105,10 @@ router.get("/:token", async (req, res) => {
 // seat_type = [{"type_name": "VIP", "description":"VIP seats"}, {"type_name": "Regular", "description":"Regular seats"}]
 router.post("/add", upload.single("file"), async (req, res) => {
 	const { token, venue_name, seat_type } = req.body;
+
+	if(!validateParams(req.body, ["token", "venue_name", "seat_type"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -143,10 +139,10 @@ router.post("/add", upload.single("file"), async (req, res) => {
 
 		await mysql_connection.promise().beginTransaction();
 
-		const sql = `INSERT INTO venue (venue_id, venue_name, img, updated_by) VALUES (?, ?, ?, ?)`;
+		const sql = `INSERT INTO venue (venue_id, venue_name, img, created_at ,updated_by) VALUES (?, ?, ?, ?, ?)`;
 		const [rows] = await mysql_connection
 			.promise()
-			.query(sql, [uuid, venue_name, img, admin_id]);
+			.query(sql, [uuid, venue_name, img, getCurrentTimeInUnix() ,admin_id]);
 
 		for (const seat of JSON.parse(seat_type)) {
 			if (
@@ -171,6 +167,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		return res.status(200).json({ message: "Venue added successfully" });
 	} catch (err) {
 		console.log(err);
+		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
@@ -179,6 +176,10 @@ router.post("/add", upload.single("file"), async (req, res) => {
 // seat_type = [{"seat_type_id":"1" ,"type_name": "VIP", "description":"VIP seats"}, {"seat_type_id":"2" ,"type_name": "Regular", "description":"Regular seats"}]
 router.post("/update", upload.single("file"), async (req, res) => {
 	const { token, venue_id, venue_name, seat_type } = req.body;
+
+	if(!validateParams(req.body, ["token", "venue_id", "venue_name", "seat_type"])){
+		return res.status(409).json({ error: "Missing parameters" });
+	}
 
 	try {
 		const { email, userType } = jwt.verify(token, JWT_SECRET);
@@ -199,7 +200,7 @@ router.post("/update", upload.single("file"), async (req, res) => {
 
 		const admin_id = await getAdminId(email);
 
-		const updated_at = getCurrentTime();
+		const updated_at = getCurrentTimeInUnix();
 
 		if (!req.file) {
 			sql = `UPDATE venue SET venue_name = ?, updated_by = ?, updated_at = ? WHERE venue_id = ?`;

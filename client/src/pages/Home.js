@@ -1,59 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EventCardList from "../components/EventCards";
 import { Row, Col, Carousel, Divider, Typography } from "antd";
 import { bodyContentStyle, carouselStyle } from "./PagesStyles";
-
-const imagePath = [
-    require("../assets/(G)i-dle.jpg"),
-    require("../assets/d4vd.jpg"),
-    require("../assets/HallyuPopFest.png"),
-];
-
-const dummyEventData = [
-    {
-        eventName: "(G)i-dle",
-        eventDateTime: "Date & Time 1",
-        imageUrl: imagePath[0],
-    },
-    {
-        eventName: "d4vd",
-        eventDateTime: "Date & Time 2",
-        imageUrl: imagePath[1],
-    },
-    {
-        eventName: "HallyuPopFest",
-        eventDateTime: "Date & Time 3",
-        imageUrl: imagePath[2],
-    },
-    {
-        eventName: "(G)i-dle",
-        eventDateTime: "Date & Time 1",
-        imageUrl: imagePath[0],
-    },
-    {
-        eventName: "d4vd",
-        eventDateTime: "Date & Time 2",
-        imageUrl: imagePath[1],
-    },
-    {
-        eventName: "HallyuPopFest",
-        eventDateTime: "Date & Time 3",
-        imageUrl: imagePath[2],
-    },
-];
+import { getEvent } from "../api/event";
+import { getToken } from "../utils/account";
 
 const Home = () => {
+    const localToken = getToken();
+    const [events, setEvents] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState();
+
+    useEffect(() => {
+        getEvent().then((res) => {
+            const events = res.events.map((event) => ({
+                ...event,
+                key: event.id,
+            }));
+            setEvents(events);
+        });
+    }, []);
+
+    useEffect(() => {
+        setIsLoggedIn(localToken);
+    }, [localToken]);
+
     return (
         <div style={{ minHeight: "100vh" }}>
             <div style={carouselStyle}>
                 <Row justify="center" align="middle">
                     <Col xs={23} sm={23} md={22} lg={22}>
                         <Carousel autoplay pauseOnHover={true}>
-                            {imagePath.map((imagePath, index) => (
+                            {events.map((event, index) => (
                                 <div key={index}>
                                     <img
-                                        src={imagePath}
-                                        alt={`Event ${index + 1}`}
+                                        src={`data:image/jpg;base64,${event.banner_img}`}
+                                        alt={`Event ${event.event_name}`}
                                         style={{
                                             width: "100%",
                                             height: "100%",
@@ -69,7 +50,7 @@ const Home = () => {
                 <Typography.Title level={2}>All Events</Typography.Title>
                 <Divider />
                 <Row>
-                    <EventCardList eventData={dummyEventData} />
+                    <EventCardList events={events} isLoggedIn={isLoggedIn} />
                 </Row>
             </div>
         </div>
