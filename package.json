@@ -44,7 +44,7 @@
       "\\.(jpg|jpeg|png|svg|css|less)$": "<rootDir>/__mocks__/fileMock.js"
     },
     "setupFilesAfterEnv": [
-      "./jest.setup.js"
+      "./jest.setup.js","@testing-library/jest-dom/extend-expect"
     ],
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
