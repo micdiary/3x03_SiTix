@@ -18,14 +18,7 @@ const UserVerfication = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
     const token = searchParams.get('token')
-
-    if (token) {
-      // Do something with the token (e.g., store it in state or perform an action)
-      console.log('Token:', token)
-    }
-
-    console.log(token)
-
+    
     verifyEmail({ token: token })
       .then(() => {
         setIsButtonDisabled(false)

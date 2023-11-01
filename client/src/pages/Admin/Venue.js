@@ -135,7 +135,6 @@ const Venue = ({ venueData, updated, setUpdated }) => {
             seat_type: JSON.stringify(seatArray),
             file: values.image.file,
         };
-        console.log(req);
         updateVenue(req)
             .then((res) => {
                 showNotification(res.message);
@@ -218,7 +217,7 @@ const Venue = ({ venueData, updated, setUpdated }) => {
     };
 
     const onChange = (key) => {
-        console.log(key);
+        // console.log(key);
     };
 
     return (

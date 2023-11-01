@@ -24,7 +24,6 @@ const AdminManagement = () => {
                     key: admin.admin_id,
                 }));
                 setData(admins);
-                console.log(res);
             })
             .catch((err) => {
                 showNotification(err.message);

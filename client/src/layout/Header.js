@@ -30,15 +30,12 @@ const Header = () => {
         setStoreToken(
             localStorageToken !== null ? localStorageToken : storeToken
         );
-        console.log(token);
         if (token !== null && token !== undefined) {
             refreshToken({ token: token })
                 .then((res) => {
                     console.log("success");
-                    console.log(res);
                 })
                 .catch((err) => {
-                    console.log(err);
                     removeToken();
                     removeUserType();
                     removeUser();
