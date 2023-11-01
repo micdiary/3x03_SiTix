@@ -26,16 +26,15 @@ describe('Login', () => {
   });
 
   test('renders login elements', () => {
-    // render your component
+
     render(
       <Router history={history}>
         <Login />
       </Router>
     );
-    const allLoginElements = screen.getAllByText('Login'); // find all elements with "Login" text
+    const allLoginElements = screen.getAllByText('Login'); // find all elements with "Login" text 
   
-    // Expect the correct number of Login elements
-    // This could differ depending on your actual layout
+    // Expect the correct number of Login elements to be in the document
     expect(allLoginElements.length).toBe(2); 
   
     // Expect the particular elements to be in the document

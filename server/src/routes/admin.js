@@ -11,10 +11,8 @@ import {
 	INTERNAL_SERVER_ERROR,
 	EMAIL,
 	EMAIL_PASSWORD,
-	EMAIL_BODY_RESET_PASSWORD,
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
-import { redis_connection } from "../redis.js";
 import { checkToken, refreshToken } from "./auth.js";
 import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";

@@ -24,7 +24,6 @@ const Event = () => {
         const req = { event_id: event_id };
         getEventDetails(req)
             .then((res) => {
-                console.log(res.event);
                 setEventData(res.event);
                 setVenueData(res.event.venue);
                 setSeatData(res.event.seat_type);

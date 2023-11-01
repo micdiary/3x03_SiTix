@@ -18,17 +18,7 @@ import rateLimit from "express-rate-limit";
 import { logger } from "./utils/logger.js";
 
 const app = express();
-
-// Use winston middleware for logging incoming requests with route information
-app.use((req, res, next) => {
-  	const method = req.method;
-  	const url = req.originalUrl;
-
-  // Log the route information
-	logger.info(`Received ${method} request for ${url}`);
-  	next();
-});
-
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "https://tix.busy-shannon.cloud" }));
 
@@ -102,10 +92,46 @@ app.get("/set-cookie", (req, res) => {
   res.send("Cookie is set");
 });
 
-//test to see if curl /test will get back response
+// Use winston middleware for logging response information with route information
+app.use((req, res, next) => {
+
+// Log request information
+	const requestInfo = `${req.method} ${req.url} ${req.protocol}/${req.httpVersion}`;
+	logger.info(`Request: ${requestInfo}`);
+
+// // Log the response route information
+// 	logger.info(`Response for ${req.method} ${req.url}: ${res.statusCode}`);
+	
+	//capture response body:
+	const chunks = [];
+	const originalWrite = res.write;
+  	const originalEnd = res.end;
+
+  	res.write = (...args) => {
+    	chunks.push(Buffer.from(args[0]));
+    	originalWrite.apply(res, args);
+  	};
+
+  	res.end = (...args) => {
+    	if (args[0]) {
+      	chunks.push(Buffer.from(args[0]));
+    }
+
+    //Log response information
+	const responseInfo = `${res.statusCode} ${res.statusMessage}`;
+	const responseBody = Buffer.concat(chunks).toString('utf-8');
+    logger.info(`Response for ${req.method} ${req.url}: ${responseInfo}`);
+    logger.info(`Response Body: ${responseBody}`);
+	originalEnd.apply(res, args);
+  	};
+
+	next();
+});
+
+//Default route for testing
 app.get('/', (req, res) => {
-	logger.info('Got get request');
-	const responseData = "response from express";
+	logger.info('Request: Got get request');
+	const responseData = "Got get response";
 	logger.info(`Response: ${responseData}`);
 	//res.send('response from express');
 	res.send(responseData);
@@ -116,9 +142,11 @@ app.use((err, req, res, next) => {
 	logger.error(err.stack);
 
 	if (err.response) {
+		//log error response details
 		logger.error(`Error Response: ${JSON.stringify(err.response.data)}`);
 	}
 	else {
+		//log error response details
 		logger.error(`Error Object: ${JSON.stringify(err)}`);
 	}
 

@@ -1,24 +1,38 @@
 pipeline {
     agent any
-
     stages {
-        stage('Install dependencies') {
+        stage('Build') {
             steps {
-                echo 'Installing dependencies...'
-                sh 'npm ci'
+                script {
+                    echo 'Installing dependencies...'
+                    sh 'pwd'
+                    sh 'id'
+                    sh 'npm --version'
+                    sh 'npm ci'
+                    sh 'npm install'
+                }
             }
         }
+        stage('OWASP Dependency-Check Vulnerabilities') {
+                    steps {
+                        dependencyCheck additionalArguments: ''' 
+                                    -o './'
+                                    -s './'
+                                    -f 'ALL' 
+                                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                        
+                        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                    }
+                }
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                sh 'npm test'
-            }
-            post {
-                always {
-                    junit '**/junit.xml'
+                script {
+                    echo 'Running tests...'
+                    sh 'npm test'
                 }
-            } 
+            }
         }
         
+     
     }
 }
