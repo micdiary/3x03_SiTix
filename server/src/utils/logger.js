@@ -13,6 +13,7 @@ const transport = new DailyRotateFile({
 	dirname: logDir,
 	filename: 'server-%DATE%.log',
 	datePattern: 'YYYY-MM-DD',
+	maxSize: '20m',
   	maxFiles: '14d', // Retain logs for 14 days
 })
 
