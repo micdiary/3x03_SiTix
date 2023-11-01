@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom'; // To wrap your component in a router
 import Home from 'client/src/pages/Home';
 import { getEvent } from 'client/src/api/event'; // Replace with your actual API module
