@@ -154,6 +154,7 @@ router.post("/checkout", async (req, res) => {
 
 		return res.status(200).json({ message: "Order created" });
 	} catch (err) {
+		//err
 		console.log(err);
 		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });
