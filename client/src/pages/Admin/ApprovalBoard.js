@@ -22,7 +22,6 @@ const ApprovalBoard = ({ eventData, updatedReq, setUpdatedReq }) => {
                 }
             }
             setDetailsData(data);
-            console.log(data);
         };
         fetchData();
     }, [eventData]);
@@ -155,7 +154,6 @@ const ApprovalBoard = ({ eventData, updatedReq, setUpdatedReq }) => {
             request_id: requestId,
             status: "accepted",
         };
-        console.log(req);
         updateRequest(req)
             .then((res) => {
                 showNotification(res.message);
@@ -172,7 +170,6 @@ const ApprovalBoard = ({ eventData, updatedReq, setUpdatedReq }) => {
             request_id: requestId,
             status: "rejected",
         };
-        console.log(req);
         updateRequest(req)
             .then((res) => {
                 showNotification(res.message);

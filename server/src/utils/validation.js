@@ -59,14 +59,28 @@ export const validateField = (field) => {
 }
 
 export const checkPassword = async (password) => {
-  //open txt file
+  // open txt file
   const commonPasswords = fs.readFileSync(
     './10-million-password-list-top-1000.txt',
     'utf8',
   )
-  //check if password is in file
+  // check if password is in file
   if (commonPasswords.includes(password)) {
     return false
   }
+
+  // password length
+  const minLength = 12
+  const maxLength = 50
+  if (password.length < minLength || password.length > maxLength) {
+    return false
+  }
+
+  // only allow ascii 
+  const regex = /^[\x00-\x7F]*$/
+  if (!regex.test(password)) {
+    return false
+  }
+
   return true
 }

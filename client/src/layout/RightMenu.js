@@ -92,7 +92,6 @@ const RightMenu = ({ userType, token }) => {
     };
 
     if (isLaptop) {
-        console.log(userType);
         return (
             <div className="right-icons">
                 {(userType === "customer" || userType === null) && (

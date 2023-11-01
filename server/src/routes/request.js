@@ -6,22 +6,17 @@ const router = express.Router();
 import {
 	JWT_SECRET,
 	INTERNAL_SERVER_ERROR,
-	EMAIL,
-	EMAIL_PASSWORD,
-	EMAIL_BODY_RESET_PASSWORD,
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken, refreshToken, removeSession } from "./auth.js";
-import { sendEmail } from "../utils/email.js";
-import { toProperCase } from "../utils/string.js";
+import { checkToken } from "./auth.js";
 import { getAdminId, getNumAdmins, isSuperAdmin } from "./admin.js";
 import { getEventSeatType, setEventSeatTypeNum, startEvent } from "./event.js";
 import { logger } from "../utils/logger.js";
 import { validateParams } from "../utils/validation.js";
 
 // get all requests
-router.get("/:token", async (req, res) => {
+router.get("/:token", async (req, res) => { 
 	const { token } = req.params;
 
 	if(!validateParams(req.params, ["token"])){

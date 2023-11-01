@@ -1,16 +1,9 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { checkToken} from "./auth.js";
-import {
-	JWT_SECRET,
-	INTERNAL_SERVER_ERROR,
-	EMAIL,
-	EMAIL_PASSWORD,
-	EMAIL_BODY_RESET_PASSWORD,
-} from "../constants.js";
+import { checkToken } from "./auth.js";
+import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
-import { redis_connection } from "../redis.js";
 import { getUserId } from "./account.js";
 import {
 	checkEventAvailability,
@@ -27,7 +20,7 @@ const router = express.Router();
 router.get("/:token", async (req, res) => {
 	const { token } = req.params;
 
-	if(!validateParams(req.params, ["token"])){
+	if (!validateParams(req.params, ["token"])) {
 		return res.status(409).json({ error: "Missing parameters" });
 	}
 
@@ -50,12 +43,12 @@ router.get("/:token", async (req, res) => {
 		const values = [user_id];
 		const [rows] = await mysql_connection.promise().query(sql, values);
 		const orders = rows;
-		
+
 		const event_sql = "SELECT * FROM event WHERE event_id = ?";
 		const venue_sql = "SELECT * FROM venue WHERE venue_id = ?";
 		const seat_type_sql = "SELECT * FROM seat_type WHERE seat_type_id = ?";
 		const event_seat_type_sql =
-		"SELECT * FROM event_seat_type WHERE event_id = ? AND seat_type_id = ?";
+			"SELECT * FROM event_seat_type WHERE event_id = ? AND seat_type_id = ?";
 		for (let i = 0; i < orders.length; i++) {
 			const event_values = [orders[i].event_id];
 			const venue_values = [orders[i].venue_id];
@@ -65,25 +58,25 @@ router.get("/:token", async (req, res) => {
 				orders[i].seat_type_id,
 			];
 			const [event_rows] = await mysql_connection
-			.promise()
-			.query(event_sql, event_values);
+				.promise()
+				.query(event_sql, event_values);
 			const [venue_rows] = await mysql_connection
-			.promise()
+				.promise()
 				.query(venue_sql, venue_values);
-				const [seat_type_rows] = await mysql_connection
+			const [seat_type_rows] = await mysql_connection
 				.promise()
 				.query(seat_type_sql, seat_type_values);
-				const [event_seat_type_rows] = await mysql_connection
+			const [event_seat_type_rows] = await mysql_connection
 				.promise()
 				.query(event_seat_type_sql, event_seat_type_values);
-				
-				orders[i].event = event_rows[0];
-				orders[i].event.date = convertToDate(orders[i].event.date);
-				orders[i].venue = venue_rows[0];			
-				orders[i].seat_type = seat_type_rows[0];
-				orders[i].event_seat_type = event_seat_type_rows[0];
-				orders[i].created_at = convertToDate(orders[i].created_at);
-			}
+
+			orders[i].event = event_rows[0];
+			orders[i].event.date = convertToDate(orders[i].event.date);
+			orders[i].venue = venue_rows[0];
+			orders[i].seat_type = seat_type_rows[0];
+			orders[i].event_seat_type = event_seat_type_rows[0];
+			orders[i].created_at = convertToDate(orders[i].created_at);
+		}
 
 		return res.status(200).json({ orders });
 	} catch (err) {
@@ -95,10 +88,27 @@ router.get("/:token", async (req, res) => {
 
 // checkout
 router.post("/checkout", async (req, res) => {
-	const { token, event_id, seat_type_id, venue_id, total_price, credit_card, quantity } =
-		req.body;
+	const {
+		token,
+		event_id,
+		seat_type_id,
+		venue_id,
+		total_price,
+		credit_card,
+		quantity,
+	} = req.body;
 
-	if(!validateParams(req.body, ["token", "event_id", "seat_type_id", "venue_id", "total_price", "credit_card", "quantity"])){
+	if (
+		!validateParams(req.body, [
+			"token",
+			"event_id",
+			"seat_type_id",
+			"venue_id",
+			"total_price",
+			"credit_card",
+			"quantity",
+		])
+	) {
 		return res.status(409).json({ error: "Missing parameters" });
 	}
 
@@ -120,17 +130,11 @@ router.post("/checkout", async (req, res) => {
 			return res.status(409).json({ error: "Payment failed" });
 		}
 
-		if (!await checkEventAvailability(event_id, seat_type_id)) {
+		if (!(await checkEventAvailability(event_id, seat_type_id))) {
 			return res.status(409).json({ error: "Seat type not available" });
 		}
 
-		if (
-			 !await reduceEventAvailability(
-				event_id,
-				seat_type_id,
-				quantity
-			)
-		) {
+		if (!(await reduceEventAvailability(event_id, seat_type_id, quantity))) {
 			return res.status(409).json({ error: "Seat type not available" });
 		}
 
@@ -150,6 +154,7 @@ router.post("/checkout", async (req, res) => {
 
 		return res.status(200).json({ message: "Order created" });
 	} catch (err) {
+		//err
 		console.log(err);
 		logger.error(err);
 		return res.status(409).json({ error: INTERNAL_SERVER_ERROR });

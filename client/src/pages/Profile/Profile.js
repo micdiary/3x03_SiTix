@@ -30,7 +30,6 @@ const Profile = () => {
         setUserType(getUserType());
         getProfile().then((res) => {
             if (res.user !== undefined) {
-                console.log(res.user);
                 // res.user is array
                 setProfile(res.user[0]);
             }
@@ -49,7 +48,6 @@ const Profile = () => {
     const handleDelete = () => {
         deleteUserAccount()
             .then((res) => {
-                console.log("delete", res);
                 showNotification(res.message);
                 removeToken();
                 removeUser();
