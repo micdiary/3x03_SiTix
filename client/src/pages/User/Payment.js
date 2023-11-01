@@ -27,7 +27,6 @@ const Payment = ({ orderItem, isLoading, setIsLoading }) => {
             credit_card: values.card_number.replace(/\s/g, ""),
             quantity: orderItem.quantity,
         };
-        console.log(req);
         createOrder(req)
             .then((res) => {
                 showNotification(res.message);

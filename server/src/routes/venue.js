@@ -69,7 +69,7 @@ router.get("/:token", async (req, res) => {
 
 		const venues = rows;
 
-		// get img from uploads folder
+		// get img from uploads folder 
 		for (let i = 0; i < venues.length; i++) {
 			const venue = venues[i];
 			const img = venue.img;

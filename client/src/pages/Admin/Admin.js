@@ -19,7 +19,6 @@ const Admin = () => {
     useEffect(() => {
         getVenue()
             .then((res) => {
-                console.log(res.venues);
                 const venues = res.venues.map((venue) => ({
                     ...venue,
                     key: venue.venue_id,
@@ -38,7 +37,6 @@ const Admin = () => {
                     ...request,
                     key: request.request_id,
                 }));
-                console.log(res.requests);
                 setEventData(requests);
             })
             .catch((err) => {
