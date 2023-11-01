@@ -139,6 +139,7 @@ app.use((err, req, res, next) => {
 		logger.error(`Error Response: ${JSON.stringify(err.response.data)}`);
 	}
 	else {
+		//log error response details
 		logger.error(`Error Object: ${JSON.stringify(err)}`);
 	}
 
