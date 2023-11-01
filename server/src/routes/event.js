@@ -8,17 +8,11 @@ import { v4 as uuidv4 } from "uuid";
 
 const router = express.Router();
 
-import {
-	JWT_SECRET,
-	INTERNAL_SERVER_ERROR,
-	EMAIL,
-	EMAIL_PASSWORD,
-	EMAIL_BODY_RESET_PASSWORD,
-} from "../constants.js";
+import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken, refreshToken, removeSession } from "./auth.js";
-import { getSeatTypes, isVenueValid, seatTypeExists } from "./venue.js";
+import { checkToken } from "./auth.js";
+import { isVenueValid, seatTypeExists } from "./venue.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
 import {
 	convertToDate,
@@ -96,7 +90,7 @@ router.get("/", async (req, res) => {
 router.get("/search/:event_name", async (req, res) => {
 	const { event_name } = req.params;
 
-	if(!validateParams(req.params, ["event_name"])){
+	if (!validateParams(req.params, ["event_name"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
@@ -137,7 +131,7 @@ router.get("/search/:event_name", async (req, res) => {
 router.get("/details/:token/:event_id", async (req, res) => {
 	const { token, event_id } = req.params;
 
-	if(!validateParams(req.params, ["token", "event_id"])){
+	if (!validateParams(req.params, ["token", "event_id"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
@@ -234,7 +228,17 @@ router.post("/add", upload.single("file"), async (req, res) => {
 		seat_type,
 	} = req.body;
 
-	if(!validateParams(req.body, ["token", "venue_id", "event_name", "date", "description", "category", "seat_type"])){
+	if (
+		!validateParams(req.body, [
+			"token",
+			"venue_id",
+			"event_name",
+			"date",
+			"description",
+			"category",
+			"seat_type",
+		])
+	) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 

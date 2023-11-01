@@ -16,7 +16,7 @@ import {
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
 import { toProperCase } from "../utils/string.js";
-import { sendEmail } from "../utils/email.js";
+import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { verifyAccountPassword } from "./account.js";
 import { checkPassword, validateParams } from "../utils/validation.js";
 import { logger } from "../utils/logger.js";
@@ -40,7 +40,7 @@ router.post("/register", async (req, res) => {
 		}
 
 		// email validation
-		if (!await isValidEmailFormat(email)) {
+		if (!isValidEmailFormat(email)) {
 			return res.status(409).json({ error: "Invalid email format" });
 		}
 
@@ -278,14 +278,6 @@ export async function usernameExists(username) {
 	const [admin] = await mysql_connection.promise().query(sql2, values2);
 
 	return user.length > 0 || admin.length > 0;
-}
-
-export async function isValidEmailFormat(email) {
-	const emailRegex = /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,4}$/;
-	if (emailRegex.test(field)) {
-    return true;
-}
-
 }
 
 // refresh token
