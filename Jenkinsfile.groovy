@@ -6,7 +6,6 @@ pipeline {
             steps {
                 echo 'Installing dependencies...'
                 sh 'npm ci'
-                sh 'npm install --save @testing-library/jest-dom @testing-library/react'
             }
         }
         stage('Test') {
