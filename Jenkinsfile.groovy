@@ -22,11 +22,11 @@ pipeline {
         stage('OWASP Dependency-Check Vulnerabilities') {
             steps { 
                 dependencyCheck additionalArguments: ''' 
+                    --suppression "yarn.json"
                     -o './'
                     -s './'
                     -f 'ALL' 
                     --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                     }
                     post {
 		    success {
