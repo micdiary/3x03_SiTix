@@ -18,7 +18,7 @@ import rateLimit from "express-rate-limit";
 import { logger } from "./utils/logger.js";
 
 const app = express();
-
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
