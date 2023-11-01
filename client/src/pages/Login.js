@@ -20,7 +20,6 @@ const Login = () => {
   const setStoreUserType = userStore((state) => state.setUserType);
 
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
 
     const req = {
       username: values.username,
@@ -29,7 +28,6 @@ const Login = () => {
 
     login(req)
       .then((res) => {
-        console.log(res);
 
         // global state
         setStoreToken(res.token);
@@ -49,7 +47,6 @@ const Login = () => {
         }
       })
       .catch((err) => {
-        console.log(err);
         alert(err.message);
       });
   };

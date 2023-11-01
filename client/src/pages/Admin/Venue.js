@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
-import { getVenue, updateVenue } from "../../api/venue";
+import { updateVenue } from "../../api/venue";
 import { showNotification } from "../../components/Notification";
 import Modals from "../../components/Modal";
 import { inputStyle, marginBottomOneStyle } from "../PagesStyles";

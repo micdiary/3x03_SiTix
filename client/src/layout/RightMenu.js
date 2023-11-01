@@ -18,7 +18,6 @@ const RightMenu = ({ userType, token }) => {
     const inputRef = useRef(null);
     const isLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
 
-    const [searchQuery, setSearchQuery] = useState("");
     const [isSearchExpanded, setSearchExpanded] = useState(false);
 
     const removeUser = userStore((state) => state.removeUser);
@@ -80,16 +79,6 @@ const RightMenu = ({ userType, token }) => {
             label: <div onClick={logoutButton}>Logout</div>,
         });
     }
-
-    const items = [
-        { id: 1, name: "Item 1" },
-        { id: 2, name: "Item 2" },
-        // Add more items here
-    ];
-
-    const handleSearchInputChange = (e) => {
-        setSearchQuery(e.target.value);
-    };
 
     if (isLaptop) {
         return (

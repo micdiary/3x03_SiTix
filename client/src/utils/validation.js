@@ -20,17 +20,17 @@ export const validateExpiryDate = (rule, value) => {
 export function getPasswordValidationRule(customRules = []) {
     const passwordRules = [
         {
-            min: 10,
-            message: "Password must contain at least 10 characters!",
+            min: 12,
+            message: "Password must contain at least 12 characters!",
         },
         {
-            max: 128,
-            message: "Password exceeded 128 characters!",
+            max: 50,
+            message: "Password exceeded 50 characters!",
             //long password characters may be used to perform Denial-Of-Service attacks
         },
         {
             pattern:
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/,
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/,
             message:
                 "Password must contain at least a number, an uppercase, a lowercase, and a special character!",
         },

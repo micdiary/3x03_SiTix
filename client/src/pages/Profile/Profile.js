@@ -3,7 +3,6 @@ import { Button, Modal } from "antd";
 import * as constants from "../../constants";
 import { deleteUserAccount, getProfile } from "../../api/account";
 import {
-    getToken,
     getUserType,
     removeToken,
     removeUserType,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { searchEvent } from "../api/event";
 import { showNotification } from "../components/Notification";
-import { Col, Divider, Row, Typography } from "antd";
+import { Divider, Row, Typography } from "antd";
 import EventCardList from "../components/EventCards";
 import { getToken } from "../utils/account";
 import { bodyContentStyle } from "./PagesStyles";
@@ -19,12 +19,10 @@ const SearchContent = () => {
         setIsLoggedIn(localToken);
     }, [localToken]);
 
-    console.log(searchQuery);
 
     useEffect(() => {
         searchEvent({ event_name: searchQuery })
             .then((res) => {
-                console.log(res.events);
                 setSearchResults(res.events);
             })
             .catch((err) => {

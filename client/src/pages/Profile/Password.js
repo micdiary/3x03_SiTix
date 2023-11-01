@@ -10,6 +10,7 @@ import Buttons from "../../components/Buttons";
 import { showNotification } from "../../components/Notification";
 import { inputStyle, marginBottomOneStyle } from "../PagesStyles";
 import { useNavigate } from "react-router-dom";
+import { getPasswordValidationRule } from "../../utils/validation";
 
 const Password = () => {
     let navigate = useNavigate();
@@ -63,7 +64,7 @@ const Password = () => {
                             required: true,
                             message: "Please enter your New password.",
                         },
-                        // ...getPasswordValidationRule(),
+                        ...getPasswordValidationRule(),
                     ]}
                     hasFeedback
                     style={marginBottomOneStyle}
