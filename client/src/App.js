@@ -6,7 +6,6 @@ import ResetPassword from "./pages/ResetPassword";
 import ForgetPassword from "./pages/ForgetPassword";
 import UserVerification from "./pages/UserVerification";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import SearchContent from "./pages/SearchContent";
 
 function App() {
     return (

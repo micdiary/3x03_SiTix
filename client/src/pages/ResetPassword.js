@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
 import { resetPassword } from "../api/account";
 import { showNotification } from "../components/Notification";
+import { getPasswordValidationRule } from "../utils/validation";
 
 const ResetPassword = () => {
     let navigate = useNavigate();
@@ -52,7 +53,7 @@ const ResetPassword = () => {
                                     required: true,
                                     message: "Please enter your new password.",
                                 },
-                                // ...getPasswordValidationRule(),
+                                ...getPasswordValidationRule(),
                             ]}
                             hasFeedback
                             style={marginBottomOneStyle}
