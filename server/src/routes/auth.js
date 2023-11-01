@@ -20,6 +20,7 @@ import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { verifyAccountPassword } from "./account.js";
 import { checkPassword, validateParams } from "../utils/validation.js";
 import { logger } from "../utils/logger.js";
+import { getCurrentTimeInUnix } from "../utils/time.js";
 
 // Register new user
 router.post("/register", async (req, res) => {
@@ -31,12 +32,17 @@ router.post("/register", async (req, res) => {
 
 	try {
 		// Checking if user exists
-		if (await emailExists(email)) {
-			return res.status(409).json({ error: "User already exists" });
-		}
+		if (await emailExists(email) || await usernameExists(username)) {
+			if (!await userVerified(email,username)){
+				// delete user from db to allow re-register
+				const sql = "DELETE FROM user WHERE email = ? AND username = ?";
+				const values = [email, username];
+				await mysql_connection.promise().query(sql, values);
 
-		if (await usernameExists(username)) {
-			return res.status(409).json({ error: "Username already exists" });
+			}
+			else{
+				return res.status(409).json({ error: "User already exists" });
+			}
 		}
 
 		// email validation
@@ -46,7 +52,7 @@ router.post("/register", async (req, res) => {
 
 		// password validation
 		if(!await checkPassword(password)){
-			return res.status(409).json({ error: "Password too weak" });
+			return res.status(409).json({ error: "Password too weak / Invalid characters found" });
 		}
 
 		// Hashing password (brcrypt does not require salt to be stored separately as it is already included in the hashed password)
@@ -70,8 +76,8 @@ router.post("/register", async (req, res) => {
 		];
 		await mysql_connection.promise().query(sql, values);
 
-		// Token expiry time: 20 minutes
-		const token = jwt.sign({ email }, JWT_SECRET);
+		// Token expiry time: 15 minutes
+		const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "15m" });
 
 		// send email to user to check if they are real
 		nodemailer.createTransport({
@@ -278,6 +284,14 @@ export async function usernameExists(username) {
 	const [admin] = await mysql_connection.promise().query(sql2, values2);
 
 	return user.length > 0 || admin.length > 0;
+}
+
+// is user verified
+export async function userVerified(email, username){
+	const sql = `SELECT * FROM user WHERE email = ? AND username = ?`;
+	const values = [email, username];
+	const [user] = await mysql_connection.promise().query(sql, values);
+	return user[0].is_verified === 1;
 }
 
 // refresh token
