@@ -79,7 +79,7 @@ app.get("/set-cookie", (req, res) => {
     	// This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
     	sameSite: "Strict", // None, Lax, or Strict
     	path: "/", // specify cookie path
-    	expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
+    	expires: new Date(Date.now() +  900000), // cookie will be removed after 15 minutes
   });
 
   res.send("Cookie is set");

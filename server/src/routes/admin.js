@@ -13,7 +13,7 @@ import {
 	EMAIL_PASSWORD,
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
-import { checkToken, getJWTFromRedis, refreshToken } from "./auth.js";
+import { checkToken, getJWTFromRedis } from "./auth.js";
 import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";

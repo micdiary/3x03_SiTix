@@ -210,7 +210,7 @@ router.post("/login", async (req, res) => {
 		const token = await bcrypt.hash(tokenUnhash, 10);
 
 		// Add token to redis for 15 minutes
-		setTokenToRedis(token, tokenUnhash, user[0].email ,900);
+		setTokenToRedis(token, tokenUnhash, user[0].email, 900);
 
 		return res.status(200).json({
 			token: token,
@@ -261,19 +261,20 @@ router.post("/refresh-token", async (req, res) => {
 	}
 
 	try {
-		if (!token) {
+		const jwtToken = await getJWTFromRedis(token);
+		if (!jwtToken) {
 			return res.status(401).json({ error: "Invalid token" });
 		}
-		const decoded = jwt.verify(token, JWT_SECRET);
+		const decoded = jwt.verify(jwtToken, JWT_SECRET);
 		const { email } = decoded;
 
 		const tokenToCompare = await redis_connection.get(email);
 
-		if (tokenToCompare !== token) {
+		if (tokenToCompare !== jwtToken) {
 			return res.status(401).json({ error: "Invalid token" });
 		}
 
-		setTokenToRedis(email, token, 900);
+		setTokenToRedis(token, jwtToken, email, 900);
 		return res.status(200).json({ token: token, message: "Token refreshed" });
 	} catch (err) {
 		console.log(err);
@@ -313,13 +314,6 @@ export async function userVerified(email, username) {
 		return true;
 	}
 	return user[0].is_verified === 1;
-}
-
-// refresh token
-export async function refreshToken(email, token) {
-	if (checkToken(email, token)) {
-		setTokenToRedis(email, token, 14400);
-	}
 }
 
 // check if token exist
