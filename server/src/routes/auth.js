@@ -207,7 +207,7 @@ router.post("/login", async (req, res) => {
 		);
 
 		// hash token
-		const token = await bcrypt.hash(tokenUnhash, 10);
+		const token = await handleTokenHashing(tokenUnhash);
 
 		// Add token to redis for 15 minutes
 		setTokenToRedis(token, tokenUnhash, user[0].email, 900);
@@ -242,7 +242,7 @@ router.get("/logout/:token", async (req, res) => {
 		const decoded = jwt.verify(jwtToken, JWT_SECRET);
 		const { email } = decoded;
 
-		await redis_connection.del(email);
+		await redis_connection.del(token);
 
 		return res.status(200).json({ message: "User logged out successfully" });
 	} catch (err) {
@@ -336,6 +336,16 @@ async function setTokenToRedis(token, jwt, email, timeout) {
 	await redis_connection.expire(token, timeout);
 	await redis_connection.set(email, jwt);
 	await redis_connection.expire(email, timeout);
+}
+
+async function handleTokenHashing(plainPassword) {
+	let hashed = bcrypt.hashSync(plainPassword, 10);
+
+	if (hashed.includes("/")) {
+		hashed = handleTokenHashing(plainPassword);
+	}
+
+	return hashed;
 }
 
 export { router as authRouter };
