@@ -13,7 +13,7 @@ import {
 	EMAIL_BODY_RESET_PASSWORD,
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
-import { checkToken, removeSession } from "./auth.js";
+import { checkToken, getJWTFromRedis, removeSession } from "./auth.js";
 import { sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { getCurrentTimeInUnix } from "../utils/time.js";
@@ -24,13 +24,19 @@ import { validateParams } from "../utils/validation.js";
 router.get("/profile/:token", async (req, res) => {
 	const { token } = req.params;
 
-	if(!validateParams(req.params, ["token"])){
+	if (!validateParams(req.params, ["token"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
-		if (!(await checkToken(email, token))) {
+		const jwtToken = await getJWTFromRedis(token);
+
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -67,13 +73,21 @@ router.get("/profile/:token", async (req, res) => {
 router.post("/edit", async (req, res) => {
 	const { token, username, first_name, last_name } = req.body;
 
-	if(!validateParams(req.body, ["token", "username", "first_name", "last_name"])){
+	if (
+		!validateParams(req.body, ["token", "username", "first_name", "last_name"])
+	) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
-		if (!(await checkToken(email, token))) {
+		const jwtToken = await getJWTFromRedis(token);
+
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -100,16 +114,22 @@ router.post("/edit", async (req, res) => {
 });
 
 // delete account (hard delete)
-router.get("/delete/:token", async (req, res) => { 
+router.get("/delete/:token", async (req, res) => {
 	const { token } = req.params;
 
-	if(!validateParams(req.params, ["token"])){
+	if (!validateParams(req.params, ["token"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
-		if (!(await checkToken(email, token))) {
+		const jwtToken = await getJWTFromRedis(token);
+
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -139,7 +159,7 @@ router.get("/delete/:token", async (req, res) => {
 router.post("/forget-password", async (req, res) => {
 	const { email } = req.body;
 
-	if(!validateParams(req.body, ["email"])){
+	if (!validateParams(req.body, ["email"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
@@ -181,14 +201,19 @@ router.post("/forget-password", async (req, res) => {
 // reset password
 router.post("/reset-password", async (req, res) => {
 	const { token, password, newPassword } = req.body;
-	console.log(req.body)
 
-	if(!validateParams(req.body, ["token", "newPassword"])){
+	if (!validateParams(req.body, ["token", "newPassword"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
 	try {
-		const decoded = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
+
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const decoded = jwt.verify(jwtToken, JWT_SECRET);
 
 		let user = [];
 		const { email } = decoded;

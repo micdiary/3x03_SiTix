@@ -1,7 +1,5 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import nodemailer from "nodemailer";
 import fs from "fs";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
@@ -11,7 +9,7 @@ const router = express.Router();
 import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken } from "./auth.js";
+import { checkToken, getJWTFromRedis } from "./auth.js";
 import { isVenueValid, seatTypeExists } from "./venue.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
 import {
@@ -136,9 +134,15 @@ router.get("/details/:token/:event_id", async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -243,9 +247,15 @@ router.post("/add", upload.single("file"), async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });

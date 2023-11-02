@@ -13,7 +13,7 @@ import {
 	EMAIL_PASSWORD,
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
-import { checkToken, refreshToken } from "./auth.js";
+import { checkToken, getJWTFromRedis, refreshToken } from "./auth.js";
 import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
@@ -29,9 +29,15 @@ router.get("/:token", async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -66,9 +72,15 @@ router.post("/add", async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -89,7 +101,7 @@ router.post("/add", async (req, res) => {
 
 		// generate password
 		const password = generatePassword();
-		const hashedPassword = await bcrypt.hash(password, 10);
+		const hashedPassword = await bcrypt.hash(password, 1024);
 
 		// generate uuid
 		const uuid = uuidv4();
@@ -133,9 +145,15 @@ router.post("/delete", async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -159,7 +177,7 @@ router.post("/delete", async (req, res) => {
 
 // generate password for account creation
 const generatePassword = () => {
-	const length = 8;
+	const length = 12;
 	const charset =
 		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	let retVal = "";
@@ -206,6 +224,10 @@ export const isSuperAdmin = async (email) => {
 		const sql = `SELECT * FROM admin WHERE email = ?`;
 		const values = [email];
 		const [rows] = await mysql_connection.promise().query(sql, values);
+
+		if (rows.length === 0) {
+			return false;
+		}
 
 		if (rows[0].role_id === 2) {
 			return true;

@@ -8,7 +8,7 @@ const router = express.Router();
 
 import { JWT_SECRET, INTERNAL_SERVER_ERROR } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
-import { checkToken } from "./auth.js";
+import { checkToken, getJWTFromRedis } from "./auth.js";
 import { getAdminId, isSuperAdmin } from "./admin.js";
 import { getCurrentTimeInUnix } from "../utils/time.js";
 import { fileFilter, handleMulterError, maxMB } from "../utils/file.js";
@@ -51,9 +51,15 @@ router.get("/:token", async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -111,9 +117,15 @@ router.post("/add", upload.single("file"), async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -182,9 +194,15 @@ router.post("/update", upload.single("file"), async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });

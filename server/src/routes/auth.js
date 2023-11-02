@@ -26,21 +26,27 @@ import { getCurrentTimeInUnix } from "../utils/time.js";
 router.post("/register", async (req, res) => {
 	const { username, first_name, last_name, email, password } = req.body;
 
-	if(!validateParams(req.body, ["username", "first_name", "last_name", "email", "password"])){
+	if (
+		!validateParams(req.body, [
+			"username",
+			"first_name",
+			"last_name",
+			"email",
+			"password",
+		])
+	) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
 	try {
 		// Checking if user exists
-		if (await emailExists(email) || await usernameExists(username)) {
-			if (!await userVerified(email,username)){
+		if ((await emailExists(email)) || (await usernameExists(username))) {
+			if (!(await userVerified(email, username))) {
 				// delete user from db to allow re-register
 				const sql = "DELETE FROM user WHERE email = ? AND username = ?";
 				const values = [email, username];
 				await mysql_connection.promise().query(sql, values);
-
-			}
-			else{
+			} else {
 				return res.status(409).json({ error: "User already exists" });
 			}
 		}
@@ -51,12 +57,14 @@ router.post("/register", async (req, res) => {
 		}
 
 		// password validation
-		if(!await checkPassword(password)){
-			return res.status(409).json({ error: "Password too weak / Invalid characters found" });
+		if (!(await checkPassword(password))) {
+			return res
+				.status(409)
+				.json({ error: "Password too weak / Invalid characters found" });
 		}
 
 		// Hashing password (brcrypt does not require salt to be stored separately as it is already included in the hashed password)
-		const hashedPassword = await bcrypt.hash(password, 10);
+		const hashedPassword = await bcrypt.hash(password, 1024);
 
 		// uuidv4
 		const uuid = uuidv4();
@@ -94,7 +102,7 @@ router.post("/register", async (req, res) => {
 		).replace(/{token}/g, token);
 
 		sendEmail(email, "Email Verification", emailBody).then((info) => {
-			console.log("Email sent: " + info.response)
+			console.log("Email sent: " + info.response);
 			logger.info("Email sent: " + info.response);
 		});
 
@@ -112,7 +120,7 @@ router.post("/register", async (req, res) => {
 router.post("/verify-email", async (req, res) => {
 	const { token } = req.body;
 
-	if(!validateParams(req.body, ["token"])){
+	if (!validateParams(req.body, ["token"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
@@ -136,7 +144,7 @@ router.post("/verify-email", async (req, res) => {
 router.post("/login", async (req, res) => {
 	const { username, password } = req.body;
 
-	if(!validateParams(req.body, ["username", "password"])){
+	if (!validateParams(req.body, ["username", "password"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
@@ -193,13 +201,16 @@ router.post("/login", async (req, res) => {
 		}
 
 		// Create and assign token
-		const token = jwt.sign(
+		const tokenUnhash = jwt.sign(
 			{ email: user[0].email, userType: userType },
 			JWT_SECRET
 		);
 
-		// Add token to redis for 4 hours
-		setTokenToRedis(user[0].email, token, 14400);
+		// hash token
+		const token = await bcrypt.hash(tokenUnhash, 10);
+
+		// Add token to redis for 15 minutes
+		setTokenToRedis(token, tokenUnhash, user[0].email ,900);
 
 		return res.status(200).json({
 			token: token,
@@ -217,12 +228,18 @@ router.post("/login", async (req, res) => {
 router.get("/logout/:token", async (req, res) => {
 	const { token } = req.params;
 
-	if(!validateParams(req.params, ["token"])){
+	if (!validateParams(req.params, ["token"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
 	try {
-		const decoded = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
+
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const decoded = jwt.verify(jwtToken, JWT_SECRET);
 		const { email } = decoded;
 
 		await redis_connection.del(email);
@@ -239,7 +256,7 @@ router.get("/logout/:token", async (req, res) => {
 router.post("/refresh-token", async (req, res) => {
 	const { token } = req.body;
 
-	if(!validateParams(req.body, ["token"])){
+	if (!validateParams(req.body, ["token"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
@@ -256,7 +273,7 @@ router.post("/refresh-token", async (req, res) => {
 			return res.status(401).json({ error: "Invalid token" });
 		}
 
-		setTokenToRedis(email, token, 14400);
+		setTokenToRedis(email, token, 900);
 		return res.status(200).json({ token: token, message: "Token refreshed" });
 	} catch (err) {
 		console.log(err);
@@ -287,10 +304,14 @@ export async function usernameExists(username) {
 }
 
 // is user verified
-export async function userVerified(email, username){
+export async function userVerified(email, username) {
 	const sql = `SELECT * FROM user WHERE email = ? AND username = ?`;
 	const values = [email, username];
 	const [user] = await mysql_connection.promise().query(sql, values);
+	console.log(user[0]);
+	if (user.length === 0) {
+		return true;
+	}
 	return user[0].is_verified === 1;
 }
 
@@ -312,8 +333,14 @@ export async function removeSession(email) {
 	await redis_connection.del(email);
 }
 
-async function setTokenToRedis(email, token, timeout) {
-	await redis_connection.set(email, token);
+export async function getJWTFromRedis(token) {
+	return await redis_connection.get(token);
+}
+
+async function setTokenToRedis(token, jwt, email, timeout) {
+	await redis_connection.set(token, jwt);
+	await redis_connection.expire(token, timeout);
+	await redis_connection.set(email, jwt);
 	await redis_connection.expire(email, timeout);
 }
 
