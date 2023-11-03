@@ -63,7 +63,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES ('80995877-2d63-4c1b-bd2e-ab4eed46137d',2,'superadmin@sitix.com','sitixsuperadmin','$2b$10$7wO5qzUkqj/k8aWxsSJzkuRoQttCyMpGNr07FyZWSeQmLvGka8g7y',UNIX_TIMESTAMP('2023-10-25 12:00:00'),NULL);
+INSERT INTO `admin` VALUES ('80995877-2d63-4c1b-bd2e-ab4eed46137d',2,'michael.chandiary@hotmail.com','sitixsuperadmin','$2b$10$7wO5qzUkqj/k8aWxsSJzkuRoQttCyMpGNr07FyZWSeQmLvGka8g7y',UNIX_TIMESTAMP('2023-10-25 12:00:00'),NULL);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,16 +94,6 @@ CREATE TABLE `event` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `event`
---
-
-LOCK TABLES `event` WRITE;
-/*!40000 ALTER TABLE `event` DISABLE KEYS */;
-INSERT INTO `event` VALUES ('3ac7af05-57fe-4876-814f-b8408771495a','705bb0fb-6ce3-473d-88d1-5e73360cf102','new event',UNIX_TIMESTAMP('2023-11-30 00:00:00'),'new event desc','sports','12345.jpg','2023-10-22 08:42:14',NULL,'80995877-2d63-4c1b-bd2e-ab4eed46137d','pending');
-/*!40000 ALTER TABLE `event` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `event_seat_type`
 --
 
@@ -120,16 +110,6 @@ CREATE TABLE `event_seat_type` (
   CONSTRAINT `seat_type_id` FOREIGN KEY (`seat_type_id`) REFERENCES `seat_type` (`seat_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `event_seat_type`
---
-
-LOCK TABLES `event_seat_type` WRITE;
-/*!40000 ALTER TABLE `event_seat_type` DISABLE KEYS */;
-INSERT INTO `event_seat_type` VALUES ('3ac7af05-57fe-4876-814f-b8408771495a',7,1000.00,30);
-/*!40000 ALTER TABLE `event_seat_type` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `order`
@@ -188,16 +168,6 @@ CREATE TABLE `request` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `request`
---
-
-LOCK TABLES `request` WRITE;
-/*!40000 ALTER TABLE `request` DISABLE KEYS */;
-INSERT INTO `request` VALUES ('cca6b2cc-a0d7-443a-a62d-ea5ab7a704b1','80995877-2d63-4c1b-bd2e-ab4eed46137d','3ac7af05-57fe-4876-814f-b8408771495a',0,'pending');
-/*!40000 ALTER TABLE `request` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `role`
 --
 
@@ -238,16 +208,6 @@ CREATE TABLE `seat_type` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `seat_type`
---
-
-LOCK TABLES `seat_type` WRITE;
-/*!40000 ALTER TABLE `seat_type` DISABLE KEYS */;
-INSERT INTO `seat_type` VALUES (5,'9e0f2a83-93cf-410e-a26a-36325dc47b53','VIP','VIP seats 123'),(6,'9e0f2a83-93cf-410e-a26a-36325dc47b53','Regular','Regular seats 12345'),(7,'705bb0fb-6ce3-473d-88d1-5e73360cf102','CAT1','Cat1'),(8,'4c98a9fd-11e9-4a9d-9689-cf4349c9e621','345','123');
-/*!40000 ALTER TABLE `seat_type` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `user`
 --
 
@@ -274,7 +234,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('c32d8b45-92fe-44f6-8b61-42c2107dfe87','micdiary','mic','chan','micdiary@123.com','$2b$10$Ir8MaqpTYwZ7g/w5FXjJzOdfVNve2R5GApdZ8flMGRxwX3likkRYC',UNIX_TIMESTAMP('2023-09-05 22:07:35'),NULL,1,0),('d956972e-1689-4bc8-b56c-a277202343f6','mic','mic','chand','michael.chandiary@hotmail.com','$2b$10$7OkY/nBR2CKn/cd1.r27lOV7eV8tCNfkAWsHMy0lIBo1OCW8bn6zC',UNIX_TIMESTAMP('2023-10-09 01:19:03'),NULL,1,0);
+INSERT INTO `user` VALUES ('c32d8b45-92fe-44f6-8b61-42c2107dfe87','micdiary','mic','chan','michael.chandiary@gmail.com','$2b$10$Ir8MaqpTYwZ7g/w5FXjJzOdfVNve2R5GApdZ8flMGRxwX3likkRYC',UNIX_TIMESTAMP('2023-09-05 22:07:35'),NULL,1,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -297,14 +257,6 @@ CREATE TABLE `venue` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `venue`
---
-
-LOCK TABLES `venue` WRITE;
-/*!40000 ALTER TABLE `venue` DISABLE KEYS */;
-INSERT INTO `venue` VALUES ('4c98a9fd-11e9-4a9d-9689-cf4349c9e621','asd45','lloyd.jpg',unix_timestamp('2023-10-21 22:55:03'),NULL,'80995877-2d63-4c1b-bd2e-ab4eed46137d'),('705bb0fb-6ce3-473d-88d1-5e73360cf102','asd','12345.jpg',UNIX_TIMESTAMP('2023-10-21 22:26:34'),NULL,'80995877-2d63-4c1b-bd2e-ab4eed46137d'),('9e0f2a83-93cf-410e-a26a-36325dc47b53','new venue17','12345.jpg',UNIX_TIMESTAMP('2023-10-19 16:55:19'),NULL,'80995877-2d63-4c1b-bd2e-ab4eed46137d');
-/*!40000 ALTER TABLE `venue` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

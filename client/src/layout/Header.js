@@ -25,24 +25,6 @@ const Header = () => {
     const [token, setToken] = useState(
         localStorageToken ? localStorageToken : storeToken
     );
-    useEffect(() => {
-        setToken(localStorageToken !== null ? localStorageToken : storeToken);
-        setStoreToken(
-            localStorageToken !== null ? localStorageToken : storeToken
-        );
-        if (token !== null && token !== undefined) {
-            refreshToken({ token: token })
-                .then((res) => {
-                    console.log("success");
-                })
-                .catch((err) => {
-                    removeToken();
-                    removeUserType();
-                    removeUser();
-                });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [localStorageToken, storeToken]);
 
     const storeUserType = userStore((state) => state.userType);
     const [userType, setUserType] = useState(
@@ -53,6 +35,27 @@ const Header = () => {
             localStorageUserType !== null ? localStorageUserType : storeUserType
         );
     }, [localStorageUserType, storeUserType]);
+    
+    useEffect(() => {
+        setToken(localStorageToken !== null ? localStorageToken : storeToken);
+        setStoreToken(
+            localStorageToken !== null ? localStorageToken : storeToken
+        );
+        if (token !== null && token !== undefined && userType !== null && userType !== undefined) {
+            console.log(token)
+            console.log(userType)
+            refreshToken({ token: token, type: userType })
+                .then((res) => {
+                    console.log("success");
+                })
+                .catch((err) => {
+                    removeToken();
+                    removeUserType();
+                    removeUser();
+                });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [localStorageToken, storeToken, userType]);
 
     const isLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
 

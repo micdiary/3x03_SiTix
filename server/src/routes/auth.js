@@ -209,18 +209,78 @@ router.post("/login", async (req, res) => {
 		// hash token
 		const token = await handleTokenHashing(tokenUnhash);
 
-		// Add token to redis for 15 minutes
-		setTokenToRedis(token, tokenUnhash, user[0].email, 900);
+		// generate OTP
+		const otp = Math.floor(100000 + Math.random() * 900000);
+		const emailBody = `Your OTP is ${otp}`;
+		await sendEmail(user[0].email, "OTP", emailBody);
 
+		// set token that expire in 15 mins
+		await redis_connection.del(`token/${token}`);
+		await redis_connection.set(`token/${token}`, otp);
+		await redis_connection.expire(`token/${token}`, 900);
+		// Add token to redis for 15 minutes
+		await setTokenToRedis(token, tokenUnhash, user[0].email, 900);
 		return res.status(200).json({
 			token: token,
-			userType: userType,
-			message: "User logged in successfully",
+			message: "An OTP has been sent to your email.",
 		});
 	} catch (err) {
 		console.log(err);
 		logger.error(err);
 		return res.status(500).json({ error: INTERNAL_SERVER_ERROR });
+	}
+});
+
+// verify otp
+router.post("/verify-otp", async (req, res) => {
+	const { otp, token } = req.body;
+
+	if (!validateParams(req.body, ["otp", "token"])) {
+		return res.status(401).json({ error: "Invalid params" });
+	}
+
+	try {
+		const otpToCompare = await redis_connection.get(`token/${token}`);
+		if (otpToCompare !== otp) {
+			return res.status(401).json({ error: "Invalid OTP" });
+		}
+
+		const jwtToken = await getJWTFromRedis(token);
+		if (!jwtToken) {
+			return res.status(401).json({ error: "Invalid token" });
+		}
+
+		const decoded = jwt.verify(jwtToken, JWT_SECRET);
+		const { email } = decoded;
+
+		const sql = `SELECT * FROM user WHERE email = ?`;
+		const values = [email];
+		let [user] = await mysql_connection.promise().query(sql, values);
+		if (user.length === 0) {
+			const adminSql = `SELECT * FROM admin WHERE email = ?`;
+			const adminValues = [email];
+			[user] = await mysql_connection.promise().query(adminSql, adminValues);
+
+			if (user.length === 0) {
+				return res.status(401).json({ error: "Invalid credentials" });
+			}
+		}
+
+		let userType = user[0].admin_id !== undefined ? "admin" : "customer";
+
+		if (user[0].role_id === 2) {
+			userType = "superadmin";
+		}
+
+		return res.status(200).json({
+			token: token,
+			userType: userType,
+			message: "You have successfully logged in!",
+		});
+	} catch (err) {
+		console.log(err);
+		logger.error(err);
+		return res.status(401).json({ error: INTERNAL_SERVER_ERROR });
 	}
 });
 
@@ -254,9 +314,9 @@ router.get("/logout/:token", async (req, res) => {
 
 // refresh token
 router.post("/refresh-token", async (req, res) => {
-	const { token } = req.body;
+	const { token, type } = req.body;
 
-	if (!validateParams(req.body, ["token"])) {
+	if (!validateParams(req.body, ["token", "type"])) {
 		return res.status(401).json({ error: "Invalid params" });
 	}
 
@@ -266,12 +326,16 @@ router.post("/refresh-token", async (req, res) => {
 			return res.status(401).json({ error: "Invalid token" });
 		}
 		const decoded = jwt.verify(jwtToken, JWT_SECRET);
-		const { email } = decoded;
+		const { email, userType } = decoded;
 
 		const tokenToCompare = await redis_connection.get(email);
 
 		if (tokenToCompare !== jwtToken) {
 			return res.status(401).json({ error: "Invalid token" });
+		}
+		console.log(userType, type)
+		if (userType !== type){
+			return res.status(401).json({ error: "Type mismatch" });
 		}
 
 		setTokenToRedis(token, jwtToken, email, 900);
@@ -309,7 +373,6 @@ export async function userVerified(email, username) {
 	const sql = `SELECT * FROM user WHERE email = ? AND username = ?`;
 	const values = [email, username];
 	const [user] = await mysql_connection.promise().query(sql, values);
-	console.log(user[0]);
 	if (user.length === 0) {
 		return true;
 	}

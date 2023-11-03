@@ -11,6 +11,7 @@ import {
     FORGET_PASSWORD_API,
     LOGOUT_API,
     DELETE_ACCOUNT_API,
+    SUBMIT_OTP_API,
 } from "../constants.js";
 import { getToken } from "../utils/account";
 
@@ -52,4 +53,8 @@ export async function resetPassword(req) {
 
 export async function forgetPassword(req) {
     return requestPost(FORGET_PASSWORD_API, { req });
+}
+
+export async function submitOTP(req) {
+    return requestPost(SUBMIT_OTP_API, { req });
 }

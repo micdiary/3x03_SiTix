@@ -22,6 +22,7 @@ export const LOGIN_API = `${URL}/auth/login`;
 export const LOGOUT_API = `${URL}/auth/logout`;
 export const VERIFY_EMAIL_API = `${URL}/auth/verify-email`;
 export const REFRESH_TOKEN_API = `${URL}/auth/refresh-token`;
+export const SUBMIT_OTP_API = `${URL}/auth/verify-otp`;
 
 export const PROFILE_API = `${URL}/account/profile`;
 export const EDIT_PROFILE_API = `${URL}/account/edit`;
