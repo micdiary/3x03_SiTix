@@ -4,7 +4,6 @@ import React from "react";
 const Category = () => {
     return (
         <div
-            className="category"
             style={{
                 minHeight: "100vh",
                 display: "flex",
@@ -15,7 +14,7 @@ const Category = () => {
         >
             <Card
                 style={{
-                    width: 300,
+                    width: 310,
                     textAlign: "center",
                     background: "transparent",
                 }}
@@ -26,7 +25,10 @@ const Category = () => {
                     style={{ width: "100%" }}
                 />
                 <Typography.Title level={4}>Work In Progress</Typography.Title>
-                <Typography.Text>Please wait for the surprise</Typography.Text>
+                <Typography.Text>
+                    Please wait for the surprise!{" "}
+                </Typography.Text>
+                <br />
                 <Typography.Text>
                     Our developers are on a coffee break ☕
                 </Typography.Text>

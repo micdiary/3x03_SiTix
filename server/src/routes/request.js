@@ -9,7 +9,7 @@ import {
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
 import { redis_connection } from "../redis.js";
-import { checkToken } from "./auth.js";
+import { checkToken, getJWTFromRedis } from "./auth.js";
 import { getAdminId, getNumAdmins, isSuperAdmin } from "./admin.js";
 import { getEventSeatType, setEventSeatTypeNum, startEvent } from "./event.js";
 import { logger } from "../utils/logger.js";
@@ -24,9 +24,15 @@ router.get("/:token", async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
 
-		if (!(await checkToken(email, token))) {
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
+
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });
@@ -94,9 +100,15 @@ router.post("/update", async (req, res) => {
 	}
 
 	try {
-		const { email, userType } = jwt.verify(token, JWT_SECRET);
+		const jwtToken = await getJWTFromRedis(token);
+		
+		if (!jwtToken) {
+			return res.status(409).json({ error: "Invalid token used" });
+		}
+		
+		const { email, userType } = jwt.verify(jwtToken, JWT_SECRET);
 
-		if (!(await checkToken(email, token))) {
+		if (!(await checkToken(email, jwtToken))) {
 			return res
 				.status(409)
 				.json({ error: "Invalid token used. Please relogin" });

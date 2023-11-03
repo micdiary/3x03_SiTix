@@ -25,7 +25,7 @@ app.use(cors({ credentials: true, origin: "https://tix.busy-shannon.cloud" }));
 // Define rate limiting middleware
 const limiter = rateLimit({
 	windowMs:  1000, // 1 sec
-  	max: 5, // limit each IP to 5 request per second
+  	max: 15, // limit each IP to 15 request per second
   	message: "Too many requests, please wait to try again later.", // message to send back when rate-limited
   	headers: false, // not sending X-RateLimit-* headers with the rate limit and the number of requests
 });
@@ -86,7 +86,7 @@ app.get("/set-cookie", (req, res) => {
     	// This attribute can help prevent cross-site request forgery (CSRF) attacks. In many cases, it's beneficial to set this attribute to "Strict."
     	sameSite: "Strict", // None, Lax, or Strict
     	path: "/", // specify cookie path
-    	expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
+    	expires: new Date(Date.now() +  900000), // cookie will be removed after 15 minutes
   });
 
   res.send("Cookie is set");

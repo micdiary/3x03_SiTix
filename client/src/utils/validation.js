@@ -30,7 +30,7 @@ export function getPasswordValidationRule(customRules = []) {
         },
         {
             pattern:
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/,
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[\w@$!%*?&]{12,}$/,
             message:
                 "Password must contain at least a number, an uppercase, a lowercase, and a special character!",
         },
