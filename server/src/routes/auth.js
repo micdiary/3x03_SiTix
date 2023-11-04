@@ -88,14 +88,6 @@ router.post("/register", async (req, res) => {
 		const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "15m" });
 
 		// send email to user to check if they are real
-		nodemailer.createTransport({
-			service: "gmail",
-			auth: {
-				user: EMAIL,
-				pass: EMAIL_PASSWORD,
-			},
-		});
-
 		const emailBody = EMAIL_BODY_ACTIVATE_ACCOUNT.replace(
 			"{name}",
 			toProperCase(first_name)
@@ -333,7 +325,6 @@ router.post("/refresh-token", async (req, res) => {
 		if (tokenToCompare !== jwtToken) {
 			return res.status(401).json({ error: "Invalid token" });
 		}
-		console.log(userType, type)
 		if (userType !== type){
 			return res.status(401).json({ error: "Type mismatch" });
 		}

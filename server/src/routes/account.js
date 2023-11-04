@@ -172,16 +172,8 @@ router.post("/forget-password", async (req, res) => {
 	}
 
 	// Generate JWT token for password reset
-	// Token expiry time: 1 hour
-	const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1h" });
-
-	nodemailer.createTransport({
-		service: "gmail",
-		auth: {
-			user: EMAIL,
-			pass: EMAIL_PASSWORD,
-		},
-	});
+	// Token expiry time: 15 minutes
+	const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "15m" });
 
 	const emailBody = EMAIL_BODY_RESET_PASSWORD.replace(
 		"{name}",
@@ -202,18 +194,28 @@ router.post("/forget-password", async (req, res) => {
 router.post("/reset-password", async (req, res) => {
 	const { token, password, newPassword } = req.body;
 
-	if (!validateParams(req.body, ["token", "newPassword"])) {
-		return res.status(401).json({ error: "Invalid params" });
+	if (password === undefined) {
+		if (!validateParams(req.body, ["token", "newPassword"])) {
+			return res.status(401).json({ error: "Invalid params" });
+		}
+	} else {
+		if (!validateParams(req.body, ["token", "password", "newPassword"])) {
+			return res.status(401).json({ error: "Invalid params" });
+		}
 	}
 
 	try {
 		const jwtToken = await getJWTFromRedis(token);
 
+		let decoded;
 		if (!jwtToken) {
-			return res.status(409).json({ error: "Invalid token used" });
+			decoded = jwt.verify(token, JWT_SECRET);
+			if (!decoded) {
+				return res.status(409).json({ error: "Invalid token used" });
+			}
+		} else {
+			decoded = jwt.verify(jwtToken, JWT_SECRET);
 		}
-
-		const decoded = jwt.verify(jwtToken, JWT_SECRET);
 
 		let user = [];
 		const { email } = decoded;
