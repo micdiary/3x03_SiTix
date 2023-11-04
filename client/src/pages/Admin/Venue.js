@@ -216,17 +216,9 @@ const Venue = ({ venueData, updated, setUpdated }) => {
         setModalVisible(false);
     };
 
-    const onChange = (key) => {
-        // console.log(key);
-    };
-
     return (
         <div className="container">
-            <Collapse
-                items={items}
-                defaultActiveKey={["1"]}
-                onChange={onChange}
-            />
+            <Collapse items={items} defaultActiveKey={["1"]} />
 
             <Modals
                 modal2Open={modalVisible}

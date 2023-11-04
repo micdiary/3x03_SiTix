@@ -11,16 +11,19 @@ const items = [
         label: "Events",
         key: "event",
         icon: <CalendarOutlined />,
+        disabled: true,
     },
     {
         label: "Categories",
         key: "category",
         icon: <EnvironmentOutlined />,
+        disabled: true,
     },
     {
         label: "Venues",
         key: "venue",
         icon: <EnvironmentOutlined />,
+        disabled: true,
     },
 ];
 

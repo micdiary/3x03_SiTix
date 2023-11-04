@@ -35,19 +35,20 @@ const Header = () => {
             localStorageUserType !== null ? localStorageUserType : storeUserType
         );
     }, [localStorageUserType, storeUserType]);
-    
+
     useEffect(() => {
         setToken(localStorageToken !== null ? localStorageToken : storeToken);
         setStoreToken(
             localStorageToken !== null ? localStorageToken : storeToken
         );
-        if (token !== null && token !== undefined && userType !== null && userType !== undefined) {
-            console.log(token)
-            console.log(userType)
+        if (
+            token !== null &&
+            token !== undefined &&
+            userType !== null &&
+            userType !== undefined
+        ) {
             refreshToken({ token: token, type: userType })
-                .then((res) => {
-                    console.log("success");
-                })
+                .then((res) => {})
                 .catch((err) => {
                     removeToken();
                     removeUserType();
