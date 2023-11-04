@@ -43,7 +43,7 @@ export const validateField = (field) => {
 			return false;
 		}
 
-		const maxLength = 255;
+		const maxLength = 4096;
 		if (field.length > maxLength) {
 			return false;
 		}

@@ -19,7 +19,6 @@ const ResetPassword = () => {
     let params = useLocation();
 
     const onFinish = (values) => {
-        console.log(params)
         const req = {
             token: params.search.split("=")[1],
             newPassword: values.new_password,

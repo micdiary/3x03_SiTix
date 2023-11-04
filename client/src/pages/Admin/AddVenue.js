@@ -41,7 +41,6 @@ const AddVenue = () => {
 
         addVenue(req)
             .then((res) => {
-                console.log("success");
                 showNotification(res.message);
                 navigate(ADMIN_URL);
             })

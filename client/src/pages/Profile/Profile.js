@@ -2,11 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal } from "antd";
 import * as constants from "../../constants";
 import { deleteUserAccount, getProfile } from "../../api/account";
-import {
-    getUserType,
-    removeToken,
-    removeUserType,
-} from "../../utils/account";
+import { getUserType, removeToken, removeUserType } from "../../utils/account";
 import Users from "./Users";
 import Admins from "./Admins";
 import Password from "./Password";
@@ -96,7 +92,6 @@ const Profile = () => {
                     </Button>
                 </div>
             )}
-            ;
         </div>
     );
 };
