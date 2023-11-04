@@ -21,3 +21,7 @@ serve -s build
 ## License
 
 [SIT](https://choosealicense.com/licenses/mit/)
+
+## Branches
+/main contains the localhost version of the application (http)
+/deploy contains the deployed version of the application (https)
