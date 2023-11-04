@@ -2,6 +2,8 @@
 
 SiTix is a web app designed to sell tickets.
 
+Access the website here: https://tix.busy-shannon.cloud
+
 ## Installation
 
 Use the package manager npm to install modules.
