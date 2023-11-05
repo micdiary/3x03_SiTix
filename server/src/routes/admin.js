@@ -13,7 +13,7 @@ import {
 	EMAIL_PASSWORD,
 } from "../constants.js";
 import { mysql_connection } from "../mysql_db.js";
-import { checkToken, getJWTFromRedis } from "./auth.js";
+import { checkToken, emailExists, getJWTFromRedis } from "./auth.js";
 import { isValidEmailFormat, sendEmail } from "../utils/email.js";
 import { toProperCase } from "../utils/string.js";
 import { convertToDate, getCurrentTimeInUnix } from "../utils/time.js";
@@ -95,7 +95,7 @@ router.post("/add", async (req, res) => {
 			return res.status(409).json({ error: "Invalid email format" });
 		}
 
-		if (await emailExists(admin_email)) {
+		if (await adminEmailExists(admin_email) || await emailExists(admin_email)) {
 			return res.status(409).json({ error: "Email already exists" });
 		}
 
@@ -188,7 +188,7 @@ const generatePassword = () => {
 };
 
 // check email exists
-const emailExists = async (email) => {
+const adminEmailExists = async (email) => {
 	try {
 		const sql = `SELECT * FROM admin WHERE email = ?`;
 		const values = [email];
